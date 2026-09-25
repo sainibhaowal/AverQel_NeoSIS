@@ -2,7 +2,7 @@
 
 <p align="center"><img src="apps/web/public/averqel-neosis-logo.svg" alt="AverQel NeoSIS logo" width="260"></p>
 
-AverQel NeoSIS (`neosis`) is an open-source agent harness developed by Mehil Krring.
+AverQel NeoSIS (`neosis`) is an open-source agent harness developed by Ravinder Singh.
 
 It is built on an **everything-is-a-plugin** architecture and powered by [Cordis](https://github.com/cordiverse/cordis), whose design is described in [_A Programming Paradigm for Spatiotemporal Composability_](https://arxiv.org/abs/2608.25512).
 
@@ -63,7 +63,7 @@ For agents, follow [AGENTS.md](AGENTS.md).
 ```bibtex
 @misc{averqel-neosis2026,
   title={AverQel NeoSIS: Everything is a Plugin},
-  author={Mehil Krring},
+  author={Ravinder Singh},
   year={2026},
   publisher={GitHub},
   howpublished={\url{https://github.com/sainibhaowal/AverQel_Neosis}},
