@@ -1,8 +1,6 @@
 # AverQel NeoSIS
 
-English | [中文](README.zh.md)
-
-<p align="center"><img src="apps/web/public/averqel-neosis-logo.svg" alt="AverQel NeoSIS logo" width="160"></p>
+<p align="center"><img src="apps/web/public/averqel-neosis-logo.svg" alt="AverQel NeoSIS logo" width="260"></p>
 
 AverQel NeoSIS (`neosis`) is an open-source agent harness developed by Mehil Krring.
 
