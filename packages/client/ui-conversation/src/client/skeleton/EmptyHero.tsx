@@ -1,10 +1,10 @@
 // The composer remains in ConversationRoot so switching out of the blank-draft
 // phase does not remount its textarea.
 
-import { useState } from 'react'
+import { useId, useState } from 'react'
 import type { ReactNode, RefObject } from 'react'
 import {
-  FISH_LOGO_PATH, FISH_LOGO_VIEWBOX, IconChevronDownOutlineRegular, IconFolderCloseRegular, IconFolderOpenRegular,
+  BrandRainbowDefs, FISH_LOGO_PATH, FISH_LOGO_VIEWBOX, IconChevronDownOutlineRegular, IconFolderCloseRegular, IconFolderOpenRegular,
 } from '@averqel/neosis-client-ui-primitives'
 import { workspaceTitleOf } from '@averqel/neosis-util-workspace-path'
 import type { ConversationContentProps } from '../contract/slots.ts'
@@ -85,6 +85,7 @@ const HERO_SWIM_DOWN_PATH = FISH_LOGO_PATH
  * @returns the mascot svg element.
  */
 function HeroFish({ hovering }: { hovering: boolean }) {
+  const gradientId = `neosis-brand-rainbow-${useId().replaceAll(':', '')}`
   return (
     <svg
       className={css.fish}
@@ -94,7 +95,10 @@ function HeroFish({ hovering }: { hovering: boolean }) {
       fill="none"
       aria-hidden="true"
     >
-      <path d={FISH_LOGO_PATH} fill="currentColor">
+      <defs>
+        <BrandRainbowDefs id={gradientId} />
+      </defs>
+      <path d={FISH_LOGO_PATH} fill={`url(#${gradientId})`}>
         {hovering && (
           <animate
             attributeName="d"
@@ -107,7 +111,7 @@ function HeroFish({ hovering }: { hovering: boolean }) {
           />
         )}
       </path>
-      <path d="M82 25C91 33 99 43 106 49C98 49 91 52 85 56" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" opacity=".72" />
+      <path d="M82 25C91 33 99 43 106 49C98 49 91 52 85 56" fill="none" stroke={`url(#${gradientId})`} strokeWidth="3" strokeLinecap="round" opacity=".92" />
     </svg>
   )
 }
