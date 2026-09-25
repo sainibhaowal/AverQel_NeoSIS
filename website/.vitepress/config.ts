@@ -181,8 +181,9 @@ const siteIdentity = {
 }
 
 /**
- * The AverQel wordmark, inlined so its `currentColor` fills follow the active
- * theme. An `<img>` would freeze the mark at the colors the file declares.
+ * The AverQel wordmark, inlined so its text follows the active theme while its
+ * rainbow mark keeps the shared brand colors. An `<img>` would freeze the text
+ * at the color the file declares.
  */
 const wordmark = readFileSync(resolve(import.meta.dirname, '../public/wordmark.svg'), 'utf8')
   .trim()
@@ -275,7 +276,7 @@ export default withMermaid({
   },
   head: [
     // VitePress leaves head hrefs untouched, so the base belongs here explicitly.
-    ['link', { rel: 'icon', type: 'image/svg+xml', href: `${base}favicon.svg` }],
+    ['link', { rel: 'icon', type: 'image/svg+xml', href: `${base}favicon.svg?v=averqel-neosis-3` }],
     ['style', {}, siteStyle],
     ['script', {}, scrollbarScript],
   ],

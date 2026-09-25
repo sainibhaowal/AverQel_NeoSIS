@@ -130,7 +130,8 @@ describe('FishLogo', () => {
     expect(Number(svg.getAttribute('height'))).toBeCloseTo(18, 1)
     expect(svg.getAttribute('viewBox')).toBe('0 0 128 96')
     expect(container.querySelectorAll('path')).toHaveLength(2)
-    expect(container.innerHTML).toContain('currentColor')
+    expect(container.querySelector('linearGradient')?.querySelectorAll('stop')).toHaveLength(7)
+    expect(container.innerHTML).toContain('url(#neosis-brand-rainbow-')
     expect(container.innerHTML).not.toContain('whale')
   })
 })
@@ -141,9 +142,11 @@ describe('BrandWordmark', () => {
     const svg = view.container.querySelector('svg')!
     expect(svg.getAttribute('width')).toBe('182')
     expect(svg.getAttribute('viewBox')).toBe('0 0 182 24')
+    expect(view.container.querySelector('linearGradient')?.querySelectorAll('stop')).toHaveLength(7)
 
     view.rerender(<primitives.BrandWordmark includeMark={false} />)
     expect(svg.getAttribute('width')).toBe('156')
     expect(svg.getAttribute('viewBox')).toBe('26 0 156 24')
+    expect(view.container.querySelector('linearGradient')).toBeNull()
   })
 })

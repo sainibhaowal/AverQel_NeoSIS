@@ -1,3 +1,5 @@
+import { useId } from 'react'
+import { BrandRainbowDefs } from './FishLogo.tsx'
 import type { IconProps } from './icons/props.ts'
 
 /** Display options for the AverQel NeoSIS wordmark. */
@@ -17,6 +19,7 @@ const MARK_TRAIL = 'M82 25C91 33 99 43 106 49C98 49 91 52 85 56'
  */
 export function BrandWordmark({ size = 24, className, includeMark = true }: BrandWordmarkProps) {
   const width = includeMark ? 182 : 156
+  const gradientId = `neosis-brand-rainbow-${useId().replaceAll(':', '')}`
   return (
     <svg
       width={(size * width) / 24}
@@ -27,9 +30,14 @@ export function BrandWordmark({ size = 24, className, includeMark = true }: Bran
       aria-hidden="true"
     >
       {includeMark && (
+        <defs>
+          <BrandRainbowDefs id={gradientId} />
+        </defs>
+      )}
+      {includeMark && (
         <g transform="translate(0 3) scale(.1875)">
-          <path d={MARK_PATH} fill="currentColor" fillRule="evenodd" clipRule="evenodd" />
-          <path d={MARK_TRAIL} fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" opacity=".72" />
+          <path d={MARK_PATH} fill={`url(#${gradientId})`} fillRule="evenodd" clipRule="evenodd" />
+          <path d={MARK_TRAIL} fill="none" stroke={`url(#${gradientId})`} strokeWidth="3" strokeLinecap="round" opacity=".92" />
         </g>
       )}
       <text x={includeMark ? 30 : 26} y="16.5" fill="currentColor" fontFamily="Inter,Segoe UI,sans-serif" fontSize="10.5" fontWeight="600" letterSpacing=".15">AverQel NeoSIS</text>

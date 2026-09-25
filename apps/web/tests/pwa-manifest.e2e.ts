@@ -28,16 +28,14 @@ it('ships install metadata with the built web application', async () => {
   })
 })
 
-it('ships fixed-color favicons selected by document media queries', async () => {
+it('ships the rainbow favicon through both document media queries', async () => {
   const index = await readFile(join(DIST_ROOT, 'index.html'), 'utf8')
-  expect(index).toContain('<link rel="icon" type="image/svg+xml" href="./favicon-dark.svg?v=averqel-neosis-2" media="(prefers-color-scheme: dark)" />')
-  expect(index).toContain('<link rel="icon" type="image/svg+xml" href="./favicon.svg?v=averqel-neosis-2" media="(prefers-color-scheme: light)" />')
+  expect(index).toContain('<link rel="icon" type="image/svg+xml" href="./favicon-dark.svg?v=averqel-neosis-3" media="(prefers-color-scheme: dark)" />')
+  expect(index).toContain('<link rel="icon" type="image/svg+xml" href="./favicon.svg?v=averqel-neosis-3" media="(prefers-color-scheme: light)" />')
   const light = await readFile(join(DIST_ROOT, 'favicon.svg'), 'utf8')
   const dark = await readFile(join(DIST_ROOT, 'favicon-dark.svg'), 'utf8')
-  expect(light).not.toContain('<style>')
-  expect(light).toContain('fill="#111827"')
-  expect(light).toContain('stroke="#111827"')
-  expect(dark).toContain('fill="#F9FAFB"')
-  expect(dark).toContain('stroke="#F9FAFB"')
-  expect(dark).not.toBe(light)
+  expect(light).toContain('id="rainbow"')
+  expect(light).toContain('fill="url(#rainbow)"')
+  expect(light).toContain('stroke="url(#rainbow)"')
+  expect(dark).toBe(light)
 })
