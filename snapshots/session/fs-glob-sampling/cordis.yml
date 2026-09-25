@@ -1,0 +1,80 @@
+# Minimal live counterpart for the glob-sampling snapshot composition.
+- id: llm-deepseek
+  name: '@averqel/neosis-llm-deepseek'
+  config:
+    models:
+      - id: deepseek-v4-pro
+
+- id: subprocess
+  name: '@averqel/neosis-subprocess-local'
+
+- id: agent-default-model
+  name: '@averqel/neosis-agent-default-model'
+  config:
+    provider: deepseek-official
+    model: deepseek-v4-pro
+
+- id: session-persistence-jsonl
+  name: '@averqel/neosis-session-persistence-jsonl'
+  config:
+    root: !!js neosisHomePath('sessions')
+    compression: !!js 'process.env.NEOSIS_SNAPSHOT === undefined ? ''zstd'' : ''none'''
+
+- id: agent-instructions
+  name: '@averqel/neosis-agent-instructions'
+  disabled: true
+
+- id: system-prompt
+  name: '@averqel/neosis-system-prompt'
+  config:
+    personaPrefix: You are a concise snapshot agent working in {{cwd}}.
+
+- id: tool-jobs
+  name: '@averqel/neosis-tool-jobs'
+  disabled: true
+
+- id: goal
+  name: '@averqel/neosis-goal'
+  disabled: true
+
+- id: goal-round-driver
+  name: '@averqel/neosis-goal-round-driver'
+  disabled: true
+
+- id: command-goal
+  name: '@averqel/neosis-command-goal'
+  disabled: true
+
+- id: tool-goal
+  name: '@averqel/neosis-tool-goal'
+  disabled: true
+
+- id: skill
+  name: '@averqel/neosis-skill'
+  disabled: true
+
+- id: skill-filesystem
+  name: '@averqel/neosis-skill-filesystem'
+  disabled: true
+
+- id: tool-skill
+  name: '@averqel/neosis-tool-skill'
+  disabled: true
+
+- id: tool-fs-search
+  name: '@averqel/neosis-tool-fs-search'
+  config:
+    sampleOverCapGlobResults: true
+    globMaxResults: 4
+
+- id: spill-local
+  name: '@averqel/neosis-spill-local'
+  config:
+    root: !!js process.env.NEOSIS_SNAPSHOT_SPILL_ROOT ?? './.spill'
+
+- insert:
+    - id: snapshot-spill-locators
+      name: ../../../scripts/snapshot-spill-locators.ts
+      config:
+        root: !!js process.env.NEOSIS_SNAPSHOT_SPILL_ROOT
+        locatorRoot: !!js process.env.NEOSIS_SNAPSHOT_SPILL_LOCATOR_ROOT

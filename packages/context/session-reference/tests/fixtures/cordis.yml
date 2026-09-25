@@ -1,0 +1,17 @@
+- name: '@averqel/neosis-session'
+- name: '@averqel/neosis-system-prompt'
+- name: '@averqel/neosis-tools'
+- name: '@averqel/neosis-fs-local'
+- name: '@averqel/neosis-tool-fs'
+- name: '@averqel/neosis-session-query-sqlite'
+  config:
+    path: ':memory:'
+    openAt: never
+- name: '@averqel/neosis-session-reference'
+  config:
+    maxReferenceBytes: 360
+- name: './source-session.ts'
+- name: '@averqel/neosis-spill-local'
+  config:
+    root: '{{spillRoot}}'
+    cleanupPeriodDays: 0

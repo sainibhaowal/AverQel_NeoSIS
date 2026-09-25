@@ -1,0 +1,53 @@
+{
+  "name": "@averqel/neosis-subagent-fork-in-process",
+  "description": "In-process fork subagent backend: runs a child agent seeded with a prefix of the parent's log",
+  "version": "0.1.7-alpha.2",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sainibhaowal/AverQel_Neosis.git",
+    "directory": "packages/subagent/subagent-fork-in-process"
+  },
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/types/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./src/*": "./src/*",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib/index.js",
+    "lib/types/**/*.d.ts"
+  ],
+  "license": "Apache-2.0",
+  "peerDependencies": {
+    "@averqel/neosis-agent": "workspace:*",
+    "@averqel/neosis-session": "workspace:*",
+    "@averqel/neosis-subagent": "workspace:*",
+    "@averqel/neosis-subagent-in-process-driver": "workspace:*",
+    "@averqel/cordis": "workspace:~"
+  },
+  "dependencies": {
+    "@averqel/schemastery": "workspace:~"
+  },
+  "devDependencies": {
+    "@averqel/cordis-plugin-loader": "workspace:~",
+    "@averqel/neosis-agent": "workspace:*",
+    "@averqel/neosis-agent-loop": "workspace:*",
+    "@averqel/neosis-agent-loop-testkit": "workspace:*",
+    "@averqel/neosis-invariants": "workspace:*",
+    "@averqel/neosis-llm": "workspace:*",
+    "@averqel/neosis-session": "workspace:*",
+    "@averqel/neosis-subagent": "workspace:*",
+    "@averqel/neosis-subagent-in-process-driver": "workspace:*",
+    "@averqel/neosis-subagent-spawn-in-process": "workspace:*",
+    "@averqel/cordis": "workspace:~",
+    "@averqel/neosis-session-projection": "workspace:*"
+  }
+}

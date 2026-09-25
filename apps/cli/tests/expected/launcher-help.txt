@@ -1,0 +1,32 @@
+Usage: neosis [--profile] <name> [options] [app-args...]
+       neosis plugin --profile <name> <pnpm-args...>
+
+neosis: boot a AverQel NeoSIS profile — an ordered stack of plugin-bundle patch
+layers under your own overrides.
+
+Arguments:
+  args                           arguments for the booted profile's app (see:
+                                 neosis --profile <name> --help)
+
+Options:
+  -V, --version                  output the version number
+  --profile <name>               the profile under $NEOSIS_HOME/profiles to boot
+  --from-default-profile <name>  initialize a new custom profile from a shipped
+                                 profile template
+  --patch <path>                 extra patch-list overlay applied after the
+                                 profile layer (repeatable)
+  --dump-config                  print the composed profile tree and exit
+  --dump-config-schema           print JSON Schema for profile entries and
+                                 patches without mounting
+  --dump-default-config          print the profile tree without its user layer
+                                 or --patch overlays and exit
+
+Examples:
+  neosis web                                   boot the web profile (same as: neosis --profile web)
+  neosis rescue --from-default-profile web
+                                            create rescue from the shipped web template, then boot it
+  neosis headless "run the tests"              answer one task, print the result, and exit
+  neosis tui --patch ./extra.yml               boot a custom profile with one extra overlay
+  neosis tui --resume <session>                arguments after the launcher flags reach the app
+  neosis web --help                            the web app's own flags and help
+  neosis plugin --profile tui add <package>    install a plugin into the tui profile

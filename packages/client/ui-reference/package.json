@@ -1,0 +1,70 @@
+{
+  "name": "@averqel/neosis-client-ui-reference",
+  "description": "Unified Web @file and @session reference source",
+  "version": "0.1.7-alpha.2",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sainibhaowal/AverQel_Neosis.git",
+    "directory": "packages/client/ui-reference"
+  },
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/types/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./client": {
+      "types": "./lib/types/client/index.d.ts",
+      "default": "./lib/client.js"
+    },
+    "./src/*": "./src/*",
+    "./package.json": "./package.json"
+  },
+  "neosis": {
+    "client": {
+      "inject": [
+        "@averqel/neosis-api-remotes",
+        "@averqel/neosis-api-session-controller",
+        "@averqel/neosis-client-connection",
+        "@averqel/neosis-client-locale",
+        "@averqel/neosis-client-ui-input-trigger",
+        "@averqel/neosis-client-ui-sidebar-right"
+      ],
+      "platform": "web"
+    }
+  },
+  "scripts": {
+    "bundle": "tsdown",
+    "watch": "tsdown --watch"
+  },
+  "license": "Apache-2.0",
+  "peerDependencies": {
+    "@averqel/cordis": "workspace:~"
+  },
+  "devDependencies": {
+    "@averqel/neosis-api-remotes": "workspace:*",
+    "@averqel/neosis-api-session-controller": "workspace:*",
+    "@averqel/neosis-client-connection": "workspace:*",
+    "@averqel/neosis-client-locale": "workspace:*",
+    "@averqel/neosis-client-test-runtime": "workspace:*",
+    "@averqel/neosis-client-ui-input-trigger": "workspace:*",
+    "@averqel/neosis-client-ui-primitives": "workspace:*",
+    "@averqel/neosis-client-ui-slots": "workspace:*",
+    "@averqel/neosis-file-reference": "workspace:*",
+    "@averqel/neosis-session-reference": "workspace:*",
+    "@averqel/neosis-typert-protocol": "workspace:*",
+    "@averqel/neosis-util-workspace-path": "workspace:*",
+    "@averqel/cordis": "workspace:~",
+    "@averqel/neosis-client-ui-sidebar-right": "workspace:*"
+  },
+  "files": [
+    "lib/index.js",
+    "lib/client.js",
+    "lib/types/**/*.d.ts"
+  ]
+}

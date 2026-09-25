@@ -1,0 +1,85 @@
+# Minimal keyless composition: real app, pwsh executor, and pwsh tool; replayed model.
+- id: llm-deepseek
+  name: '@averqel/neosis-llm-deepseek'
+  disabled: true
+
+- insert:
+    - id: llm-replay
+      name: '@averqel/neosis-llm-replay'
+      config:
+        providers:
+          - id: deepseek-official
+            name: DeepSeek
+            models:
+              - id: deepseek-v4-pro
+
+- id: subprocess
+  name: '@averqel/neosis-subprocess-local'
+
+- id: bash-sandbox
+  name: '@averqel/neosis-bash-sandbox'
+  disabled: true
+
+- id: pwsh-sandbox
+  name: '@averqel/neosis-pwsh-sandbox'
+  disabled: false
+
+- id: shell-env
+  name: '@averqel/neosis-shell-env'
+
+- id: agent-default-model
+  name: '@averqel/neosis-agent-default-model'
+  config:
+    provider: deepseek-official
+    model: deepseek-v4-pro
+
+- id: session-persistence-jsonl
+  name: '@averqel/neosis-session-persistence-jsonl'
+  config:
+    root: !!js neosisHomePath('sessions')
+    compression: none
+
+- id: agent-instructions
+  name: '@averqel/neosis-agent-instructions'
+  disabled: true
+
+- id: system-prompt
+  name: '@averqel/neosis-system-prompt'
+  config:
+    personaPrefix: You are a concise snapshot agent working in {{cwd}}.
+
+- id: goal
+  name: '@averqel/neosis-goal'
+  disabled: true
+
+- id: goal-round-driver
+  name: '@averqel/neosis-goal-round-driver'
+  disabled: true
+
+- id: command-goal
+  name: '@averqel/neosis-command-goal'
+  disabled: true
+
+- id: tool-goal
+  name: '@averqel/neosis-tool-goal'
+  disabled: true
+
+- id: skill
+  name: '@averqel/neosis-skill'
+  disabled: true
+
+- id: skill-filesystem
+  name: '@averqel/neosis-skill-filesystem'
+  disabled: true
+
+- id: tool-skill
+  name: '@averqel/neosis-tool-skill'
+  disabled: true
+
+- id: tool-bash
+  name: '@averqel/neosis-tool-bash'
+  disabled: true
+
+- id: tool-pwsh
+  name: '@averqel/neosis-tool-pwsh'
+  disabled: false

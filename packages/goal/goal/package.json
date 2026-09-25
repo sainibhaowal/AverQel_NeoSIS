@@ -1,0 +1,88 @@
+{
+  "name": "@averqel/neosis-goal",
+  "description": "Event-sourced same-session goal state and lifecycle service for the AverQel NeoSIS",
+  "version": "0.1.7-alpha.2",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sainibhaowal/AverQel_Neosis.git",
+    "directory": "packages/goal/goal"
+  },
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/types/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./invariant": {
+      "types": "./lib/types/invariant.d.ts",
+      "default": "./lib/invariant.js"
+    },
+    "./types": {
+      "types": "./lib/types/types.d.ts",
+      "default": "./lib/types/types.js"
+    },
+    "./client": {
+      "types": "./lib/types/client.d.ts",
+      "default": "./lib/types/client.js"
+    },
+    "./typert": {
+      "types": "./lib/typert.host.d.ts",
+      "default": "./lib/typert.host.js"
+    },
+    "./remote": {
+      "types": "./lib/typert.remote-client.d.ts",
+      "default": "./lib/typert.remote-client.js"
+    },
+    "./src/*": "./src/*",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib/index.js",
+    "lib/invariant.js",
+    "lib/types/**/*.js",
+    "lib/types/**/*.d.ts",
+    "lib/typert.host.js",
+    "lib/typert.host.d.ts",
+    "lib/typert.remote-client.js",
+    "lib/typert.remote-client.d.ts"
+  ],
+  "license": "Apache-2.0",
+  "peerDependencies": {
+    "@averqel/neosis-agent": "workspace:*",
+    "@averqel/neosis-session-projection": "workspace:*",
+    "@averqel/neosis-brand": "workspace:*",
+    "@averqel/neosis-invariants": "workspace:*",
+    "@averqel/neosis-llm": "workspace:*",
+    "@averqel/neosis-scope": "workspace:*",
+    "@averqel/neosis-session": "workspace:*",
+    "@averqel/neosis-typert-protocol": "workspace:*",
+    "@averqel/cordis": "workspace:~"
+  },
+  "dependencies": {
+    "@averqel/schemastery": "workspace:~",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@averqel/neosis-agent": "workspace:*",
+    "@averqel/neosis-agent-loop": "workspace:*",
+    "@averqel/neosis-agent-loop-testkit": "workspace:*",
+    "@averqel/neosis-bash-local": "workspace:*",
+    "@averqel/neosis-session-projection": "workspace:*",
+    "@averqel/neosis-brand": "workspace:*",
+    "@averqel/neosis-invariants": "workspace:*",
+    "@averqel/neosis-llm": "workspace:*",
+    "@averqel/neosis-loader-smoke": "workspace:*",
+    "@averqel/neosis-scope": "workspace:*",
+    "@averqel/neosis-session": "workspace:*",
+    "@averqel/neosis-session-checkpoint-policy": "workspace:*",
+    "@averqel/neosis-session-persistence-jsonl": "workspace:*",
+    "@averqel/neosis-subprocess-local": "workspace:*",
+    "@averqel/neosis-typert-protocol": "workspace:*",
+    "@averqel/cordis": "workspace:~"
+  }
+}

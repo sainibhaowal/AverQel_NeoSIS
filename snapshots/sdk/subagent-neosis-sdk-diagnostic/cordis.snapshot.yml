@@ -1,0 +1,15 @@
+# Keyless parent-model overlay for the NEOSIS SDK diagnostic snapshot.
+
+- id: llm-deepseek
+  name: '@averqel/neosis-llm-deepseek'
+  disabled: true
+
+- insert:
+    - id: llm-replay
+      name: '@averqel/neosis-llm-replay'
+      config:
+        providers:
+          - id: deepseek-official
+            name: AverQel
+            models:
+              - id: deepseek-v4-flash

@@ -1,0 +1,102 @@
+{
+  "name": "@averqel/neosis-api-remotes",
+  "description": "Remote BFF assembly for application-selected Host capabilities",
+  "version": "0.1.7-alpha.2",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sainibhaowal/AverQel_Neosis.git",
+    "directory": "packages/api/remotes"
+  },
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/types/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./client": {
+      "types": "./lib/types/client/index.d.ts",
+      "default": "./lib/client.js"
+    },
+    "./types": {
+      "types": "./lib/types/types.d.ts",
+      "default": "./lib/types/types.js"
+    },
+    "./src/*": "./src/*",
+    "./package.json": "./package.json"
+  },
+  "neosis": {
+    "client": {
+      "inject": [
+        "@averqel/neosis-api-gateway"
+      ],
+      "platform": "web",
+      "immediately": true
+    }
+  },
+  "scripts": {
+    "bundle": "tsdown",
+    "watch": "tsdown --watch"
+  },
+  "license": "Apache-2.0",
+  "files": [
+    "lib/index.js",
+    "lib/client.js",
+    "lib/types/**/*.js",
+    "lib/types/**/*.d.ts"
+  ],
+  "dependencies": {
+    "@averqel/neosis-deque": "workspace:*",
+    "@averqel/neosis-session": "workspace:*",
+    "@averqel/neosis-util-values": "workspace:*"
+  },
+  "peerDependencies": {
+    "@averqel/cordis": "workspace:~",
+    "@averqel/neosis-scope": "workspace:*"
+  },
+  "devDependencies": {
+    "@averqel/cordis": "workspace:~",
+    "@averqel/neosis-agent": "workspace:*",
+    "@averqel/neosis-agent-preset-registry": "workspace:*",
+    "@averqel/neosis-api-gateway": "workspace:*",
+    "@averqel/neosis-api-job-controller": "workspace:*",
+    "@averqel/neosis-api-session-controller": "workspace:*",
+    "@averqel/neosis-api-settings-controller": "workspace:*",
+    "@averqel/neosis-api-workspace-controller": "workspace:*",
+    "@averqel/neosis-client-connection": "workspace:*",
+    "@averqel/neosis-client-file-upload": "workspace:*",
+    "@averqel/neosis-commands": "workspace:*",
+    "@averqel/neosis-cordis-host-runner": "workspace:*",
+    "@averqel/neosis-credentials": "workspace:*",
+    "@averqel/neosis-file-reference": "workspace:*",
+    "@averqel/neosis-goal": "workspace:*",
+    "@averqel/neosis-host-plugin-inventory": "workspace:*",
+    "@averqel/neosis-llm": "workspace:*",
+    "@averqel/neosis-message-feedback": "workspace:*",
+    "@averqel/neosis-scope": "workspace:*",
+    "@averqel/neosis-permission-presets": "workspace:*",
+    "@averqel/neosis-session-reference": "workspace:*",
+    "@averqel/neosis-settings": "workspace:*",
+    "@averqel/neosis-subagent": "workspace:*",
+    "@averqel/neosis-typert-protocol": "workspace:*",
+    "@averqel/neosis-user-approval": "workspace:*",
+    "@averqel/neosis-user-questions": "workspace:*",
+    "@averqel/neosis-client-connection": "workspace:*",
+    "@averqel/neosis-client-file-upload": "workspace:*",
+    "@averqel/neosis-typert-protocol": "workspace:*",
+    "@averqel/neosis-scope": "workspace:*",
+    "@averqel/neosis-api-session-controller": "workspace:*",
+    "@averqel/neosis-api-workspace-files": "workspace:*",
+    "zod": "^4.4.3",
+    "@averqel/neosis-command-feedback": "workspace:*",
+    "@averqel/neosis-api-terminal-controller": "workspace:*",
+    "@averqel/neosis-plugin-manager": "workspace:*",
+    "@averqel/neosis-client-ui-plugin-manager": "workspace:*",
+    "@averqel/neosis-office-to-pdf": "workspace:*",
+    "@averqel/neosis-api-account-controller": "workspace:*"
+  }
+}

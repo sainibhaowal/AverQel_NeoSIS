@@ -1,0 +1,5 @@
+AverQel NeoSIS is unavailable
+The application could not start or stopped unexpectedly.
+Another NEOSIS instance (such as neosis web or the desktop app) is running. They cannot start at the same time. Quit the other running NEOSIS instance, then restart.
+Exit
+Restart

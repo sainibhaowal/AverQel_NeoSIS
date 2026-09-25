@@ -1,0 +1,68 @@
+# TypeScript SDK snapshot patch for foreground and background NEOSIS SDK failures.
+
+- id: skill-filesystem
+  name: '@averqel/neosis-skill-filesystem'
+  config:
+    includeDefaultRoots: false
+
+- id: llm-deepseek
+  name: '@averqel/neosis-llm-deepseek'
+  config:
+    thinking: enabled
+    reasoningEffort: max
+
+- id: session-persistence-jsonl
+  name: '@averqel/neosis-session-persistence-jsonl'
+  config:
+    root: !!js neosisHomePath('sessions')
+    compression: !!js "process.env.NEOSIS_SNAPSHOT === undefined ? 'zstd' : 'none'"
+
+- id: session-log-deepseek
+  name: '@averqel/neosis-session-log-deepseek'
+  config:
+    enabled: true
+
+- insert:
+    - id: subagent-neosis-sdk-diagnostic
+      name: '@averqel/neosis-subagent-neosis-sdk'
+      config:
+        providerName: neosis-sdk-diagnostic
+        profile: sdk
+        patches:
+          - !!js process.env.NEOSIS_TEST_CHILD_PATCH
+        neosisHome: !!js neosisHomePath('children/foreground')
+        provider: mock
+        model: mock-echo
+        env:
+          NEOSIS_TELEMETRY_DISABLED: '1'
+          NEOSIS_TEST_CHILD_FAILURE: '1'
+    - id: tool-subagent-neosis-sdk-diagnostic
+      name: '@averqel/neosis-tool-subagent'
+      config:
+        provider: neosis-sdk-diagnostic
+        toolName: subagent_neosis_sdk
+        backgroundMode: one-shot
+        maxDepth: provider-managed
+    - id: subagent-neosis-sdk-diagnostic-background
+      name: '@averqel/neosis-subagent-neosis-sdk'
+      config:
+        providerName: neosis-sdk-diagnostic-background
+        profile: sdk
+        patches:
+          - !!js process.env.NEOSIS_TEST_CHILD_PATCH
+        neosisHome: !!js neosisHomePath('children/background')
+        provider: mock
+        model: mock-echo
+        env:
+          NEOSIS_TELEMETRY_DISABLED: '1'
+          NEOSIS_TEST_CHILD_FAILURE: '1'
+          FAKE_INIT_GO: .neosis-sdk-background-release
+    - id: tool-subagent-neosis-sdk-diagnostic-background
+      name: '@averqel/neosis-tool-subagent'
+      config:
+        provider: neosis-sdk-diagnostic-background
+        toolName: subagent_neosis_sdk_background
+        backgroundMode: one-shot
+        maxDepth: provider-managed
+    - id: release-neosis-sdk-background-on-job-output
+      name: '../../../apps/cli/tests/profiles/sdk/fixtures/subagent-neosis-sdk-release-on-job-output.ts'

@@ -1,0 +1,105 @@
+{
+  "name": "@averqel/neosis-client-ui-conversation",
+  "description": "Target-neutral Conversation assembly, shell, composer, queue, and view navigation",
+  "version": "0.1.7-alpha.2",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sainibhaowal/AverQel_Neosis.git",
+    "directory": "packages/client/ui-conversation"
+  },
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/types/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./client": {
+      "types": "./lib/types/client/index.d.ts",
+      "default": "./lib/client.js"
+    },
+    "./src/*": "./src/*",
+    "./package.json": "./package.json"
+  },
+  "neosis": {
+    "client": {
+      "inject": [
+        "@averqel/neosis-api-session-controller",
+        "@averqel/neosis-client-file-upload",
+        "@averqel/neosis-client-locale",
+        "@averqel/neosis-client-ui-layout",
+        "@averqel/neosis-client-ui-renderer",
+        "@averqel/neosis-client-ui-session",
+        "@averqel/neosis-client-ui-settings",
+        "@averqel/neosis-client-ui-workspace"
+      ],
+      "platform": "web"
+    }
+  },
+  "scripts": {
+    "bundle": "tsdown",
+    "watch": "tsdown --watch"
+  },
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@averqel/schemastery": "workspace:~"
+  },
+  "peerDependencies": {
+    "@averqel/cordis": "workspace:~"
+  },
+  "devDependencies": {
+    "@averqel/cordis": "workspace:~",
+    "@averqel/neosis-api-remotes": "workspace:*",
+    "@averqel/neosis-api-session-controller": "workspace:*",
+    "@averqel/neosis-api-workspace-controller": "workspace:*",
+    "@averqel/neosis-attachment": "workspace:*",
+    "@averqel/neosis-brand": "workspace:*",
+    "@averqel/neosis-client-locale": "workspace:*",
+    "@averqel/neosis-client-file-upload": "workspace:*",
+    "@averqel/neosis-client-store": "workspace:*",
+    "@averqel/neosis-client-test-runtime": "workspace:*",
+    "@averqel/neosis-client-ui-layout": "workspace:*",
+    "@averqel/neosis-client-ui-primitives": "workspace:*",
+    "@averqel/neosis-client-ui-renderer": "workspace:*",
+    "@averqel/neosis-client-ui-session": "workspace:*",
+    "@averqel/neosis-client-ui-settings": "workspace:*",
+    "@averqel/neosis-client-ui-workspace": "workspace:*",
+    "@averqel/neosis-client-ui-slots": "workspace:*",
+    "@averqel/neosis-commands": "workspace:*",
+    "@averqel/neosis-goal": "workspace:*",
+    "@averqel/neosis-llm": "workspace:*",
+    "@averqel/neosis-llm-retry": "workspace:*",
+    "@averqel/neosis-plan-mode": "workspace:*",
+    "@averqel/neosis-session": "workspace:*",
+    "@averqel/neosis-util-values": "workspace:*",
+    "@averqel/neosis-token-meter": "workspace:*",
+    "@averqel/neosis-tool-todo": "workspace:*",
+    "@averqel/neosis-util-crypto": "workspace:*",
+    "@averqel/neosis-workspace": "workspace:*",
+    "@averqel/neosis-file-reference": "workspace:*",
+    "@averqel/neosis-util-workspace-path": "workspace:*",
+    "@types/react": "~18.3.1",
+    "react": "^18.2.0",
+    "@lexical/headless": "^0.49.0",
+    "react-dom": "^18.2.0",
+    "@types/react-dom": "~18.3.0",
+    "zod": "^4.4.3",
+    "lexical": "^0.49.0",
+    "clsx": "^2.0.0",
+    "@lexical/utils": "^0.49.0",
+    "@lexical/text": "^0.49.0",
+    "@lexical/plain-text": "^0.49.0",
+    "@lexical/history": "^0.49.0",
+    "@averqel/neosis-agent": "workspace:*",
+    "@averqel/neosis-settings": "workspace:*"
+  },
+  "files": [
+    "lib/index.js",
+    "lib/client.js",
+    "lib/types/**/*.d.ts"
+  ]
+}

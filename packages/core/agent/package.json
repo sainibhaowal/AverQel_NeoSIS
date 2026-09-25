@@ -1,0 +1,69 @@
+{
+  "name": "@averqel/neosis-agent",
+  "description": "Agent interface, registry, initiator scope, and event vocabulary for the AverQel NeoSIS",
+  "version": "0.1.7-alpha.2",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sainibhaowal/AverQel_Neosis.git",
+    "directory": "packages/core/agent"
+  },
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/types/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./invariant": {
+      "types": "./lib/types/invariant.d.ts",
+      "default": "./lib/invariant.js"
+    },
+    "./types": {
+      "types": "./lib/types/types.d.ts",
+      "default": "./lib/types/types.js"
+    },
+    "./src/*": "./src/*",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib/index.js",
+    "lib/invariant.js",
+    "lib/types/**/*.js",
+    "lib/types/**/*.d.ts"
+  ],
+  "license": "Apache-2.0",
+  "peerDependencies": {
+    "@averqel/neosis-invariants": "workspace:*",
+    "@averqel/neosis-llm": "workspace:*",
+    "@averqel/neosis-scope": "workspace:*",
+    "@averqel/neosis-session": "workspace:*",
+    "@averqel/neosis-session-projection": "workspace:*",
+    "@averqel/neosis-system-prompt": "workspace:*",
+    "@averqel/neosis-typert-protocol": "workspace:*",
+    "@averqel/neosis-util-values": "workspace:*",
+    "@averqel/neosis-workspace": "workspace:*",
+    "@averqel/cordis": "workspace:~"
+  },
+  "peerDependenciesMeta": {
+    "@averqel/neosis-workspace": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@averqel/neosis-invariants": "workspace:*",
+    "@averqel/neosis-llm": "workspace:*",
+    "@averqel/neosis-scope": "workspace:*",
+    "@averqel/neosis-session": "workspace:*",
+    "@averqel/neosis-session-projection": "workspace:*",
+    "@averqel/neosis-system-prompt": "workspace:*",
+    "@averqel/neosis-typert-protocol": "workspace:*",
+    "@averqel/neosis-typert-registry": "workspace:*",
+    "@averqel/neosis-util-values": "workspace:*",
+    "@averqel/neosis-workspace": "workspace:*",
+    "@averqel/cordis": "workspace:~"
+  }
+}

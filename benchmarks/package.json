@@ -1,0 +1,42 @@
+{
+  "name": "@averqel/neosis-benchmarks",
+  "version": "0.1.3-alpha.1",
+  "license": "Apache-2.0",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "playwright": "^1.49.0",
+    "@xterm/headless": "^6.0.0",
+    "@averqel/neosis-terminal": "workspace:*",
+    "@averqel/neosis-subprocess": "workspace:*",
+    "@averqel/neosis-llm-replay": "workspace:*",
+    "@averqel/cordis": "workspace:~",
+    "@averqel/neosis-agent": "workspace:*",
+    "@averqel/neosis-agent-loop": "workspace:*",
+    "@averqel/neosis-agent-loop-testkit": "workspace:*",
+    "@averqel/neosis-agent-preset-registry": "workspace:*",
+    "@averqel/neosis-api-session-controller": "workspace:*",
+    "@averqel/neosis-client-store": "workspace:*",
+    "@averqel/neosis-client-ui-chat": "workspace:*",
+    "@averqel/neosis-deque": "workspace:*",
+    "@averqel/neosis-lazy-require": "workspace:*",
+    "@averqel/neosis-llm": "workspace:*",
+    "@averqel/neosis-sdk-client": "workspace:*",
+    "@averqel/neosis-session": "workspace:*",
+    "@averqel/neosis-session-persistence": "workspace:*",
+    "@averqel/neosis-session-persistence-jsonl": "workspace:*",
+    "@averqel/neosis-session-projection": "workspace:*",
+    "@averqel/neosis-session-query": "workspace:*",
+    "@averqel/neosis-session-stats": "workspace:*",
+    "@averqel/neosis-session-title": "workspace:*",
+    "@averqel/neosis-session-turn-outline": "workspace:*",
+    "@averqel/neosis-subagent": "workspace:*",
+    "@averqel/neosis-tools": "workspace:*",
+    "@averqel/neosis-token-meter": "workspace:*",
+    "@averqel/neosis-typert-protocol": "workspace:*",
+    "@averqel/neosis-util-values": "workspace:*"
+  },
+  "peerDependencies": {
+    "@averqel/cordis": "workspace:~"
+  }
+}

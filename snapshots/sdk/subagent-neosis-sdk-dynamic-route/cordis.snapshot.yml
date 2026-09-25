@@ -1,0 +1,26 @@
+# Keyless replay layer for the NEOSIS SDK dynamic-route snapshot.
+
+- insert:
+    - id: llm-replay
+      name: '@averqel/neosis-llm-replay'
+      config:
+        providers:
+          - id: deepseek-official
+            name: AverQel
+            models:
+              - id: mock-delegate
+          - id: mock
+            name: Mock
+            models:
+              - id: mock-routed
+                reasoningEfforts: [max]
+
+    - id: sdk-jsonrpc-server-dynamic-replay
+      name: '@averqel/neosis-sdk-jsonrpc-server'
+      inject: [sdkAppStartup, loader]
+      config:
+        maxTokensAsSuccess: true
+
+- id: session-log-deepseek
+  config:
+    enabled: false

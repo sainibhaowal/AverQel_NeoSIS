@@ -1,0 +1,25 @@
+{
+  "name": "@averqel/neosis-desktop-host",
+  "description": "Private Node-mode host process for the Electron desktop application",
+  "version": "0.1.7-alpha.2",
+  "private": true,
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "lib/index.js",
+  "files": [
+    "lib/index.js"
+  ],
+  "dependencies": {
+    "@averqel/cordis": "workspace:~",
+    "@averqel/neosis": "workspace:*",
+    "@averqel/neosis-agent": "workspace:*",
+    "@averqel/neosis-app-boot": "workspace:*",
+    "@averqel/neosis-client-connection": "workspace:*",
+    "@averqel/neosis-host-webserver": "workspace:*",
+    "@averqel/neosis-home-paths": "workspace:*",
+    "@averqel/neosis-jobs": "workspace:*",
+    "@averqel/neosis-tool-workspace-dependencies": "workspace:*",
+    "@averqel/neosis-skill-office": "workspace:*",
+    "@averqel/neosis-deepseek-account": "workspace:*"
+  }
+}

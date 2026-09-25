@@ -1,0 +1,72 @@
+{
+  "name": "@averqel/neosis-client-ui-settings-plugin-inventory",
+  "description": "Read-only Cordis Loader inventory tab in Web Plugins settings",
+  "version": "0.1.7-alpha.2",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sainibhaowal/AverQel_Neosis.git",
+    "directory": "packages/client/ui-settings-plugin-inventory"
+  },
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/types/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./client": {
+      "types": "./lib/types/client/index.d.ts",
+      "default": "./lib/client.js"
+    },
+    "./src/*": "./src/*",
+    "./package.json": "./package.json"
+  },
+  "neosis": {
+    "client": {
+      "inject": [
+        "@averqel/neosis-api-remotes",
+        "@averqel/neosis-client-ui-settings",
+        "@averqel/neosis-client-locale",
+        "@averqel/neosis-client-ui-agent-preset",
+        "@averqel/neosis-client-modules"
+      ],
+      "platform": "web"
+    }
+  },
+  "scripts": {
+    "bundle": "tsdown",
+    "watch": "tsdown --watch"
+  },
+  "license": "Apache-2.0",
+  "peerDependencies": {
+    "@averqel/cordis": "workspace:~"
+  },
+  "devDependencies": {
+    "@averqel/neosis-api-remotes": "workspace:*",
+    "@averqel/neosis-client-locale": "workspace:*",
+    "@averqel/neosis-client-test-runtime": "workspace:*",
+    "@averqel/neosis-client-ui-agent-preset": "workspace:*",
+    "@averqel/neosis-client-ui-primitives": "workspace:*",
+    "@averqel/neosis-client-ui-settings": "workspace:*",
+    "@averqel/neosis-client-ui-slots": "workspace:*",
+    "@averqel/neosis-package-manifest": "workspace:*",
+    "@testing-library/react": "^16.1.0",
+    "@types/react": "~18.3.1",
+    "@averqel/cordis": "workspace:~",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "@averqel/neosis-client-ui-renderer": "workspace:*",
+    "@averqel/neosis-agent-preset-registry": "workspace:*",
+    "@averqel/neosis-client-modules": "workspace:*",
+    "@averqel/neosis-client-store": "workspace:*"
+  },
+  "files": [
+    "lib/index.js",
+    "lib/client.js",
+    "lib/types/**/*.d.ts"
+  ]
+}

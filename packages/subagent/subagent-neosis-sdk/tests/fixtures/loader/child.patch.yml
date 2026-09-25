@@ -1,0 +1,29 @@
+# SDK-profile patch for the child runtime in the cwd-inheritance proof.
+
+- id: llm-deepseek
+  name: '@averqel/neosis-llm-deepseek'
+  disabled: true
+
+- id: system-prompt
+  name: '@averqel/neosis-system-prompt'
+  config:
+    personaPrefix: 'Echo where you run.'
+
+- id: agent-instructions
+  name: '@averqel/neosis-agent-instructions'
+  disabled: true
+
+- id: skill-filesystem
+  name: '@averqel/neosis-skill-filesystem'
+  config:
+    includeDefaultRoots: false
+
+- id: session-persistence-jsonl
+  name: '@averqel/neosis-session-persistence-jsonl'
+  config:
+    root: !!js neosisHomePath('sessions')
+    compression: none
+
+- insert:
+    - id: child-mock-llm
+      name: './child-mock-llm.ts'

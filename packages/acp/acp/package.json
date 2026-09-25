@@ -1,0 +1,66 @@
+{
+  "name": "@averqel/neosis-acp",
+  "description": "Automation-only Agent Client Protocol server for driving AverQel NeoSIS agents over JSON-RPC stdio",
+  "version": "0.1.7-alpha.2",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sainibhaowal/AverQel_Neosis.git",
+    "directory": "packages/acp/acp"
+  },
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/types/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./src/*": "./src/*",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib/index.js",
+    "lib/types/**/*.d.ts"
+  ],
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@agentclientprotocol/sdk": "1.4.0",
+    "@averqel/neosis-brand": "workspace:*",
+    "@averqel/schemastery": "workspace:~"
+  },
+  "peerDependencies": {
+    "@averqel/cordis": "workspace:~",
+    "@averqel/neosis-agent": "workspace:*",
+    "@averqel/neosis-attachment": "workspace:*",
+    "@averqel/neosis-llm": "workspace:*",
+    "@averqel/neosis-mcp-client": "workspace:*",
+    "@averqel/neosis-session": "workspace:*",
+    "@averqel/neosis-session-persistence": "workspace:*",
+    "@averqel/neosis-token-meter": "workspace:*",
+    "@averqel/neosis-user-approval": "workspace:*"
+  },
+  "peerDependenciesMeta": {
+    "@averqel/neosis-token-meter": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@averqel/cordis": "workspace:~",
+    "@averqel/neosis-agent": "workspace:*",
+    "@averqel/neosis-agent-loop": "workspace:*",
+    "@averqel/neosis-agent-loop-testkit": "workspace:*",
+    "@averqel/neosis-attachment": "workspace:*",
+    "@averqel/neosis-llm": "workspace:*",
+    "@averqel/neosis-mcp-client": "workspace:*",
+    "@averqel/neosis-session": "workspace:*",
+    "@averqel/neosis-session-persistence": "workspace:*",
+    "@averqel/neosis-session-persistence-jsonl": "workspace:*",
+    "@averqel/neosis-session-projection": "workspace:*",
+    "@averqel/neosis-token-meter": "workspace:*",
+    "@averqel/neosis-tools": "workspace:*",
+    "@averqel/neosis-user-approval": "workspace:*"
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "name": "@averqel/neosis-client-ui-sidebar-terminal",
+  "description": "Interactive shell tabs for the right Sidebar",
+  "version": "0.1.7-alpha.2",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sainibhaowal/AverQel_Neosis.git",
+    "directory": "packages/client/ui-sidebar-terminal"
+  },
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/types/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./client": {
+      "types": "./lib/types/client/index.d.ts",
+      "default": "./lib/client.js"
+    },
+    "./src/*": "./src/*",
+    "./package.json": "./package.json"
+  },
+  "neosis": {
+    "client": {
+      "inject": [
+        "@averqel/neosis-api-terminal-controller",
+        "@averqel/neosis-client-ui-sidebar-right",
+        "@averqel/neosis-api-remotes",
+        "@averqel/neosis-client-ui-theme"
+      ],
+      "platform": "web"
+    }
+  },
+  "scripts": {
+    "bundle": "tsdown",
+    "watch": "tsdown --watch"
+  },
+  "license": "Apache-2.0",
+  "peerDependencies": {
+    "@averqel/cordis": "workspace:~"
+  },
+  "devDependencies": {
+    "@averqel/cordis": "workspace:~",
+    "@averqel/neosis-api-remotes": "workspace:*",
+    "@averqel/neosis-client-locale": "workspace:*",
+    "@averqel/neosis-client-store": "workspace:*",
+    "@averqel/neosis-client-test-runtime": "workspace:*",
+    "@averqel/neosis-client-ui-dockkit": "workspace:*",
+    "@averqel/neosis-client-ui-primitives": "workspace:*",
+    "@averqel/neosis-client-ui-renderer": "workspace:*",
+    "@averqel/neosis-client-ui-session": "workspace:*",
+    "@averqel/neosis-client-ui-sidebar-right": "workspace:*",
+    "@averqel/neosis-client-ui-slots": "workspace:*",
+    "@averqel/neosis-session": "workspace:*",
+    "@testing-library/react": "^16.1.0",
+    "@types/react": "~18.3.1",
+    "@types/react-dom": "~18.3.0",
+    "react": "^18.2.0",
+    "clsx": "^2.0.0",
+    "react-dom": "^18.2.0",
+    "@averqel/neosis-api-terminal-controller": "workspace:*",
+    "@xterm/xterm": "^6.0.0",
+    "@xterm/addon-fit": "^0.11.0",
+    "@averqel/neosis-client-ui-layout": "workspace:*",
+    "@averqel/neosis-client-ui-conversation": "workspace:*",
+    "@averqel/neosis-client-ui-theme": "workspace:*"
+  },
+  "files": [
+    "lib/index.js",
+    "lib/client.js",
+    "lib/client.*.js",
+    "lib/types/**/*.d.ts"
+  ]
+}

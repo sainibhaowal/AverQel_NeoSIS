@@ -1,0 +1,29 @@
+# Keyless context-overflow replay composition.
+
+- id: llm-deepseek
+  name: '@averqel/neosis-llm-deepseek'
+  disabled: true
+
+- id: session-persistence-jsonl
+  name: '@averqel/neosis-session-persistence-jsonl'
+  config:
+    root: !!js neosisHomePath('sessions')
+    compression: none
+
+- id: compaction-basic
+  name: '@averqel/neosis-compaction-basic'
+  config:
+    thresholdRatio: 0.99
+    retainTokens: 20
+    maxTokens: 32
+
+- insert:
+    - id: llm-replay
+      name: '@averqel/neosis-llm-replay'
+      config:
+        providers:
+          - id: deepseek-official
+            name: DeepSeek
+            models:
+              - id: deepseek-v4-flash
+                contextWindow: 128000

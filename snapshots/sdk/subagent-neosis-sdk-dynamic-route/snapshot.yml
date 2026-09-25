@@ -1,0 +1,10 @@
+version: 1
+scenario: subagent-neosis-sdk-dynamic-route
+profile: sdk
+composition: sdk-neosis-sdk-dynamic-route
+recording: authored
+header:
+  class: sdk-neosis-sdk-dynamic-route
+  pin: true
+  childSystemPrompts: [1]
+  childToolSchemas: [1]

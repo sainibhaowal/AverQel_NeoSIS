@@ -1,0 +1,71 @@
+{
+  "name": "@averqel/neosis-workflow-ptc",
+  "description": "Workflow orchestration in the shared sandboxed Node PTC runtime",
+  "version": "0.1.7-alpha.2",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sainibhaowal/AverQel_Neosis.git",
+    "directory": "packages/workflow/workflow-ptc"
+  },
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/types/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./src/*": "./src/*",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib/index.js",
+    "lib/types/**/*.d.ts"
+  ],
+  "license": "Apache-2.0",
+  "peerDependencies": {
+    "@averqel/cordis": "workspace:~",
+    "@averqel/neosis-agent": "workspace:*",
+    "@averqel/neosis-llm": "workspace:*",
+    "@averqel/neosis-session": "workspace:*",
+    "@averqel/neosis-subagent": "workspace:*",
+    "@averqel/neosis-tools": "workspace:*",
+    "@averqel/neosis-workflow": "workspace:*",
+    "@averqel/neosis-ptc-runtime": "workspace:*",
+    "@averqel/neosis-sandbox": "workspace:*",
+    "@averqel/neosis-sandbox-policy": "workspace:*"
+  },
+  "dependencies": {
+    "@averqel/neosis-brand": "workspace:*",
+    "@averqel/neosis-util-values": "workspace:*",
+    "@averqel/schemastery": "workspace:~"
+  },
+  "devDependencies": {
+    "@averqel/cordis": "workspace:~",
+    "@averqel/neosis-agent": "workspace:*",
+    "@averqel/neosis-agent-loop": "workspace:*",
+    "@averqel/neosis-agent-loop-testkit": "workspace:*",
+    "@averqel/neosis-invariants": "workspace:*",
+    "@averqel/neosis-llm": "workspace:*",
+    "@averqel/neosis-session": "workspace:*",
+    "@averqel/neosis-session-projection": "workspace:*",
+    "@averqel/neosis-subagent": "workspace:*",
+    "@averqel/neosis-subagent-spawn-in-process": "workspace:*",
+    "@averqel/neosis-system-prompt": "workspace:*",
+    "@averqel/neosis-tools": "workspace:*",
+    "@averqel/neosis-workflow": "workspace:*",
+    "@averqel/neosis-http-proxy": "workspace:*",
+    "@averqel/neosis-ptc-runtime": "workspace:*",
+    "@averqel/neosis-sandbox": "workspace:*",
+    "@averqel/neosis-sandbox-policy": "workspace:*",
+    "@averqel/neosis-ptc-runtime-node": "workspace:*",
+    "@averqel/neosis-fs": "workspace:*",
+    "@averqel/neosis-fs-local": "workspace:*",
+    "@averqel/neosis-subprocess": "workspace:*",
+    "@averqel/neosis-subprocess-local": "workspace:*",
+    "@averqel/neosis-sandbox-local": "workspace:*"
+  }
+}

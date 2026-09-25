@@ -1,0 +1,65 @@
+# SDK-profile patch for a deterministic parent model that selects a route for
+# a separate SDK child runtime. Both runtimes persist their request headers.
+
+- id: llm-deepseek
+  name: '@averqel/neosis-llm-deepseek'
+  disabled: true
+
+- id: tool-subagent
+  name: '@averqel/neosis-tool-subagent'
+  disabled: true
+
+- id: sdk-jsonrpc-server
+  name: '@averqel/neosis-sdk-jsonrpc-server'
+  disabled: true
+
+- id: session-persistence-jsonl
+  name: '@averqel/neosis-session-persistence-jsonl'
+  config:
+    root: !!js neosisHomePath('sessions')
+    compression: none
+
+- insert:
+    - id: mock-llm
+      name: '../../../packages/subagent/subagent-neosis-sdk/tests/fixtures/loader/mock-delegating-llm.ts'
+      disabled: !!js process.env.NEOSIS_SNAPSHOT !== 'record'
+
+    - id: subagent-neosis-sdk
+      name: '@averqel/neosis-subagent-neosis-sdk'
+      config:
+        profile: sdk
+        patches: !!js JSON.parse(process.env.NEOSIS_TEST_CHILD_PATCHES ?? '[]')
+        neosisHome: !!js process.env.NEOSIS_TEST_CHILD_HOME
+        provider: mock
+        model: mock-routed
+        env:
+          NEOSIS_TELEMETRY_DISABLED: '1'
+
+    - id: subagent-model-selection-settings
+      name: '@averqel/neosis-tool-subagent/model-selection-settings'
+      config:
+        enabled: true
+        allowedModels:
+          - provider: mock
+            model: mock-routed
+
+    - id: tool-subagent-neosis-sdk
+      name: '../../../packages/subagent/subagent-neosis-sdk/tests/fixtures/loader/scoped-tool-subagent.ts'
+      config:
+        provider: neosis-sdk
+        toolName: subagent
+        enableRunInBackground: false
+        agentOptions:
+          maxTokens: 777
+        maxDepth: 'provider-managed'
+
+    - id: sdk-jsonrpc-server-dynamic-live
+      name: '@averqel/neosis-sdk-jsonrpc-server'
+      inject: [sdkAppStartup, loader]
+      disabled: !!js process.env.NEOSIS_SNAPSHOT !== 'record'
+      config:
+        maxTokensAsSuccess: true
+
+- id: session-log-deepseek
+  config:
+    enabled: false

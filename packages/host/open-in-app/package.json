@@ -1,0 +1,52 @@
+{
+  "name": "@averqel/neosis-host-open-in-app",
+  "description": "Host half of open-in-app: resolved application catalog, icons, and the launch endpoint as three webServer routes",
+  "version": "0.1.7-alpha.2",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sainibhaowal/AverQel_Neosis.git",
+    "directory": "packages/host/open-in-app"
+  },
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/types/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./shared": {
+      "types": "./lib/types/shared.d.ts",
+      "default": "./lib/types/shared.js"
+    },
+    "./src/*": "./src/*",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib/index.js",
+    "lib/types/**/*.js",
+    "lib/types/**/*.d.ts"
+  ],
+  "scripts": {
+    "bundle": "tsdown",
+    "watch": "tsdown --watch"
+  },
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@averqel/neosis-launch-environment": "workspace:*",
+    "@averqel/neosis-native-command": "workspace:*",
+    "@averqel/neosis-subprocess": "workspace:*",
+    "@averqel/schemastery": "workspace:~"
+  },
+  "peerDependencies": {
+    "@averqel/cordis": "workspace:~"
+  },
+  "devDependencies": {
+    "@averqel/cordis": "workspace:~",
+    "@averqel/cordis-plugin-loader": "workspace:~",
+    "@averqel/neosis-host-webserver": "workspace:*"
+  }
+}

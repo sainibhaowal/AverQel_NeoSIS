@@ -1,0 +1,20 @@
+# Filesystem-scenario overlay: the sandboxed filesystem stack already lives in
+# `neosis-base`, so this patch changes only the local tool-result spill
+# storage those scenarios exercise.
+
+- id: spill-local
+  name: '@averqel/neosis-spill-local'
+  config:
+    root: !!js process.env.NEOSIS_SNAPSHOT_SPILL_ROOT ?? './.spill'
+
+- id: spill-policy
+  name: '@averqel/neosis-spill-policy'
+  config:
+    maxInlineTokens: !!js process.env.NEOSIS_SNAPSHOT && 200 || 12500
+
+- insert:
+    - id: snapshot-spill-locators
+      name: ../../../scripts/snapshot-spill-locators.ts
+      config:
+        root: !!js process.env.NEOSIS_SNAPSHOT_SPILL_ROOT
+        locatorRoot: !!js process.env.NEOSIS_SNAPSHOT_SPILL_LOCATOR_ROOT

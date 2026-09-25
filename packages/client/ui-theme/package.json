@@ -1,0 +1,76 @@
+{
+  "name": "@averqel/neosis-client-ui-theme",
+  "description": "Theme plugin: Host bootstrap for the pre-plugin palette; DOM-free ThemeRuntime for light/dark/system state; --dsw-* token styles and Appearance settings row",
+  "version": "0.1.7-alpha.2",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sainibhaowal/AverQel_Neosis.git",
+    "directory": "packages/client/ui-theme"
+  },
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/types/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./client": {
+      "types": "./lib/types/client/index.d.ts",
+      "default": "./lib/client.js"
+    },
+    "./src/*": "./src/*",
+    "./package.json": "./package.json",
+    "./brand-font.css": "./lib/styles/brand-font.css"
+  },
+  "neosis": {
+    "client": {
+      "inject": [
+        "@averqel/neosis-client-connection",
+        "@averqel/neosis-client-locale",
+        "@averqel/neosis-client-ui-renderer",
+        "@averqel/neosis-client-ui-settings",
+        "@averqel/neosis-api-remotes"
+      ],
+      "platform": "web",
+      "immediately": true
+    }
+  },
+  "license": "Apache-2.0",
+  "peerDependencies": {
+    "@averqel/cordis": "workspace:~"
+  },
+  "devDependencies": {
+    "@averqel/cordis": "workspace:~",
+    "@averqel/neosis-api-remotes": "workspace:*",
+    "@averqel/neosis-client-connection": "workspace:*",
+    "@averqel/neosis-client-locale": "workspace:*",
+    "@averqel/neosis-client-store": "workspace:*",
+    "@averqel/neosis-client-test-runtime": "workspace:*",
+    "@averqel/neosis-client-ui-primitives": "workspace:*",
+    "@averqel/neosis-client-ui-renderer": "workspace:*",
+    "@averqel/neosis-client-ui-settings": "workspace:*",
+    "@averqel/neosis-client-ui-slots": "workspace:*",
+    "@averqel/neosis-host-webserver": "workspace:*",
+    "@types/react": "~18.3.1",
+    "react": "^18.2.0",
+    "clsx": "^2.0.0",
+    "@averqel/neosis-settings": "workspace:*"
+  },
+  "files": [
+    "lib/index.js",
+    "lib/client.js",
+    "lib/styles",
+    "lib/types/**/*.d.ts"
+  ],
+  "scripts": {
+    "bundle": "tsdown",
+    "watch": "tsdown --watch"
+  },
+  "dependencies": {
+    "@averqel/schemastery": "workspace:~"
+  }
+}

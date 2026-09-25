@@ -1,0 +1,96 @@
+{
+  "name": "@averqel/neosis-client-test-runtime",
+  "description": "Browser test runtimes: a jsdom slot bench with test-owned Session and Workspace doubles, and a whole-client tier that boots the web roster through the production bootClient over an endpoint-named Remote mock",
+  "version": "0.1.7-alpha.2",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sainibhaowal/AverQel_Neosis.git",
+    "directory": "packages/test-support/client-runtime"
+  },
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/types/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./src/*": "./src/*",
+    "./package.json": "./package.json"
+  },
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/react": "^16.3.2",
+    "js-yaml": "^4.2.0",
+    "vitest": "^4.1.8"
+  },
+  "peerDependencies": {
+    "@averqel/cordis": "workspace:~",
+    "@averqel/cordis-plugin-include": "workspace:~",
+    "@averqel/cordis-plugin-loader": "workspace:~",
+    "@averqel/neosis-api-gateway": "workspace:*",
+    "@averqel/neosis-api-session-controller": "workspace:*",
+    "@averqel/neosis-api-workspace-controller": "workspace:*",
+    "@averqel/neosis-attachment": "workspace:*",
+    "@averqel/neosis-client-connection": "workspace:*",
+    "@averqel/neosis-client-hmr": "workspace:*",
+    "@averqel/neosis-client-modules": "workspace:*",
+    "@averqel/neosis-client-store": "workspace:*",
+    "@averqel/neosis-client-ui-chat": "workspace:*",
+    "@averqel/neosis-client-ui-conversation": "workspace:*",
+    "@averqel/neosis-client-ui-renderer": "workspace:*",
+    "@averqel/neosis-client-ui-session": "workspace:*",
+    "@averqel/neosis-client-ui-settings": "workspace:*",
+    "@averqel/neosis-client-ui-slots": "workspace:*",
+    "@averqel/neosis-client-web": "workspace:*",
+    "@averqel/neosis-remote-mock": "workspace:*",
+    "@averqel/neosis-session": "workspace:*",
+    "@averqel/neosis-subagent": "workspace:*",
+    "@averqel/neosis-typert-protocol": "workspace:*",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@averqel/cordis": "workspace:~",
+    "@averqel/cordis-plugin-include": "workspace:~",
+    "@averqel/cordis-plugin-loader": "workspace:~",
+    "@averqel/neosis-api-gateway": "workspace:*",
+    "@averqel/neosis-api-remotes": "workspace:*",
+    "@averqel/neosis-api-session-controller": "workspace:*",
+    "@averqel/neosis-api-workspace-controller": "workspace:*",
+    "@averqel/neosis-attachment": "workspace:*",
+    "@averqel/neosis-base": "workspace:*",
+    "@averqel/neosis-client-connection": "workspace:*",
+    "@averqel/neosis-client-hmr": "workspace:*",
+    "@averqel/neosis-client-locale": "workspace:*",
+    "@averqel/neosis-client-modules": "workspace:*",
+    "@averqel/neosis-client-store": "workspace:*",
+    "@averqel/neosis-client-ui-chat": "workspace:*",
+    "@averqel/neosis-client-ui-conversation": "workspace:*",
+    "@averqel/neosis-client-ui-layout": "workspace:*",
+    "@averqel/neosis-client-ui-renderer": "workspace:*",
+    "@averqel/neosis-client-ui-session": "workspace:*",
+    "@averqel/neosis-client-ui-settings": "workspace:*",
+    "@averqel/neosis-client-ui-slots": "workspace:*",
+    "@averqel/neosis-client-web": "workspace:*",
+    "@averqel/neosis-remote-mock": "workspace:*",
+    "@averqel/neosis-session": "workspace:*",
+    "@averqel/neosis-settings": "workspace:*",
+    "@averqel/neosis-subagent": "workspace:*",
+    "@averqel/neosis-typert-protocol": "workspace:*",
+    "@averqel/neosis-web-app": "workspace:*",
+    "@types/js-yaml": "^4.0.9",
+    "@types/react": "~18.3.1",
+    "@types/react-dom": "~18.3.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "files": [
+    "lib/index.js",
+    "lib/types/**/*.d.ts"
+  ]
+}

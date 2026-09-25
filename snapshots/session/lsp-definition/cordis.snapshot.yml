@@ -1,0 +1,36 @@
+# Keyless replay keeps the LSP composition intact and replaces only the model adapter.
+- id: llm-deepseek
+  name: '@averqel/neosis-llm-deepseek'
+  disabled: true
+
+- insert:
+    - id: lsp
+      name: '@averqel/neosis-lsp'
+    - id: lsp-stdio
+      name: '@averqel/neosis-lsp-stdio'
+      config:
+        servers:
+          fixture:
+            command: !!js process.execPath
+            args: ['./lsp-server.mjs']
+            extensionToLanguage:
+              '.ts': typescript
+    - id: tool-lsp
+      name: '@averqel/neosis-tool-lsp'
+      config:
+        maxLocations: 1
+    - id: llm-replay
+      name: '@averqel/neosis-llm-replay'
+      config:
+        providers:
+          - id: deepseek-official
+            name: DeepSeek
+            models:
+              - id: deepseek-v4-flash
+              - id: deepseek-v4-pro
+
+- id: timeout-policy
+  name: '@averqel/neosis-tool-call-timeout-policy'
+
+- id: plugin-package-inventory-deepseek
+  disabled: true

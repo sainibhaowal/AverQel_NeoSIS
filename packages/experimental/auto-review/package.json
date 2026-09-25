@@ -1,0 +1,80 @@
+{
+  "name": "@averqel/neosis-experimental-auto-review",
+  "description": "Per-tool LLM authorization review for the AverQel NeoSIS Auto permission preset",
+  "version": "0.1.7-alpha.2",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sainibhaowal/AverQel_Neosis.git",
+    "directory": "packages/experimental/auto-review"
+  },
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/types/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./locale/*.json": "./locale/*.json",
+    "./src/*": "./src/*",
+    "./package.json": "./package.json",
+    "./cordis.patch.yml": "./cordis.patch.yml"
+  },
+  "files": [
+    "locale/*.json",
+    "lib/index.js",
+    "cordis.patch.yml",
+    "lib/types/**/*.d.ts"
+  ],
+  "license": "Apache-2.0",
+  "peerDependencies": {
+    "@averqel/neosis-agent": "workspace:*",
+    "@averqel/neosis-agent-instructions": "workspace:*",
+    "@averqel/neosis-llm": "workspace:*",
+    "@averqel/neosis-permission-presets": "workspace:*",
+    "@averqel/neosis-session": "workspace:*",
+    "@averqel/neosis-tools": "workspace:*",
+    "@averqel/cordis": "workspace:~"
+  },
+  "dependencies": {
+    "@averqel/neosis-util-values": "workspace:*"
+  },
+  "devDependencies": {
+    "@averqel/neosis-agent": "workspace:*",
+    "@averqel/neosis-agent-instructions": "workspace:*",
+    "@averqel/neosis-agent-loop": "workspace:*",
+    "@averqel/neosis-agent-loop-testkit": "workspace:*",
+    "@averqel/neosis-bash-sandbox": "workspace:*",
+    "@averqel/neosis-compaction": "workspace:*",
+    "@averqel/neosis-fs-local": "workspace:*",
+    "@averqel/neosis-fs-observation-policy": "workspace:*",
+    "@averqel/neosis-fs-sandbox": "workspace:*",
+    "@averqel/neosis-llm": "workspace:*",
+    "@averqel/neosis-llm-deepseek": "workspace:*",
+    "@averqel/neosis-permission-presets": "workspace:*",
+    "@averqel/neosis-ptc-runtime-node": "workspace:*",
+    "@averqel/neosis-sandbox": "workspace:*",
+    "@averqel/neosis-sandbox-policy": "workspace:*",
+    "@averqel/neosis-session": "workspace:*",
+    "@averqel/neosis-session-projection": "workspace:*",
+    "@averqel/neosis-shell": "workspace:*",
+    "@averqel/neosis-shell-env": "workspace:*",
+    "@averqel/neosis-subagent": "workspace:*",
+    "@averqel/neosis-subprocess-local": "workspace:*",
+    "@averqel/neosis-system-prompt": "workspace:*",
+    "@averqel/neosis-tool-bash": "workspace:*",
+    "@averqel/neosis-tool-fs": "workspace:*",
+    "@averqel/neosis-tool-subagent": "workspace:*",
+    "@averqel/neosis-tools": "workspace:*",
+    "@averqel/neosis-user-approval": "workspace:*",
+    "@averqel/cordis": "workspace:~"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "neosis": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}

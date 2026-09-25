@@ -1,0 +1,12 @@
+# Opt-in Schedule patch over the shipped Web composition. The owner observes
+# only roots published after this overlay loads.
+
+- insert:
+    - id: time-context
+      name: '@averqel/neosis-time-context'
+
+    - id: schedule
+      name: '@averqel/neosis-schedule'
+
+- id: ui-schedule
+  disabled: false
