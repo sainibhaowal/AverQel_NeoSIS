@@ -891,34 +891,32 @@ test('performs no lifecycle requests for removed signals or title-only edits', a
   assert.deepEqual(fixture.requests, [])
 })
 
-test('keeps trusted preflight before token minting and required policy unconditional', () => {
+test('keeps trusted preflight before project access and required policy unconditional', () => {
   const source = readFileSync(new URL('../workflows/issue-policy.yml', import.meta.url), 'utf8')
   const job = source.slice(source.indexOf('  policy:'))
   assert.ok(job.includes('    name: Issue policy'))
   assert.ok(!job.slice(0, job.indexOf('    steps:')).includes('    if:'))
   assert.ok(source.includes('types: [opened, edited, synchronize, reopened, labeled, unlabeled, ready_for_review, review_requested]'))
   const steps = job.split('      - name: ').slice(1)
-  assert.equal(steps.length, 4)
+  assert.equal(steps.length, 3)
   assert.ok(steps[0].includes('ref: ${{ github.event.repository.default_branch }}'))
   assert.ok(steps[0].includes('persist-credentials: false'))
-  assert.doesNotMatch(source, /pull_request\.head|pull_request_target/)
+  assert.match(source, /pull_request_target:/)
   assert.ok(steps[1].includes('id: preflight'))
   assert.ok(steps[1].includes('GITHUB_TOKEN: ${{ github.token }}'))
   assert.ok(steps[1].includes('node .github/issue-management/policy.mjs pr-preflight'))
   assert.ok(steps[1].includes('if [ -f .github/issue-management/selective-preflight.json ]; then'))
   assert.doesNotMatch(steps[1], /secrets\.|PROJECT_TOKEN|if:/)
-  assert.ok(steps[2].includes("if: ${{ steps.preflight.outputs.needs-project == 'true' }}"))
-  assert.ok(steps[2].includes('permission-organization-projects: read'))
-  assert.ok(steps[3].includes('PROJECT_TOKEN: ${{ steps.app-token.outputs.token }}'))
-  assert.ok(steps[3].includes('run: node .github/issue-management/policy.mjs pr'))
-  assert.ok(steps[3].includes("if: ${{ steps.preflight.outputs.legacy-automated != 'true' }}"))
+  assert.ok(steps[2].includes('PROJECT_TOKEN: ${{ secrets.NEOSIS_ISSUE_MANAGEMENT_TOKEN }}'))
+  assert.ok(steps[2].includes('run: node .github/issue-management/policy.mjs pr'))
+  assert.ok(steps[2].includes("if: ${{ steps.preflight.outputs.legacy-automated != 'true' }}"))
 })
 
 test('runs trusted rollout selection with absent and present capability markers', { skip: process.platform === 'win32' ? 'The policy workflow executes under hosted Ubuntu bash' : false }, (t) => {
   const directory = mkdtempSync(join(tmpdir(), 'neosis-policy-rollout-'))
   t.after(() => rmSync(directory, { recursive: true, force: true }))
   const source = readFileSync(new URL('../workflows/issue-policy.yml', import.meta.url), 'utf8')
-  const script = source.split('        run: |\n')[1].split('      - name: Create Project read token')[0]
+  const script = source.split('        run: |\n')[1].split('      # Re-read current state')[0]
     .split('\n').map((line) => line.slice(10)).join('\n')
   assert.deepEqual(JSON.parse(readFileSync(new URL('./selective-preflight.json', import.meta.url), 'utf8')), { version: 1 })
   const cases = [
@@ -958,8 +956,8 @@ test('runs trusted rollout selection with absent and present capability markers'
 
 test('allocates lifecycle runners only for relevant reviews and PR body edits', () => {
   const source = readFileSync(new URL('../workflows/issue-lifecycle.yml', import.meta.url), 'utf8')
-  const issues = source.split('  issues:')[1].split('  pull_request:')[0]
-  const pulls = source.split('  pull_request:')[1].split('  pull_request_review:')[0]
+  const issues = source.split('  issues:')[1].split('  pull_request_target:')[0]
+  const pulls = source.split('  pull_request_target:')[1].split('  pull_request_review:')[0]
   const actions = (block) => [...block.matchAll(/^      - (\w+)$/gm)].map((match) => match[1])
   assert.deepEqual(actions(issues), ['opened', 'edited', 'labeled', 'unlabeled', 'closed', 'reopened', 'typed', 'untyped', 'field_added', 'field_removed'])
   assert.deepEqual(actions(pulls), ['opened', 'edited', 'reopened', 'review_requested'])
@@ -967,7 +965,7 @@ test('allocates lifecycle runners only for relevant reviews and PR body edits', 
   const beforeSteps = job.slice(0, job.indexOf('    steps:'))
   assert.ok(beforeSteps.includes('    if: >-'))
   assert.ok(beforeSteps.includes("(github.event_name != 'pull_request_review' || github.event.review.state == 'changes_requested') &&"))
-  assert.ok(beforeSteps.includes("(github.event_name != 'pull_request' || github.event.action != 'edited' || github.event.changes.body != null)"))
+  assert.ok(beforeSteps.includes("(github.event_name != 'pull_request_target' || github.event.action != 'edited' || github.event.changes.body != null)"))
   assert.ok(source.includes('ref: ${{ github.event.repository.default_branch }}'))
   assert.ok(source.includes('persist-credentials: false'))
 })

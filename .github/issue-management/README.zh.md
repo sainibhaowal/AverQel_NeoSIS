@@ -8,7 +8,7 @@ description: "面向仓库维护者的 Issue 策略强制范围、Project 访问
 
 ## 摘要
 
-贡献者可以引用 Issue 作为背景，而无需让 PR（Pull Request）校验依赖 Project 可用性。解决型引用还会强制检查 Project Priority。必需的 `Issue policy` job 与独立的生命周期工作流使用受信任的默认分支代码。
+贡献者可以引用 Issue 作为背景，而无需让 PR（Pull Request）校验依赖 Project 可用性。解决型引用还会强制检查 Project Priority。必需的 `Issue policy` job 与独立的生命周期工作流使用受信任的默认分支代码和仓库 Project token。
 
 ## 目录
 
@@ -24,9 +24,9 @@ description: "面向仓库维护者的 Issue 策略强制范围、Project 访问
 <a id="pull-request-policy"></a>
 ## PR 策略
 
-[Issue policy](../workflows/issue-policy.yml)适用于已请求评审或已有评审、非草稿且由人类创建的 PR。豁免 PR 成功结束，不解析 Issue 引用、不签发 Project App token，也不查询 ProjectV2。工作流在昂贵读取前根据仓库实时状态判断强制范围；订阅事件仍保留必需 job。最终校验重新读取实时状态：预检不是缓存结论，也不是元数据编辑的豁免。
+[Issue policy](../workflows/issue-policy.yml)适用于已请求评审或已有评审、非草稿且由人类创建的 PR。豁免 PR 成功结束，不解析 Issue 引用，也不查询 ProjectV2。工作流在昂贵读取前根据仓库实时状态判断强制范围；订阅事件仍保留必需 job。最终校验重新读取实时状态：预检不是缓存结论，也不是元数据编辑的豁免。
 
-选择性预检要求受信任的检出中存在 [selective-preflight.json](selective-preflight.json)。缺少该标记时，工作流保留旧版行为：人类 PR 获取 Project token 并执行完整旧版校验；Bot/App PR 跳过两者。受支持的预检执行失败时，job 失败而不回退。
+选择性预检要求受信任的检出中存在 [selective-preflight.json](selective-preflight.json)。缺少该标记时，工作流保留旧版行为：人类 PR 使用 Project token 并执行完整旧版校验；Bot/App PR 跳过两者。受支持的预检执行失败时，job 失败而不回退。
 
 强制范围内的 PR 至少需要一个同仓库 Issue 引用、恰好一个规范的 `kind/*`、至少一个 `area/*`，以及最多一个 `p0`–`p3` 标签。不支持的 kind、退役别名和 `source/*` 标签会使校验失败；[标签分类](../../.agents/notes/implemented/process/2026-08-08-unified-github-label-taxonomy.zh.md)定义其含义。
 
@@ -34,7 +34,7 @@ description: "面向仓库维护者的 Issue 策略强制范围、Project 访问
 - 解决型引用使用关闭关键词，如 `Fixes #123`、`Closes #123` 或 `Resolves #123`。校验期间只有解析为实际 Issue 的解决型引用需要读取 Project。PR Priority 必须匹配被解决 Issue 中的最高 Priority；带 Priority 标签的解决型 PR 要求每个被解决 Issue 均有 Priority。若所有被解决 Issue 的 Priority 均为空，PR 可以省略 Priority。
 - HTML 注释、代码围栏或行内代码中的引用不计入。跨仓库引用与指向 PR 的引用不能满足 Issue 引用要求。
 
-REST 读取使用仓库 `GITHUB_TOKEN`。Project 校验使用独立的 App token，具有 Issues 和组织 Projects 读取权限。缺少所需 Project 访问权限或字段配置无效时，校验失败，而不是绕过解决型 Issue 的 Priority 检查。
+REST 读取使用仓库 `GITHUB_TOKEN`。Project 校验使用 `NEOSIS_ISSUE_MANAGEMENT_TOKEN` 仓库 secret；它是具有 `repo` 与 `project` 权限的 classic personal access token。由于 classic `repo` 权限范围较宽，应为 NeoSIS 单独创建此 token，并在过期前轮换。缺少所需 Project 访问权限或字段配置无效时，校验失败，而不是绕过解决型 Issue 的 Priority 检查。
 
 -----
 
@@ -45,7 +45,7 @@ REST 读取使用仓库 `GITHUB_TOKEN`。Project 校验使用独立的 App token
 
 仅批准或仅评论的评审不分配生命周期 runner。PR 推送与标签变更，以及 Issue 指派变更，不触发生命周期工作。其他已订阅的 Issue 事件维护 Project 归属、状态及审计评论；精确订阅列表由工作流定义。
 
-PR 打开时，工作流按配置时区中的 PR 创建日期，为每个被引用 Issue（包括信息型引用）初始化空的 Project `Start Date`。此生命周期操作可以添加 Project 归属，并需要 Project 写权限；信息型引用的读取豁免仅适用于 PR 校验。[规划字段归属](../../.agents/notes/implemented/process/2026-09-02-project-local-issue-planning-fields.zh.md)定义日期保留规则。
+PR 打开时，工作流按配置时区中的 PR 创建日期，为每个被引用 Issue（包括信息型引用）初始化空的 Project `Start Date`。此生命周期操作可以添加 Project 归属，并通过 Project token 需要 Project 写权限；信息型引用的读取豁免仅适用于 PR 校验。[规划字段归属](../../.agents/notes/implemented/process/2026-09-02-project-local-issue-planning-fields.zh.md)定义日期保留规则。
 
 -----
 
@@ -83,7 +83,7 @@ PR 打开时，工作流按配置时区中的 PR 创建日期，为每个被引�
 node --test .github/issue-management/policy.test.mjs
 ```
 
-[工作流测试](../../scripts/ci-workflow.spec.ts)验证触发器与权限声明。本地测试不能证明 GitHub 实际事件交付、App 安装访问权限或实际 runner 成本；仓库维护者在 Actions 中验证这些内容。
+[工作流测试](../../scripts/ci-workflow.spec.ts)验证触发器与权限声明。本地测试不能证明 GitHub 实际事件交付、token 权限或实际 runner 成本；仓库维护者在 Actions 中验证这些内容。
 
 -----
 

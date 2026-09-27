@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import type { GlobalStandardProps, PropsRuntime } from '@averqel/neosis-client-ui-slots'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { createContext, useContext, type ReactNode } from 'react'
+import React, { createContext, useContext, type ReactNode } from 'react'
 import { act, cleanup, fireEvent, render } from '@testing-library/react'
 import type { Context } from '@averqel/cordis'
 import type { SessionListState, SessionSnapshot } from '@averqel/neosis-api-session-controller/client'
@@ -36,6 +36,9 @@ import type {
   ConversationViewsProps,
 } from '../src/client/contract/slots.ts'
 import type { ViewTab } from '../src/client/contract/views.ts'
+
+// The Vitest JSX transform uses the classic React runtime for this fixture.
+void React
 
 // Every session-scope fixture carries the resource hook the resources plugin merges into GlobalStandardProps.
 const useResource = (() => ({ status: 'none' as const, value: undefined, failure: undefined })) as GlobalStandardProps['useResource']
@@ -380,7 +383,7 @@ function mount(
 
 describe('Hero chrome', () => {
   it('renders the English preview badge through the hero locale seat', () => {
-    const renderSlot = vi.fn<HeroShellProps['renderSlot']>((_name, _props, fallback) => fallback)
+    const renderSlot = vi.fn<HeroShellProps['renderSlot']>((_name, _props, opts) => opts?.fallback ?? null)
     const view = render(<HeroShell t={makeTranslate(en, commonEn)} renderSlot={renderSlot} />)
     expect(view.getByText('Into the Unknown')).toBeTruthy()
     expect(view.getByText('Preview')).toBeTruthy()

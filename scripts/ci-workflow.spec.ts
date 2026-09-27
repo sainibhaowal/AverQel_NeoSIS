@@ -148,7 +148,7 @@ describe('CI workflow', () => {
     }
   })
 
-  it('keeps split native Windows PR jobs with failover, plus a master-only standby', () => {
+  it('keeps split native Windows PR jobs with failover, plus a post-merge standby', () => {
     const workflow = loadWorkflow('.github/workflows/ci.yml')
     const masterWorkflow = loadWorkflow('.github/workflows/ci-master.yml')
     if (!isRecord(workflow.jobs)
@@ -283,8 +283,8 @@ describe('CI workflow', () => {
     expect(report?.run).toContain('::warning::')
     expect(report?.run).toContain('Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Encoding utf8 -Append')
 
-    // serial-windows: master-only standby, self-hosted, non-blocking, lives in ci-master.
-    expect(serialWindows.if).toBe("github.event_name == 'push' && github.ref == 'refs/heads/master'")
+    // serial-windows: post-merge standby, self-hosted, non-blocking, lives in ci-master.
+    expect(serialWindows.if).toBe("github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')")
     expect(serialWindows['runs-on']).toEqual(['self-hosted', 'neosis-win-ci', 'windows'])
     expect(serialWindows.name).toBe('serial / windows (self-hosted standby)')
     // Its store must share the ReFS workspace volume for clone; the install
@@ -499,8 +499,8 @@ describe('CI workflow', () => {
     })
     expect(prWorkflow.concurrency).toEqual(workflow.concurrency)
 
-    // The exact event sets are what keep master-only jobs out of the PR check
-    // panel: ci-master triggers only on push(master) + workflow_dispatch and
+    // The exact event sets are what keep post-merge jobs out of the PR check
+    // panel: ci-master triggers only on push(main/master) + workflow_dispatch and
     // never on pull_request; ci.yml is exactly pull_request-only. Assert the
     // full sets so losing the wrong event, or gaining an extra one, fails.
     if (!isRecord(workflow.on) || !isRecord(prWorkflow.on)) {
@@ -515,7 +515,7 @@ describe('CI workflow', () => {
       if (!isRecord(job)) throw new TypeError(`${name} must be defined`)
       expect(job.concurrency).toBeUndefined()
       // Standby drills remain post-merge work, but share run cancellation.
-      expect(job.if).toBe("github.event_name == 'push' && github.ref == 'refs/heads/master'")
+      expect(job.if).toBe("github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')")
     }
 
     // Pin the post-merge runtime, Wine, and standby inventory.
@@ -690,7 +690,7 @@ describe('AverQel e2e workflow', () => {
     const e2e = workflowJob(workflow, 'e2e')
     if (!Array.isArray(e2e.steps)) throw new TypeError('AverQel e2e workflow must define steps')
 
-    const step = e2e.steps.filter(isRecord).find(candidate => candidate.name === 'E2E tests (real AverQel API)')
+    const step = e2e.steps.filter(isRecord).find(candidate => candidate.name === 'E2E tests (real DeepSeek API)')
     expect(step).toMatchObject({ env: { NEOSIS_E2E_MAX_WORKERS: 4 } })
   })
 })
@@ -948,12 +948,12 @@ describe('Weighted approval workflow', () => {
     const recordSteps = recordJob.steps.filter(isRecord)
     const record = recordSteps.find(step => step.name === 'Record review event')
 
-    expect(publisher.name).toBe('weighted-approval')
+    expect(publisher.name).toBe('AverQel NeoSIS — Weighted approval')
     expect(Object.keys(publisher.on)).toEqual(['pull_request_target', 'issue_comment', 'workflow_run'])
     expect(workflowEvent(publisher, 'issue_comment').types).toEqual(['created', 'edited', 'deleted'])
     expect(pullRequest.types).toEqual(['opened', 'synchronize', 'reopened', 'ready_for_review', 'converted_to_draft', 'edited'])
-    expect(workflowRun).toEqual({ workflows: ['weighted-approval-review-event'], types: ['completed'] })
-    expect(reviewEvent.name).toBe('weighted-approval-review-event')
+    expect(workflowRun).toEqual({ workflows: ['AverQel NeoSIS — Weighted approval review event'], types: ['completed'] })
+    expect(reviewEvent.name).toBe('AverQel NeoSIS — Weighted approval review event')
     expect(reviewEvent['run-name']).toBe('weighted-approval-review-event:${{ github.event.pull_request.number }}')
     expect(Object.keys(reviewEvent.on)).toEqual(['pull_request_review'])
     expect(review.types).toEqual(['submitted', 'edited', 'dismissed'])
@@ -1034,14 +1034,14 @@ describe('Issue lifecycle workflow', () => {
     const lifecycleJob = workflowJob(lifecycle, 'lifecycle')
     if (!Array.isArray(lifecycleJob.steps)) throw new TypeError('Issue lifecycle job must define steps')
 
-    expect(lifecycle.on).toHaveProperty('pull_request')
+    expect(lifecycle.on).toHaveProperty('pull_request_target')
     expect(lifecycle.on).toHaveProperty('pull_request_review')
     expect(lifecycleJob.if).toContain("github.event.review.state == 'changes_requested'")
     expect(lifecycleJob.if).toContain('github.event.changes.body != null')
     // Keep the subscription-type gates: issue-lifecycle does not re-subscribe
     // ready_for_review (issue-policy owns that) and only reacts to submitted
     // review events.
-    const lifecyclePullRequest = workflowEvent(lifecycle, 'pull_request')
+    const lifecyclePullRequest = workflowEvent(lifecycle, 'pull_request_target')
     const lifecycleReview = workflowEvent(lifecycle, 'pull_request_review')
     expect(lifecyclePullRequest.types).toContain('opened')
     expect(lifecyclePullRequest.types).not.toContain('ready_for_review')
@@ -1056,22 +1056,25 @@ describe('Issue lifecycle workflow', () => {
     expect(issueEvents.types).toContain('typed')
     expect(issueEvents.types).toContain('untyped')
     const steps = lifecycleJob.steps.filter(isRecord)
-    const tokenStep = steps.find(s => s.name === 'Create project token')
     const handleStep = steps.find(s => s.name === 'Handle repository event')
-    expect(tokenStep?.if).toBeUndefined()
     expect(handleStep?.if).toBeUndefined()
+    expect(handleStep).toMatchObject({
+      env: {
+        GH_TOKEN: '${{ secrets.NEOSIS_ISSUE_MANAGEMENT_TOKEN }}',
+        PROJECT_TOKEN: '${{ secrets.NEOSIS_ISSUE_MANAGEMENT_TOKEN }}',
+      },
+    })
 
     // issue-policy owns PR validation; it is read-only and a real gate.
-    const policyPullRequest = workflowEvent(policy, 'pull_request')
+    const policyPullRequest = workflowEvent(policy, 'pull_request_target')
     expect(policyPullRequest.types).toContain('ready_for_review')
   })
 
-  it('mints Project credentials only after preflight and always revalidates current metadata', () => {
+  it('uses the trusted project token after preflight and always revalidates current metadata', () => {
     const policy = loadWorkflow('.github/workflows/issue-policy.yml')
     const policyJob = workflowJob(policy, 'policy')
     if (!Array.isArray(policyJob.steps)) throw new TypeError('Issue policy job must define steps')
     const steps = policyJob.steps.filter(isRecord)
-    const tokenStep = steps.find(step => step.name === 'Create Project read token')
     const validateStep = steps.find(step => step.name === 'Validate pull request')
     const preflightStep = steps.find(step => step.id === 'preflight')
     expect(preflightStep).toMatchObject({ shell: 'bash' })
@@ -1081,23 +1084,10 @@ describe('Issue lifecycle workflow', () => {
     expect(policyJob.if).toBeUndefined()
     expect(validateStep?.if).toBe("${{ steps.preflight.outputs.legacy-automated != 'true' }}")
 
-    expect(tokenStep).toMatchObject({
-      id: 'app-token',
-      if: "${{ steps.preflight.outputs.needs-project == 'true' }}",
-      uses: 'actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1',
-      with: {
-        'client-id': '${{ vars.NEOSIS_ISSUE_APP_CLIENT_ID }}',
-        'private-key': '${{ secrets.NEOSIS_ISSUE_APP_PRIVATE_KEY }}',
-        owner: 'averqel-neosis',
-        repositories: 'averqel-neosis',
-        'permission-issues': 'read',
-        'permission-organization-projects': 'read',
-      },
-    })
     expect(validateStep).toMatchObject({
       env: {
         GITHUB_TOKEN: '${{ github.token }}',
-        PROJECT_TOKEN: '${{ steps.app-token.outputs.token }}',
+        PROJECT_TOKEN: '${{ secrets.NEOSIS_ISSUE_MANAGEMENT_TOKEN }}',
       },
     })
   })
@@ -1168,12 +1158,12 @@ describe('Documentation site publication', () => {
     // Complete history: the release scripts read tags.
     expect(checkout).toMatchObject({ with: { 'fetch-depth': 0 } })
 
-    // Projected source links stay on the public repository's master. That
-    // repository advances only to each release commit, so its master never
+    // Projected source links stay on the public repository's main branch. That
+    // repository advances only to each release commit, so its main branch never
     // carries unreleased work, while it retains only the most recent tags:
     // following the dispatched tag would leave every source link on a deploy
     // from an older tag unresolvable.
-    expect(workflow.env.DOCS_REPOSITORY_REF).toBe('master')
+    expect(workflow.env.DOCS_REPOSITORY_REF).toBe('main')
 
     // The environment owns the deployment tag policy and the required reviewers.
     expect(deploy.environment).toMatchObject({ name: 'github-pages' })

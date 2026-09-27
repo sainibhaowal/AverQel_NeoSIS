@@ -2,6 +2,7 @@
 
 import type { StdioOptions } from 'node:child_process'
 import { accessSync, constants as fsConstants, lstatSync, statSync } from 'node:fs'
+import { createRequire } from 'node:module'
 import { extname, isAbsolute } from 'node:path'
 import { inspect } from 'node:util'
 import { fileURLToPath } from 'node:url'
@@ -20,6 +21,7 @@ export const WINDOWS_RUNNER_SELECTION = 'windows' as const
 export type RunnerInvocation = [string, ...string[]]
 
 const SOURCE_TSCONFIG_PATH = fileURLToPath(new URL('../../../../tsconfig.base.json', import.meta.url))
+const resolvePackage = createRequire(import.meta.url).resolve
 const RUNNER_CONTROL_ENV_PREFIXES = ['NODE_', 'TSX_'] as const
 
 /**
@@ -31,12 +33,12 @@ export function spawnRunnerInvocation(): RunnerInvocation {
   /* v8 ignore next -- built-artifact smoke imports the emitted JavaScript runner entry;
    * source-unit coverage cannot change import.meta.url. */
   if (extname(fileURLToPath(import.meta.url)) !== '.ts') {
-    return [process.execPath, fileURLToPath(import.meta.resolve('@averqel/neosis-subprocess-local/runner'))]
+    return [process.execPath, resolvePackage('@averqel/neosis-subprocess-local/runner')]
   }
   return [
     process.execPath,
     '--import',
-    import.meta.resolve('tsx/esm'),
+    resolvePackage('tsx/esm'),
     fileURLToPath(new URL('./bin.ts', import.meta.url)),
   ]
 }

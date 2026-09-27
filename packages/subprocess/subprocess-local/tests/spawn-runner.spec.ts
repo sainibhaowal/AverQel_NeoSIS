@@ -11,6 +11,7 @@ import {
   unlinkSync,
   writeFileSync,
 } from 'node:fs'
+import { createRequire } from 'node:module'
 import { tmpdir } from 'node:os'
 import { join, posix, resolve } from 'node:path'
 import { afterEach, describe, expect, it, vi } from 'vitest'
@@ -51,6 +52,7 @@ import {
 import type { SpawnRunnerInternals } from '../src/spawn-runner.ts'
 
 const scratch: string[] = []
+const resolvePackage = createRequire(import.meta.url).resolve
 
 afterEach(() => {
   for (const path of scratch.splice(0)) rmSync(path, { recursive: true, force: true })
@@ -341,7 +343,7 @@ describe('runner launch inputs', () => {
   it('resolves the source runner entry and checks concrete paths without executing it', () => {
     const invocation = spawnRunnerInvocation()
     expect(invocation[0]).toBe(process.execPath)
-    expect(invocation).toContain(import.meta.resolve('tsx/esm'))
+    expect(invocation).toContain(resolvePackage('tsx/esm'))
     expect(runnerInvocationAvailable(invocation)).toBe(true)
     expect(runnerInvocationAvailable(['/definitely/missing-neosis-runner'])).toBe(false)
     expect(runnerInvocationAvailable(['node'])).toBe(true)

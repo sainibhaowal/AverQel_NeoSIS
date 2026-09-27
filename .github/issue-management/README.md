@@ -8,7 +8,7 @@ English | [中文](README.zh.md)
 
 ## Summary
 
-Contributors can link Issues as context without coupling pull-request validation to Project availability. Resolving references additionally enforce Project Priority. The required `Issue policy` job and the separate lifecycle workflow use trusted default-branch code.
+Contributors can link Issues as context without coupling pull-request validation to Project availability. Resolving references additionally enforce Project Priority. The required `Issue policy` job and the separate lifecycle workflow use trusted default-branch code and the repository's project token.
 
 ## Table of Contents
 
@@ -24,9 +24,9 @@ Contributors can link Issues as context without coupling pull-request validation
 <a id="pull-request-policy"></a>
 ## Pull-request policy
 
-[Issue policy](../workflows/issue-policy.yml) applies to non-draft, human-authored PRs with a requested review or submitted review. Exempt PRs finish successfully without resolving Issue references, minting a Project App token, or querying ProjectV2. Eligibility uses live repository state before expensive reads; the required job remains present for subscribed events. Final validation re-reads live state: preflight is not a cached verdict or an exemption for metadata edits.
+[Issue policy](../workflows/issue-policy.yml) applies to non-draft, human-authored PRs with a requested review or submitted review. Exempt PRs finish successfully without resolving Issue references or querying ProjectV2. Eligibility uses live repository state before expensive reads; the required job remains present for subscribed events. Final validation re-reads live state: preflight is not a cached verdict or an exemption for metadata edits.
 
-Selective preflight requires [selective-preflight.json](selective-preflight.json) in the trusted checkout. Without that marker, the workflow preserves legacy behavior: human PRs receive a Project token and full legacy validation; Bot/App PRs skip both. A failed supported preflight fails the job rather than falling back.
+Selective preflight requires [selective-preflight.json](selective-preflight.json) in the trusted checkout. Without that marker, the workflow preserves legacy behavior: human PRs use the project token and full legacy validation; Bot/App PRs skip both. A failed supported preflight fails the job rather than falling back.
 
 Eligible PRs need at least one same-repository Issue reference, exactly one canonical `kind/*`, at least one `area/*`, and at most one `p0`–`p3` label. Unsupported kinds, retired aliases, and `source/*` labels fail validation; [label taxonomy](../../.agents/notes/implemented/process/2026-08-08-unified-github-label-taxonomy.md) owns their meanings.
 
@@ -34,7 +34,7 @@ Eligible PRs need at least one same-repository Issue reference, exactly one cano
 - Resolving references use closing keywords such as `Fixes #123`, `Closes #123`, or `Resolves #123`. Only references that resolve to actual Issues require Project reads during validation. A PR Priority must match the highest resolving-Issue Priority; a resolving PR with a Priority label requires every resolving Issue to have Priority. If all resolving Priorities are empty, the PR may omit Priority.
 - References inside HTML comments, code fences, or inline code do not count. Cross-repository references and references to PRs do not satisfy the Issue requirement.
 
-REST reads use the repository `GITHUB_TOKEN`. Project validation uses a separate App token with Issues and organization Projects read permissions. Missing required Project access or invalid field configuration fails validation rather than bypassing resolving-Issue Priority checks.
+REST reads use the repository `GITHUB_TOKEN`. Project validation uses the `NEOSIS_ISSUE_MANAGEMENT_TOKEN` repository secret, a classic personal access token with `repo` and `project` scopes. Because the classic `repo` scope is broad, keep this token dedicated to NeoSIS and rotate it before expiry. Missing required Project access or invalid field configuration fails validation rather than bypassing resolving-Issue Priority checks.
 
 -----
 
@@ -45,7 +45,7 @@ REST reads use the repository `GITHUB_TOKEN`. Project validation uses a separate
 
 Approval-only and comment-only reviews do not allocate a lifecycle runner. PR pushes and label changes, and Issue assignment changes, do not trigger lifecycle work. Other subscribed Issue events maintain membership, state, and audit comments; exact subscriptions live in the workflow.
 
-PR opening initializes an empty Project `Start Date` for every referenced Issue, including informational references, using the PR creation date in the configured time zone. This lifecycle operation can add Project membership and needs Project write access; the informational-reference read exemption applies only to PR validation. [Planning-field ownership](../../.agents/notes/implemented/process/2026-09-02-project-local-issue-planning-fields.md) defines date preservation.
+PR opening initializes an empty Project `Start Date` for every referenced Issue, including informational references, using the PR creation date in the configured time zone. This lifecycle operation can add Project membership and needs Project write access through the project token; the informational-reference read exemption applies only to PR validation. [Planning-field ownership](../../.agents/notes/implemented/process/2026-09-02-project-local-issue-planning-fields.md) defines date preservation.
 
 -----
 
@@ -83,7 +83,7 @@ The focused, keyless policy suite runs from the repository root:
 node --test .github/issue-management/policy.test.mjs
 ```
 
-[Workflow tests](../../scripts/ci-workflow.spec.ts) verify trigger and permission declarations. Local tests do not establish live GitHub delivery, App installation access, or actual runner cost; repository maintainers verify those in Actions.
+[Workflow tests](../../scripts/ci-workflow.spec.ts) verify trigger and permission declarations. Local tests do not establish live GitHub delivery, token scope, or actual runner cost; repository maintainers verify those in Actions.
 
 -----
 

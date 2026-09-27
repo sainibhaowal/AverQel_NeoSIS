@@ -1,7 +1,10 @@
-name: Issue policy
+name: AverQel NeoSIS — Issue policy
 
 on:
-  pull_request:
+  # This workflow checks out and executes only the trusted default-branch
+  # policy. The target trigger is therefore required for its project token to
+  # be available when a PR comes from a fork.
+  pull_request_target:
     types: [opened, edited, synchronize, reopened, labeled, unlabeled, ready_for_review, review_requested]
   pull_request_review:
     types: [submitted]
@@ -38,21 +41,10 @@ jobs:
           console.log('Trusted policy has no selective preflight; preserving legacy policy enforcement.')
           NODE
           fi
-      - name: Create Project read token
-        id: app-token
-        if: ${{ steps.preflight.outputs.needs-project == 'true' }}
-        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1
-        with:
-          client-id: ${{ vars.NEOSIS_ISSUE_APP_CLIENT_ID }}
-          private-key: ${{ secrets.NEOSIS_ISSUE_APP_PRIVATE_KEY }}
-          owner: sainibhaowal
-          repositories: AverQel_Neosis
-          permission-issues: read
-          permission-organization-projects: read
       # Re-read current state even after an exempt preflight; never replace a failure with an edit skip.
       - name: Validate pull request
         if: ${{ steps.preflight.outputs.legacy-automated != 'true' }}
         env:
           GITHUB_TOKEN: ${{ github.token }}
-          PROJECT_TOKEN: ${{ steps.app-token.outputs.token }}
+          PROJECT_TOKEN: ${{ secrets.NEOSIS_ISSUE_MANAGEMENT_TOKEN }}
         run: node .github/issue-management/policy.mjs pr

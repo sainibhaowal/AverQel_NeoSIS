@@ -1,4 +1,4 @@
-name: Issue lifecycle
+name: AverQel NeoSIS — Issue lifecycle
 
 on:
   issues:
@@ -13,7 +13,10 @@ on:
       - untyped
       - field_added
       - field_removed
-  pull_request:
+  # This workflow checks out and executes only the trusted default-branch
+  # policy. The target trigger is therefore required for its project token to
+  # be available when a PR comes from a fork.
+  pull_request_target:
     types:
       - opened
       - edited
@@ -35,7 +38,7 @@ jobs:
     name: Issue lifecycle
     if: >-
       (github.event_name != 'pull_request_review' || github.event.review.state == 'changes_requested') &&
-      (github.event_name != 'pull_request' || github.event.action != 'edited' || github.event.changes.body != null)
+      (github.event_name != 'pull_request_target' || github.event.action != 'edited' || github.event.changes.body != null)
     runs-on: ubuntu-latest
     steps:
       - name: Check out trusted policy
@@ -43,15 +46,8 @@ jobs:
         with:
           ref: ${{ github.event.repository.default_branch }}
           persist-credentials: false
-      - name: Create project token
-        id: app-token
-        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1
-        with:
-          client-id: ${{ vars.NEOSIS_ISSUE_APP_CLIENT_ID }}
-          private-key: ${{ secrets.NEOSIS_ISSUE_APP_PRIVATE_KEY }}
-          owner: sainibhaowal
-          repositories: AverQel_Neosis
       - name: Handle repository event
         env:
-          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          GH_TOKEN: ${{ secrets.NEOSIS_ISSUE_MANAGEMENT_TOKEN }}
+          PROJECT_TOKEN: ${{ secrets.NEOSIS_ISSUE_MANAGEMENT_TOKEN }}
         run: node .github/issue-management/policy.mjs lifecycle

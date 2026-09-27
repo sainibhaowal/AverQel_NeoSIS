@@ -143,7 +143,7 @@ export async function runLifecycle(eventName, event) {
     return
   }
 
-  if (eventName === 'pull_request' || eventName === 'pull_request_review') {
+  if (eventName === 'pull_request' || eventName === 'pull_request_target' || eventName === 'pull_request_review') {
     const command = resolvingIssueStatusCommand(eventName, event)
     if (!command) return
     const pull = await lifecyclePullRequestSnapshot(event.pull_request.number)
