@@ -23,9 +23,10 @@
 
 import { spawnSync } from 'node:child_process'
 import { existsSync, mkdtempSync, rmSync } from 'node:fs'
+import { createRequire } from 'node:module'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 import {
   LAUNCHER_BIN,
   LAUNCHER_FAILURE_EXIT,
@@ -40,6 +41,8 @@ import type { SessionId } from '@averqel/neosis-session'
 import { AclWriteGrant, assertTempRootOutsideWorkspace, tempWriteSid, workspaceWriteSid } from '@averqel/neosis-sandbox-windows-acl'
 import { assertNever } from '@averqel/neosis-util-values'
 import { bwrapProfileArgs, landlockProfileArgs, seatbeltProfileArgs } from './profiles.ts'
+
+const require = createRequire(import.meta.url)
 
 /** Plugin config. All optional — `static Config` supplies the defaults. */
 export interface Config {
@@ -565,11 +568,13 @@ export class LocalSandboxProvider extends SandboxProvider {
   private windowsAclRunnerInvocation(): string[] {
     const override = this.internals.windowsAclRunnerArgs
     if (override !== undefined) return override
-    const builtEntry = this.internals.windowsAclRunnerEntry ?? fileURLToPath(import.meta.resolve('@averqel/neosis-sandbox-windows-acl/runner'))
+    const builtEntry = this.internals.windowsAclRunnerEntry
+      ?? require.resolve('@averqel/neosis-sandbox-windows-acl/runner')
     if (existsSync(builtEntry)) return [process.execPath, builtEntry]
-    const sourceEntry = fileURLToPath(import.meta.resolve('@averqel/neosis-sandbox-windows-acl/src/runner.ts'))
+    const sourceEntry = require.resolve('@averqel/neosis-sandbox-windows-acl/src/runner.ts')
     const sourceConfig = fileURLToPath(new URL('../../../../tsconfig.base.json', import.meta.url))
-    const registration = `import { register } from ${JSON.stringify(import.meta.resolve('tsx/esm/api'))}; register({ tsconfig: ${JSON.stringify(sourceConfig)} });`
+    const tsxApi = pathToFileURL(require.resolve('tsx/esm/api')).href
+    const registration = `import { register } from ${JSON.stringify(tsxApi)}; register({ tsconfig: ${JSON.stringify(sourceConfig)} });`
     return [process.execPath, '--import', `data:text/javascript,${encodeURIComponent(registration)}`, sourceEntry]
   }
 }

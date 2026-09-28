@@ -9,7 +9,6 @@ import {
 import { createRequire } from 'node:module'
 import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
-import { fileURLToPath } from 'node:url'
 import { promisify } from 'node:util'
 import { Context } from '@averqel/cordis'
 import { afterEach, describe, expect, it, vi } from 'vitest'
@@ -24,9 +23,7 @@ const execFileAsync = promisify(execFile)
 const OFFICIAL_DEEPSEEK_MESSAGES_BASE_URL = 'https://api.deepseek.com/anthropic'
 const DEEPSEEK_MODEL = 'deepseek-v4-flash'
 const resolvePackage = createRequire(import.meta.url).resolve
-const sdkRoot = dirname(fileURLToPath(
-  resolvePackage('@anthropic-ai/claude-agent-sdk'),
-))
+const sdkRoot = dirname(resolvePackage('@anthropic-ai/claude-agent-sdk'))
 const sdkPackage = JSON.parse(readFileSync(
   join(sdkRoot, 'package.json'),
   'utf8',
