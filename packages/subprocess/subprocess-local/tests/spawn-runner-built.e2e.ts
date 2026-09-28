@@ -1,8 +1,8 @@
 import { spawn } from 'node:child_process'
 import type { Buffer } from 'node:buffer'
 import { existsSync } from 'node:fs'
+import { createRequire } from 'node:module'
 import { resolve } from 'node:path'
-import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
 import type { SubprocessSpawnSpec } from '@averqel/neosis-subprocess'
 import {
@@ -21,7 +21,7 @@ import { launchWindowsJob } from '../src/windows-job.ts'
 
 const repoRoot = resolve(import.meta.dirname, '../../../..')
 const sourceRunner = resolve(repoRoot, 'packages/subprocess/subprocess-local/src/bin.ts')
-const builtRunner = fileURLToPath(import.meta.resolve('@averqel/neosis-subprocess-local/runner'))
+const builtRunner = createRequire(import.meta.url).resolve('@averqel/neosis-subprocess-local/runner')
 
 function targetEnv(): Record<string, string> {
   return {

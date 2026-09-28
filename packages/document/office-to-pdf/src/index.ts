@@ -1,9 +1,9 @@
-/** Host LibreOffice kit provider with reusable converters and private disk input/output. */
+/** Host system-LibreOffice provider with reusable conversion and private disk input/output. */
 import { randomUUID } from 'node:crypto'
-import { extname, isAbsolute } from 'node:path'
+import { mkdtemp, rm } from 'node:fs/promises'
+import { extname, isAbsolute, join } from 'node:path'
+import { tmpdir } from 'node:os'
 import { Context } from '@averqel/cordis'
-// import { createConverter, type Converter, type ConverterOptions } from '@libreoffice/kit'
-// TODO: Uncomment when @libreoffice/kit is published
 import z from '@averqel/schemastery'
 import type { WorkspaceFileScope, WorkspaceFileStat } from '@averqel/neosis-api-workspace-files'
 import type {} from '@averqel/neosis-fs'
@@ -11,11 +11,16 @@ import { brandString } from '@averqel/neosis-brand'
 import { Remote, RemoteError, TypertRemoteService } from '@averqel/neosis-typert-protocol'
 import { OfficeToPdfError } from './errors.ts'
 import { OfficeToPdfGeneration, type OfficeSourceKey } from './identity.ts'
-import type { OfficeExtension, OfficeToPdfRequest, OfficeToPdfResult, OfficeToPdfPriority, RenderedDocumentBytes } from './types.ts'
+import type { OfficeExtension, OfficeToPdfErrorCode, OfficeToPdfRequest, OfficeToPdfResult, OfficeToPdfPriority, RenderedDocumentBytes } from './types.ts'
+import { createSystemOfficeConverter, writeOfficeInput, type SystemOfficeConverterOptions } from './system-office.ts'
+import { resolveOfficeExecutable } from './executable.ts'
+import { readPdf } from './output.ts'
 import { ConversionQueue } from './queue.ts'
 
 export * from './errors.ts'
 export * from './identity.ts'
+export * from './system-office.ts'
+export * from './executable.ts'
 export * from './types.ts'
 
 declare module '@averqel/cordis' {
@@ -25,7 +30,7 @@ declare module '@averqel/cordis' {
   }
 }
 
-/** Provider concurrency and kit rendering/font configuration. */
+/** Provider concurrency and system LibreOffice configuration. */
 export interface Config {
   /** Maximum simultaneous conversions; queued callers remain cancellable. */
   maxConcurrentConversions: number
@@ -43,21 +48,23 @@ export interface Config {
   maxCachedBytes: number
   /** Maximum retained source-version aliases to cached content. */
   maxSourceEntries: number
-  /** Conversion deadline in milliseconds; excludes the NEOSIS queue. */
+  /** System LibreOffice executable name or absolute path. */
+  executable: string
+  /** Conversion deadline in milliseconds; excludes the NeoSIS queue. */
   timeoutMs: number
   /** Maximum authorized source bytes. */
   maxInputBytes: number
   /** Maximum complete PDF bytes. */
   maxOutputBytes: number
-  /** Exported raster-image DPI. */
+  /** Retained for configuration compatibility; system LibreOffice controls rasterization. */
   maxImageResolution: number
   /** Maximum OOXML ZIP entries. */
   maxArchiveEntries: number
   /** Maximum total declared uncompressed OOXML bytes. */
   maxUncompressedBytes: number
-  /** Absolute font roots; omission uses the kit's platform defaults. */
+  /** Absolute font roots exposed to system LibreOffice through SAL_FONTPATH. */
   fontDirectories?: string[]
-  /** Ordered font-family preference groups; omission retains the kit defaults. */
+  /** Retained for configuration compatibility; system LibreOffice resolves fallback families. */
   fontFallbacks?: string[][]
   /** Maximum physical font files indexed by each converter. */
   maxFontFiles: number
@@ -77,6 +84,7 @@ export const Config: z<Partial<Config>, Config> = z.object({
   maxCachedEntries: z.natural().min(1).max(Number.MAX_SAFE_INTEGER).default(8),
   maxCachedBytes: z.natural().min(1).max(Number.MAX_SAFE_INTEGER).default(134217728),
   maxSourceEntries: z.natural().min(1).max(Number.MAX_SAFE_INTEGER).default(64),
+  executable: z.string().min(1).default(resolveOfficeExecutable()),
   timeoutMs: z.natural().min(1).max(2_147_483_647).default(60_000),
   maxInputBytes: z.natural().min(1).max(Number.MAX_SAFE_INTEGER - 1).default(50 * 1024 * 1024),
   maxOutputBytes: z.natural().min(1).max(Number.MAX_SAFE_INTEGER - 1).default(100 * 1024 * 1024),
@@ -90,6 +98,11 @@ export const Config: z<Partial<Config>, Config> = z.object({
   maxLoadedFontBytes: z.natural().min(1).max(Number.MAX_SAFE_INTEGER).default(512 * 1024 * 1024),
 })
 
+const officeErrorCodes = new Set<OfficeToPdfErrorCode>([
+  'input-too-large', 'output-too-large', 'invalid-document', 'unsupported-format', 'invalid-output',
+  'timeout', 'unavailable', 'failed', 'busy', 'source-changed',
+])
+
 /** A provider lifetime owns all converters, queued calls, and temporary files. */
 export class OfficeToPdf extends TypertRemoteService {
   static Config = Config
@@ -98,7 +111,8 @@ export class OfficeToPdf extends TypertRemoteService {
   private readonly remoteLifetime = new AbortController()
   private readonly remoteRequests = new Set<Promise<RenderedDocumentBytes>>()
   private readonly queue: ConversionQueue
-  // private readonly options: ConverterOptions // TODO: Uncomment when @libreoffice/kit is published
+  private readonly config: Config
+  private readonly converterOptions: SystemOfficeConverterOptions
 
   /**
    * @param ctx - owning Host context.
@@ -106,28 +120,19 @@ export class OfficeToPdf extends TypertRemoteService {
    */
   constructor(ctx: Context, config: Config) {
     super(ctx, 'officeToPdf')
+    this.config = config
     if (config.fontDirectories?.some(path => !isAbsolute(path))) throw new Error('fontDirectories must contain absolute paths.')
     if (config.maxSourceBytes < config.maxInputBytes) throw new Error('maxSourceBytes must be at least maxInputBytes.')
-    // TODO: Uncomment when @libreoffice/kit is published
-    // const { fontDirectories, fontFallbacks, timeoutMs, maxInputBytes, maxOutputBytes, maxImageResolution,
-    //   maxArchiveEntries, maxUncompressedBytes, maxFontFiles, maxFontFileBytes, maxLoadedFontBytes } = config
-    // this.options = { timeoutMs, maxInputBytes, maxOutputBytes, maxImageResolution, maxArchiveEntries, maxUncompressedBytes,
-    //   maxFontFiles, maxFontFileBytes, maxLoadedFontBytes,
-    //   ...(fontDirectories === undefined ? {} : { fontDirectories }),
-    //   ...(fontFallbacks === undefined ? {} : { fontFallbacks }),
-    // }
+    this.converterOptions = {
+      executable: config.executable,
+      timeoutMs: config.timeoutMs,
+      ...(config.fontDirectories === undefined ? {} : { fontDirectories: config.fontDirectories }),
+    }
     this.queue = new ConversionQueue(config, this.generation, (bytes, extension, signal) => this.convertBytes(bytes, extension, signal))
     ctx.effect(() => async () => {
       this.remoteLifetime.abort()
       await this.queue.dispose()
       await Promise.allSettled(this.remoteRequests)
-      // TODO: Uncomment when @libreoffice/kit is published
-      // const results = await Promise.allSettled(this.slots.map(async (slot) => {
-      //   const converter = await slot.converter
-      //   await converter?.dispose()
-      // }))
-      // const failures = results.filter(result => result.status === 'rejected')
-      // if (failures.length > 0) throw new AggregateError(failures.map((result): unknown => result.reason), 'LibreOffice converter disposal failed.')
     })
   }
 
@@ -174,10 +179,15 @@ export class OfficeToPdf extends TypertRemoteService {
     try {
       signal.throwIfAborted()
       const extension = extname(path).slice(1).toLowerCase()
-      if (extension !== 'doc' && extension !== 'docx' && extension !== 'xls'
-        && extension !== 'xlsx' && extension !== 'ppt' && extension !== 'pptx') {
-        throw new OfficeToPdfError('unsupported-format', 'The path must end in doc, docx, xls, xlsx, ppt, or pptx.')
+      const supported = new Set<OfficeExtension>([
+        'doc', 'docx', 'docm', 'dot', 'dotx', 'dotm', 'odt', 'ott', 'fodt', 'rtf',
+        'xls', 'xlsx', 'xlsm', 'xlt', 'xltx', 'xltm', 'ods', 'ots', 'fods',
+        'ppt', 'pptx', 'pptm', 'pot', 'potx', 'potm', 'pps', 'ppsx', 'ppsm', 'odp', 'otp', 'fodp',
+      ])
+      if (!supported.has(extension as OfficeExtension)) {
+        throw new OfficeToPdfError('unsupported-format', 'The path does not use a supported LibreOffice document extension.')
       }
+      const officeExtension = extension as OfficeExtension
       const files = this.ctx.get('workspaceFiles')
       const fs = this.ctx.get('fs')
       if (files === undefined || fs === undefined) throw new OfficeToPdfError('unavailable', 'Office file rendering requires workspaceFiles and fs.')
@@ -190,7 +200,7 @@ export class OfficeToPdf extends TypertRemoteService {
       }
       assertUnchanged(authorized)
       signal.throwIfAborted()
-      const result = await this.convert({ extension, priority, source: {
+      const result = await this.convert({ extension: officeExtension, priority, source: {
         key: brandString<OfficeSourceKey>(JSON.stringify([scope.sessionId, scope.workspaceRoot, source.absolutePath])),
         version: source.version, ...(source.bytes === undefined ? {} : { bytes: source.bytes }),
         read: async (upstream, maxBytes) => {
@@ -225,10 +235,29 @@ export class OfficeToPdf extends TypertRemoteService {
   }
 
   private async convertBytes(bytes: Uint8Array, extension: OfficeExtension, signal: AbortSignal): Promise<Pick<OfficeToPdfResult, 'pdf' | 'missingFonts'>> {
-    void bytes
-    void extension
     signal.throwIfAborted()
-    throw new Error('Office-to-PDF conversion is not yet implemented. The @libreoffice/kit package needs to be published.')
+    const directory = await mkdtemp(join(tmpdir(), 'neosis-office-to-pdf-'))
+    let converter: Awaited<ReturnType<typeof createSystemOfficeConverter>> | undefined
+    try {
+      const paths = await writeOfficeInput(directory, bytes, extension)
+      converter = await createSystemOfficeConverter(this.converterOptions)
+      const rendered = await converter.render(paths, signal)
+      const pdf = await readPdf(paths.outputPath, this.config.maxOutputBytes, signal)
+      return { pdf, missingFonts: rendered.missingFonts }
+    } catch (cause) {
+      if (cause instanceof OfficeToPdfError) throw cause
+      if (typeof cause === 'object' && cause !== null && 'code' in cause
+        && typeof cause.code === 'string' && officeErrorCodes.has(cause.code as OfficeToPdfErrorCode)) {
+        throw new OfficeToPdfError(cause.code as OfficeToPdfErrorCode, 'LibreOffice conversion failed.', { cause })
+      }
+      if (typeof cause === 'object' && cause !== null && 'code' in cause && cause.code === 'ENOENT') {
+        throw new OfficeToPdfError('invalid-output', 'LibreOffice did not produce the expected PDF.', { cause })
+      }
+      throw new OfficeToPdfError('failed', 'LibreOffice conversion failed.', { cause })
+    } finally {
+      if (converter !== undefined) await converter.dispose()
+      await rm(directory, { recursive: true, force: true })
+    }
   }
 }
 

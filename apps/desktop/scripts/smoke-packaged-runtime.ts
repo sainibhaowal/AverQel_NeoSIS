@@ -11,13 +11,17 @@ const paths = resolveDesktopTargetBuildPaths()
 const { values } = parseArgs({ options: { unsigned: { type: 'boolean', default: false } }, allowPositionals: false })
 const target = resolveDesktopBuildTarget()
 const windows = target === 'win-x64'
+const mac = target.startsWith('mac-')
 if (values.unsigned && !windows) throw new Error('desktop smoke: unsigned artifacts require Windows')
 const artifacts = values.unsigned ? paths.unsignedArtifacts : paths.artifacts
 const application = windows ? join(artifacts, 'win-unpacked')
-  : join(artifacts, target === 'mac-arm64' ? 'mac-arm64' : 'mac', 'AverQel NeoSIS.app', 'Contents')
-const resources = join(application, windows ? 'resources' : 'Resources')
-const executable = windows ? join(application, 'AverQel NeoSIS.exe') : join(application, 'MacOS', 'AverQel NeoSIS')
+  : mac ? join(artifacts, target === 'mac-arm64' ? 'mac-arm64' : 'mac', 'AverQel NeoSIS.app', 'Contents')
+    : join(artifacts, 'linux-unpacked')
+const resources = join(application, windows || !mac ? 'resources' : 'Resources')
+const executable = windows ? join(application, 'AverQel NeoSIS.exe')
+  : mac ? join(application, 'MacOS', 'AverQel NeoSIS') : join(application, 'averqel-neosis')
 const descriptor = await verifyDesktopRuntime(paths.neosis, readDesktopRuntime(paths.neosis).release.version,
   resolveDesktopPackageTarget(target))
 if (windows && !values.unsigned) await verifyWindowsCode(application)
-await smokePreparedRuntime(join(resources, 'app.asar', 'neosis'), executable, join(resources, 'runtime'), descriptor)
+await smokePreparedRuntime(join(resources, 'app.asar', 'neosis'), executable, join(resources, 'runtime'), descriptor,
+  join(resources, 'office'))

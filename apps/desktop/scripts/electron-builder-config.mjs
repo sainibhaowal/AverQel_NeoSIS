@@ -68,8 +68,7 @@ export function createElectronBuilderConfig(
   let primaryRuntimeDestination
   let neosisDestination
   let windowsCode = []
-  const unpack = ['**/*.{node,dylib,dll,so,exe}', '**/*.so.*', '**/spawn-helper', '**/@vscode/ripgrep-*/bin/rg',
-    `**/node_modules/@averqel/libreoffice-kit-${resolvedPlatform}-${resolvedArch}/**/*`]
+  const unpack = ['**/*.{node,dylib,dll,so,exe}', '**/*.so.*', '**/spawn-helper', '**/@vscode/ripgrep-*/bin/rg']
   const windowsSigner = packagesWindows && !unsigned
     ? createWindowsTokenSigner({
         certificateFile: env.NEOSIS_DESKTOP_WINDOWS_CER_FILE,
@@ -142,6 +141,7 @@ export function createElectronBuilderConfig(
     asarUnpack: unpack,
     extraResources: [
       { from: buildPaths.runtime, to: 'runtime' },
+      { from: buildPaths.office, to: 'office' },
       { from: fileURLToPath(new URL('../resources/icon-windows.png', import.meta.url)), to: 'icon.png' },
     ],
     mac: {

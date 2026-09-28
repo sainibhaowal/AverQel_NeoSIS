@@ -368,9 +368,15 @@ async function main(): Promise<void> {
     () => locale.id === 'zh-CN' ? 'zh_CN' : 'en_US')
   const backend = new DesktopBackendController((onFailure) => {
     const hostInspectPort = developmentHostInspectPort(development)
+    const officeRoot = development
+      ? join(app.getAppPath(), '.desktop-build', 'targets', `${process.platform === 'darwin' ? 'mac' : process.platform === 'win32' ? 'win' : 'linux'}-${process.arch}`, 'office')
+      : join(process.resourcesPath, 'office')
     const host = new DesktopHostProcess(resources.node, resources.neosis, activeProject,
-      hostInspectPort, process.env, onFailure,
-      development ? join(app.getAppPath(), '.desktop-build', 'targets', `${process.platform === 'darwin' ? 'mac' : 'win'}-${process.arch}`, 'runtime', 'primary-runtime')
+      hostInspectPort, {
+        ...process.env, NEOSIS_OFFICE_BUNDLE_ROOT: officeRoot,
+        ...(development ? {} : { NEOSIS_OFFICE_BUNDLE_REQUIRED: '1' }),
+      }, onFailure,
+      development ? join(app.getAppPath(), '.desktop-build', 'targets', `${process.platform === 'darwin' ? 'mac' : process.platform === 'win32' ? 'win' : 'linux'}-${process.arch}`, 'runtime', 'primary-runtime')
         : join(process.resourcesPath, 'runtime', 'primary-runtime'),
       resources, (next) => { platformView.setSession(next) })
     return {
@@ -1068,7 +1074,8 @@ async function main(): Promise<void> {
     let wasBlocking = false
     mandatoryPolicy = new DesktopMandatoryUpdatePolicy(policyConfig, {
       platform: process.platform as 'win32' | 'darwin', arch: process.arch as 'x64' | 'arm64',
-      version: app.getVersion(), bundledNeosisVersion: app.isPackaged ? readDesktopRuntime(resources.neosis).release.version : app.getVersion(),
+      version: app.getVersion(), bundledNeosisVersion: app.isPackaged
+        ? readDesktopRuntime(resources.neosis).release.version : app.getVersion(),
       bundleId, locale: locale.id,
     }, (state) => {
       if (state.error !== 'authentication-required') policyAuthenticationQueued = false

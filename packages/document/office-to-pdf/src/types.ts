@@ -4,8 +4,14 @@ import type {} from '@averqel/neosis-typert-protocol'
 import type { OfficeSourceKey, OfficeToPdfGeneration, OfficeToPdfKey } from './identity.ts'
 export type { OfficeSourceKey, OfficeToPdfGeneration, OfficeToPdfKey } from './identity.ts'
 
-/** Binary Office and Office Open XML formats supported by Office-to-PDF conversion. */
-export type OfficeExtension = 'doc' | 'docx' | 'xls' | 'xlsx' | 'ppt' | 'pptx'
+/** LibreOffice document extensions accepted by the Host conversion service. */
+export type OfficeExtension =
+  | 'doc' | 'docx' | 'docm' | 'dot' | 'dotx' | 'dotm'
+  | 'odt' | 'ott' | 'fodt' | 'rtf'
+  | 'xls' | 'xlsx' | 'xlsm' | 'xlt' | 'xltx' | 'xltm'
+  | 'ods' | 'ots' | 'fods'
+  | 'ppt' | 'pptx' | 'pptm' | 'pot' | 'potx' | 'potm' | 'pps' | 'ppsx' | 'ppsm'
+  | 'odp' | 'otp' | 'fodp'
 
 /** Foreground previews and explicit QA precede speculative background conversion. */
 export type OfficeToPdfPriority = 'foreground' | 'background'

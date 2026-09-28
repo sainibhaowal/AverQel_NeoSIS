@@ -30,7 +30,11 @@ declare module '@averqel/neosis-client-ui-slots' {
  */
 export function apply(ctx: Context, config: Config['office']): void {
   const id = '@averqel/neosis-client-ui-sidebar-documentpreview/office'
-  const extensions = ['doc', 'docx', 'ppt', 'pptx']
+  const extensions = [
+    'doc', 'docx', 'docm', 'dot', 'dotx', 'dotm', 'odt', 'ott', 'fodt', 'rtf',
+    'xlsm', 'xlt', 'xltx', 'xltm', 'ods', 'ots', 'fods',
+    'ppt', 'pptx', 'pptm', 'pot', 'potx', 'potm', 'pps', 'ppsx', 'ppsm', 'odp', 'otp', 'fodp',
+  ]
   ctx.effect(() => ctx.locale.register('sidebarOffice', { zh, en }))
   const t = ctx.locale.bind('sidebarOffice')
   const unavailable: ReadOfficeDocument = (_file, signal) => {

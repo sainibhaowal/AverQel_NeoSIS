@@ -89,7 +89,7 @@ The pinned [ExcelJS patch](../../../patches/exceljs@4.4.0.patch) resolves the wo
 <a id="office-preview"></a>
 ## Office preview
 
-Open `.doc`, `.docx`, `.ppt`, and `.pptx` as PDF previews with the same loading state, zoom controls, cancellation, and selectable text as PDF files. The [Host provider](../../document/office-to-pdf/README.md) performs local conversion and retains its spreadsheet conversion API for other consumers. Invalid supported files, conversion failures, and timeouts receive localized messages. Missing Host services show configuration guidance.
+Open common Word, PowerPoint, OpenDocument, RTF, and legacy Office formats as PDF previews with the same loading state, zoom controls, cancellation, and selectable text as PDF files. The [Host provider](../../document/office-to-pdf/README.md) performs local conversion and retains the direct browser spreadsheet renderer for formats it handles natively. Invalid supported files, conversion failures, and timeouts receive localized messages. Missing Host services show configuration guidance.
 
 The [Web bundle](../../bundle/web-app/README.md) mounts this package as `ui-sidebar-documentpreview`. Configure its transient Office cache through that entry's `office` settings; the [configuration catalog](../../../docs/config-catalog.md#averqelneosis-client-ui-sidebar-documentpreview) defines accepted values. Settings are embedded in each served page; reload the browser page after changing YAML.
 

@@ -4,7 +4,7 @@ import { mkdtemp, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import { promisify } from 'node:util'
-import { runtimeArchivePath } from '../../desktop-host/src/office-engine.ts'
+import { runtimeArchivePath } from './runtime-archive.ts'
 import { desktopNodeEnvironment } from '../src/node-environment.ts'
 import type { DesktopRuntimeDescriptor } from '../src/runtime-tree.ts'
 import { scrubWindowsSigningEnvironment } from './windows-sign.mjs'
@@ -20,7 +20,7 @@ import { verifyRuntimeArchive } from './verify-runtime-archive.ts'
  * @returns Resolves after archive integrity, payload checks, Host startup, Office conversion and teardown.
  */
 export async function smokePreparedRuntime(
-  root: string, node: string, resourcesRuntime: string, descriptor: DesktopRuntimeDescriptor,
+  root: string, node: string, resourcesRuntime: string, descriptor: DesktopRuntimeDescriptor, resourcesOffice?: string,
 ): Promise<void> {
   const cache = await mkdtemp(join(tmpdir(), 'desktop-native-smoke-'))
   const environment = { ...scrubWindowsSigningEnvironment(process.env), NODE_OPTIONS: '',
@@ -33,7 +33,7 @@ export async function smokePreparedRuntime(
     ], { timeout: 120_000, windowsHide: true,
       env: desktopNodeEnvironment(node, join(resourcesRuntime, 'bin'), environment) })
     process.stdout.write(stdout)
-    await smokeDesktopRuntime(root, node, descriptor, environment, resourcesRuntime)
+    await smokeDesktopRuntime(root, node, descriptor, environment, resourcesRuntime, resourcesOffice)
   } finally {
     await rm(cache, { recursive: true, force: true })
   }

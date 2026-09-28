@@ -10,6 +10,7 @@ import { downloadArtifact } from '@electron/get'
 import extractZip from 'extract-zip'
 import { resolveDesktopBuildTarget, resolveDesktopTargetBuildPaths } from './desktop-build-paths.mjs'
 import { preparePrimaryRuntime } from './prepare-primary-runtime.ts'
+import { prepareOfficeRuntime } from './prepare-office-runtime.ts'
 
 const BUILD_PATHS = resolveDesktopTargetBuildPaths()
 const RUNTIME_ROOT = BUILD_PATHS.runtime
@@ -29,7 +30,7 @@ function preparePnpm(): string {
 async function main(): Promise<void> {
   const { values } = parseArgs({ options: { 'defer-primary-runtime-smoke': { type: 'boolean', default: false } } })
   const target = resolveDesktopBuildTarget()
-  const platform = target.startsWith('mac-') ? 'darwin' : 'win32'
+  const platform = target.startsWith('mac-') ? 'darwin' : target.startsWith('win-') ? 'win32' : 'linux'
   const arch = target.endsWith('arm64') ? 'arm64' : 'x64'
   const require = createRequire(import.meta.url)
   const { version } = require('electron/package.json') as { version: string }
@@ -37,7 +38,11 @@ async function main(): Promise<void> {
     () => downloadArtifact({ version, platform, arch, artifactName: 'electron', cacheRoot: BUILD_PATHS.downloads }))
   rmSync(BUILD_PATHS.electron, { recursive: true, force: true })
   await packagingStep(process.env.NEOSIS_DESKTOP_PACKAGING_RUN_DIR, 'extract:electron', () => extractZip(archive, { dir: BUILD_PATHS.electron }))
-  const executable = join(BUILD_PATHS.electron, platform === 'win32' ? 'electron.exe' : 'Electron.app/Contents/MacOS/Electron')
+  const executable = platform === 'win32'
+    ? join(BUILD_PATHS.electron, 'electron.exe')
+    : platform === 'darwin'
+      ? join(BUILD_PATHS.electron, 'Electron.app/Contents/MacOS/Electron')
+      : join(BUILD_PATHS.electron, 'electron')
   const nodeVersion = execFileSync(executable, ['-p', 'process.versions.node'], {
     encoding: 'utf8', env: { ...process.env, ELECTRON_RUN_AS_NODE: '1' },
   }).trim()
@@ -53,6 +58,11 @@ async function main(): Promise<void> {
   }, undefined, 2)}\n`)
   await packagingStep(process.env.NEOSIS_DESKTOP_PACKAGING_RUN_DIR, 'prepare:primary-runtime',
     () => preparePrimaryRuntime({ deferSmoke: values['defer-primary-runtime-smoke'] }))
+  await packagingStep(process.env.NEOSIS_DESKTOP_PACKAGING_RUN_DIR, 'prepare:office-runtime',
+    () => prepareOfficeRuntime({
+      target: resolveDesktopBuildTarget(), destination: BUILD_PATHS.office, cache: join(BUILD_PATHS.downloads, 'office'),
+      ...(process.env.NEOSIS_DESKTOP_OFFICE_SOURCE === undefined ? {} : { sourceRoot: process.env.NEOSIS_DESKTOP_OFFICE_SOURCE }),
+    }))
 }
 
 await main()

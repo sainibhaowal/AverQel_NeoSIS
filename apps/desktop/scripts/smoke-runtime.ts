@@ -18,16 +18,21 @@ import type { DesktopRuntimeDescriptor } from '../src/runtime-tree.ts'
  * @param runtime - Verified resource descriptor.
  * @param environment - Credential-scrubbed build environment and private native cache.
  * @param resourcesRuntime - Bundled interpreters outside the application archive.
+ * @param resourcesOffice - Bundled LibreOffice resource directory.
  * @returns Resolves after checks and teardown; rejects on a check or teardown failure.
  */
 export async function smokeDesktopRuntime(
   root: string, node: string, runtime: DesktopRuntimeDescriptor, environment: NodeJS.ProcessEnv, resourcesRuntime: string,
+  resourcesOffice?: string,
 ): Promise<void> {
   const home = mkdtempSync(join(tmpdir(), 'neosis-desktop-smoke-'))
   const profile = join(home, 'profiles', 'desktop')
-  const host = new DesktopHostProcess(node, root, profile, undefined, { ...environment, NEOSIS_HOME: home },
-    undefined, join(resourcesRuntime, 'primary-runtime'),
-    { pnpm: join(resourcesRuntime, 'pnpm', 'bin', 'pnpm.cjs'), nodeBin: join(resourcesRuntime, 'bin') })
+  const host = new DesktopHostProcess(node, root, profile, undefined, {
+    ...environment, NEOSIS_HOME: home,
+    ...(resourcesOffice === undefined ? {} : { NEOSIS_OFFICE_BUNDLE_ROOT: resourcesOffice, NEOSIS_OFFICE_BUNDLE_REQUIRED: '1' }),
+  },
+  undefined, join(resourcesRuntime, 'primary-runtime'),
+  { pnpm: join(resourcesRuntime, 'pnpm', 'bin', 'pnpm.cjs'), nodeBin: join(resourcesRuntime, 'bin') })
   let timer: ReturnType<typeof setTimeout> | undefined
   try {
     createPluginProfile(profile)
@@ -39,7 +44,7 @@ export async function smokeDesktopRuntime(
     await promisify(execFile)(dependencies.python, ['-I', '-B',
       fileURLToPath(new URL('../tests/fixtures/office-conversion-inputs.py', import.meta.url)), home],
     { env: environment, timeout: 120_000, windowsHide: true })
-    const inputs = ['docx', 'xlsx', 'pptx'].map(extension => ({ extension,
+    const inputs = ['docx', 'xlsx', 'pptx', 'odt', 'ods', 'odp', 'rtf'].map(extension => ({ extension,
       bytes: readFileSync(join(home, `input.${extension}`)).toString('base64') }))
     const cordis = runtime.sharedPackages.find(entry => entry.name === '@averqel/cordis')
     if (cordis === undefined) throw new Error('desktop runtime: missing shared Cordis package')
@@ -103,7 +108,7 @@ export function apply(ctx) {
         throw new Error(`desktop runtime: invalid ${extension} PDF output`)
       }
     }
-    console.log('desktop runtime: DOCX, XLSX, PPTX to PDF passed')
+    console.log('desktop runtime: DOCX, XLSX, PPTX, ODT, ODS, ODP, and RTF to PDF passed')
   } finally {
     clearTimeout(timer)
     await host.stop()

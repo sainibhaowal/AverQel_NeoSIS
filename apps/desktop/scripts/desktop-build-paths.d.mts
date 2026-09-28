@@ -6,6 +6,7 @@ export interface DesktopTargetBuildPaths {
   readonly artifacts: string
   readonly unsignedArtifacts: string
   readonly runtime: string
+  readonly office: string
   readonly packageSet: string
   readonly neosis: string
   readonly neosisPnpm: string

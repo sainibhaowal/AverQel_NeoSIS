@@ -217,30 +217,6 @@ it.each([false, true])('unpacks platform ripgrep executables with external sourc
   }
 })
 
-it.each([false, true])('keeps the complete Office engine outside ASAR with external source=%s', async (external) => {
-  const input = await fixture(external)
-  const engine = join('node_modules', '@averqel', 'libreoffice-kit-win32-x64')
-  const files = ['package.json', 'prebuilds.json', 'bin/libreoffice-kit', 'program/registry/main.xcd']
-  for (const file of files) {
-    const path = join(input.source, engine, file)
-    await mkdir(dirname(path), { recursive: true })
-    await writeFile(path, '{}')
-  }
-  const wasm = join(input.source, 'node_modules/@averqel/libreoffice-kit-wasm/package.json')
-  await mkdir(dirname(wasm), { recursive: true })
-  await writeFile(wasm, '{}')
-  const config = unsignedWindowsConfig('com.example.office', input.source)
-  input.config.asarUnpack = [...config.asarUnpack]
-  await config.beforePack(input.context)
-  await packageFixture(input)
-  const archive = await readAsar(join(input.resources, 'app.asar'))
-  expect(archive.getFile(join('neosis', 'node_modules', '@averqel', 'libreoffice-kit-wasm', 'package.json')).unpacked).not.toBe(true)
-  for (const file of files) {
-    expect(archive.getFile(join('neosis', engine, file), false).unpacked).toBe(true)
-    expect(await readFile(join(input.resources, 'app.asar.unpacked', 'neosis', engine, file), 'utf8')).toBe('{}')
-  }
-})
-
 async function seal(input: Awaited<ReturnType<typeof fixture>>): Promise<DesktopRuntimeDescriptor> {
   const descriptor: DesktopRuntimeDescriptor = {
     schemaVersion: 1,

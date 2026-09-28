@@ -31,7 +31,6 @@ import {
 } from './macos-runtime.ts'
 import { resolveDesktopBuildTarget, resolveDesktopTargetBuildPaths } from './desktop-build-paths.mjs'
 import { desktopRuntimeFileExclusion } from './runtime-file-policy.ts'
-import { selectOfficeEngine } from '../../../scripts/libreoffice-engine.ts'
 
 const APP_ROOT = resolve(import.meta.dirname, '..')
 const BUILD_PATHS = resolveDesktopTargetBuildPaths()
@@ -132,13 +131,11 @@ async function main(): Promise<void> {
     const targetName = resolveDesktopBuildTarget()
     const target = { platform: process.platform, arch: targetName.endsWith('arm64') ? 'arm64' : 'x64' }
     const modules = join(BUILD_ROOT, 'node_modules')
-    const officeManifest = JSON.parse(readFileSync(join(modules, '@averqel/libreoffice-kit/package.json'), 'utf8'))
-    const officeEngine = selectOfficeEngine(officeManifest, target)
     mkdirSync(NEOSIS_OUTPUT_ROOT, { recursive: true })
     await packagingStep(process.env.NEOSIS_DESKTOP_PACKAGING_RUN_DIR, 'runtime:materialize-modules', async () => {
       cpSync(modules, join(NEOSIS_OUTPUT_ROOT, 'node_modules'), {
         recursive: true, dereference: true,
-        filter: source => desktopRuntimeFileExclusion(relative(modules, source), target, officeEngine) === undefined,
+        filter: source => desktopRuntimeFileExclusion(relative(modules, source), target) === undefined,
       })
     })
     writeFileSync(join(NEOSIS_OUTPUT_ROOT, 'package.json'), `${JSON.stringify({
@@ -149,9 +146,6 @@ async function main(): Promise<void> {
       if (!existsSync(join(NEOSIS_OUTPUT_ROOT, 'node_modules', DESKTOP_HOST_PACKAGE, file))) {
         throw new Error(`desktop runtime: missing private Host file ${file}`)
       }
-    }
-    if (!existsSync(join(NEOSIS_OUTPUT_ROOT, 'node_modules', '@averqel', `libreoffice-kit-${officeEngine}`, 'prebuilds.json'))) {
-      throw new Error(`desktop runtime: missing required LibreOffice engine ${officeEngine}`)
     }
     if (process.platform === 'darwin') {
       await packagingStep(process.env.NEOSIS_DESKTOP_PACKAGING_RUN_DIR, 'sign:neosis-native', () => signMacOSRuntime(NEOSIS_OUTPUT_ROOT, resolveDesktopAppId(process.env), resolveMacOSSigningEnvironment(process.env), join(BUILD_PATHS.root, 'signature-cache')))

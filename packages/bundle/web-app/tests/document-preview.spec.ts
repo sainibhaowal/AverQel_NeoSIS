@@ -17,11 +17,14 @@ import SandboxPolicyService from '@averqel/neosis-sandbox-policy'
 import LocalFileSystem from '@averqel/neosis-fs-local'
 import { FsError } from '@averqel/neosis-fs'
 import TypertRegistry from '@averqel/neosis-typert-registry'
-import type { Converter, ConverterOptions } from '@averqel/libreoffice-kit'
+import type { SystemOfficeConverter, SystemOfficeConverterOptions } from '../../../document/office-to-pdf/src/system-office.ts'
 import { expect, it, onTestFinished, vi } from 'vitest'
 
-const kit = vi.hoisted(() => ({ create: vi.fn<(options?: ConverterOptions) => Promise<Converter>>() }))
-vi.mock('@averqel/libreoffice-kit', () => ({ createConverter: kit.create }))
+const systemOffice = vi.hoisted(() => ({ create: vi.fn<(options: SystemOfficeConverterOptions) => Promise<SystemOfficeConverter>>() }))
+vi.mock('../../../document/office-to-pdf/src/system-office.ts', async importOriginal => ({
+  ...(await importOriginal<typeof import('../../../document/office-to-pdf/src/system-office.ts')>()),
+  createSystemOfficeConverter: systemOffice.create,
+}))
 
 it('loads the shipped Office rows with separately patched settings and authorized PDF output', async () => {
   const directory = await realpath(await mkdtemp(join(tmpdir(), 'neosis-web-office-')))
@@ -55,12 +58,12 @@ it('loads the shipped Office rows with separately patched settings and authorize
     ...configured,
   ]))
   const pdf = Buffer.from('%PDF-1.7\nLoader preview\n%%EOF\n')
-  const render = vi.fn<Converter['render']>().mockImplementation(async ({ inputPath, outputPath }) => {
+  const render = vi.fn<SystemOfficeConverter['render']>().mockImplementation(async ({ inputPath, outputPath }) => {
     expect(await readFile(inputPath)).toEqual(Buffer.from('authorized OOXML'))
     await writeFile(outputPath, pdf)
-    return { backend: 'native', missingFonts: ['Missing Serif'] }
+    return { backend: 'system', missingFonts: ['Missing Serif'] }
   })
-  kit.create.mockReset().mockResolvedValue({ backend: 'native', render, dispose: async () => {} })
+  systemOffice.create.mockReset().mockResolvedValue({ backend: 'system', render, dispose: async () => {} })
   ctx.baseUrl = pathToFileURL(directory).href + '/'
   await ctx.plugin(Loader)
   ctx.loader.builtins.include = Include
@@ -112,8 +115,7 @@ it('loads the shipped Office rows with separately patched settings and authorize
   expect(await readFile(sourcePath, 'utf8')).toBe('authorized OOXML')
   expect(session.seq).toBe(before)
   expect(ctx.get('agents')).toBeUndefined()
-  const { maxConcurrentConversions: _count, ...kitOptions } = providerConfig
-  expect(kit.create).toHaveBeenCalledWith(expect.objectContaining(kitOptions))
+  expect(systemOffice.create).toHaveBeenCalledWith({ executable: 'soffice', timeoutMs: 60_000 })
   await expect(ctx.officeToPdf.render(scope, 'missing.docx', 'foreground', signal))
     .rejects.toMatchObject({ code: 'workspace-file/not-found' })
   const refusal = new FsError('read refused', 'FS_SANDBOX_DENIED')

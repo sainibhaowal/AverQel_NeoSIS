@@ -44,8 +44,9 @@ describe('desktop macOS release signature', () => {
     expect(config.protocols).toEqual([{ name: 'AverQel NeoSIS', schemes: ['neosis'] }])
     expect(portablePath(config.directories.output)).toContain('/.desktop-build/targets/mac-arm64/artifacts')
     expect(config.mac.extendInfo.NSMicrophoneUsageDescription).toContain('microphone')
-    expect(config.extraResources).toHaveLength(2)
+    expect(config.extraResources).toHaveLength(3)
     expect(config.extraResources[0]?.to).toBe('runtime')
+    expect(config.extraResources[1]?.to).toBe('office')
     expect(portablePath(config.extraResources[0]?.from ?? '')).toContain('/.desktop-build/targets/mac-arm64/runtime')
     const [neosisFiles, neosisNodeModules] = config.files.slice(-2)
     if (!neosisFiles || !neosisNodeModules || typeof neosisFiles === 'string' || typeof neosisNodeModules === 'string') {

@@ -44,7 +44,7 @@ beforeEach(async () => {
 })
 afterEach(async () => { await ctx.fiber.dispose() })
 
-it.each(['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx'])('converts authorized %s bytes and returns the PDF under source identity', async (extension) => {
+it.each(['doc', 'docx', 'odt', 'rtf', 'xls', 'xlsx', 'ods', 'ppt', 'pptx', 'odp'])('converts authorized %s bytes and returns the PDF under source identity', async (extension) => {
   const path = `report.${extension.toUpperCase()}`
   const result = await ctx.officeToPdf.render(scope, path, 'foreground', new AbortController().signal)
   expect(read).toHaveBeenCalledExactlyOnceWith(target, expect.any(AbortSignal), 4)
@@ -94,7 +94,7 @@ it('refuses a source replaced while checking read access before cache lookup', a
 })
 
 it('rejects unsupported extensions before reading a source', async () => {
-  await expect(ctx.officeToPdf.render(scope, 'report.odt', 'foreground', new AbortController().signal))
+  await expect(ctx.officeToPdf.render(scope, 'report.pdf', 'foreground', new AbortController().signal))
     .rejects.toMatchObject({ code: 'document-render/failed', details: { reason: 'unsupported-format' } })
   expect(read).not.toHaveBeenCalled()
 })

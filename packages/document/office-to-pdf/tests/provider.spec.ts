@@ -1,13 +1,16 @@
-/** Disk output, resource bounds, and cancellation around the external kit. */
+/** Disk output, resource bounds, and cancellation around system LibreOffice. */
 import { access, mkdir, readFile, stat, writeFile } from 'node:fs/promises'
 import { dirname } from 'node:path'
 import { Context } from '@averqel/cordis'
-import type { Converter, ConverterOptions } from '@averqel/libreoffice-kit'
+import type { SystemOfficeConverter, SystemOfficeConverterOptions } from '../src/system-office.ts'
 import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import OfficeToPdf, { Config, OfficeSourceKey, type OfficeToPdfRequest } from '../src/index.ts'
 
-const kit = vi.hoisted(() => ({ create: vi.fn<(options?: ConverterOptions) => Promise<Converter>>() }))
-vi.mock('@averqel/libreoffice-kit', () => ({ createConverter: kit.create }))
+const systemOffice = vi.hoisted(() => ({ create: vi.fn<(options: SystemOfficeConverterOptions) => Promise<SystemOfficeConverter>>() }))
+vi.mock('../src/system-office.ts', async importOriginal => ({
+  ...(await importOriginal<typeof import('../src/system-office.ts')>()),
+  createSystemOfficeConverter: systemOffice.create,
+}))
 
 const pdf = Buffer.from('%PDF-1.7\npreview\n%%EOF\n')
 const input = new Uint8Array([80, 75, 3, 4])
@@ -20,17 +23,17 @@ function distinct(index: number): OfficeToPdfRequest {
     read: async () => ({ bytes: new Uint8Array([80, 75, 3, index]), version: 'v1' }) } }
 }
 let ctx: Context
-let render: ReturnType<typeof vi.fn<Converter['render']>>
-let dispose: ReturnType<typeof vi.fn<Converter['dispose']>>
+let render: ReturnType<typeof vi.fn<SystemOfficeConverter['render']>>
+let dispose: ReturnType<typeof vi.fn<SystemOfficeConverter['dispose']>>
 
 beforeEach(() => {
   ctx = new Context()
-  render = vi.fn<Converter['render']>().mockImplementation(async ({ outputPath }) => {
+  render = vi.fn<SystemOfficeConverter['render']>().mockImplementation(async ({ outputPath }) => {
     await writeFile(outputPath, pdf)
-    return { backend: 'native', missingFonts: ['Missing Serif'] }
+    return { backend: 'system', missingFonts: ['Missing Serif'] }
   })
-  dispose = vi.fn<Converter['dispose']>().mockResolvedValue(undefined)
-  kit.create.mockReset().mockImplementation(async () => ({ backend: 'native', render, dispose }))
+  dispose = vi.fn<SystemOfficeConverter['dispose']>().mockResolvedValue(undefined)
+  systemOffice.create.mockReset().mockImplementation(async () => ({ backend: 'system', render, dispose }))
 })
 afterEach(async () => { await ctx.fiber.dispose() })
 
@@ -39,11 +42,10 @@ async function mount(config: Partial<Config> = {}): Promise<OfficeToPdf> {
   return ctx.officeToPdf
 }
 
-it('preserves the kit font defaults when font configuration is omitted', async () => {
+it('uses the system executable and preserves omitted font configuration', async () => {
   const provider = await mount()
   await provider.convert(request)
-  expect(kit.create.mock.calls[0]![0]).not.toHaveProperty('fontDirectories')
-  expect(kit.create.mock.calls[0]![0]).not.toHaveProperty('fontFallbacks')
+  expect(systemOffice.create.mock.calls[0]![0]).toEqual({ executable: 'soffice', timeoutMs: 60_000 })
   expect(Config({ fontDirectories: [] }).fontDirectories).toEqual([])
   expect(Config({ fontFallbacks: [] }).fontFallbacks).toEqual([])
   expect(() => Config({ fontDirectories: [''] })).toThrow()
@@ -56,10 +58,10 @@ it.each([
   [['sans-serif', ' \t\n ']],
 ])('rejects invalid font preference groups %j before creating a converter', (...fontFallbacks) => {
   expect(() => Config({ fontFallbacks })).toThrow()
-  expect(kit.create).not.toHaveBeenCalled()
+  expect(systemOffice.create).not.toHaveBeenCalled()
 })
 
-it('passes configured limits to the kit, reuses the converter, and removes all scratch files', async () => {
+it('passes system settings and removes all scratch files', async () => {
   const config = Config({ maxConcurrentConversions: 1, maxInputBytes: 4, maxOutputBytes: pdf.length,
     maxImageResolution: 144, maxArchiveEntries: 32, maxUncompressedBytes: 4096,
     timeoutMs: 321, fontDirectories: [], fontFallbacks: [['sans-serif', 'Arial'], ['serif', 'Times New Roman']],
@@ -74,16 +76,13 @@ it('passes configured limits to the kit, reuses the converter, and removes all s
       expect((await stat(inputPath)).mode & 0o777).toBe(0o600)
     }
     await writeFile(outputPath, pdf)
-    return { backend: 'native', missingFonts: ['Missing Serif'] }
+    return { backend: 'system', missingFonts: ['Missing Serif'] }
   })
   const result = await provider.convert(request)
   expect(result).toMatchObject({ pdf: Uint8Array.from(pdf), missingFonts: ['Missing Serif'] })
   await expect(access(scratch)).rejects.toMatchObject({ code: 'ENOENT' })
   await provider.convert(request)
-  const { maxConcurrentConversions: _count, maxQueuedJobs: _queued, maxReaders: _readers, maxSourceBytes: _source,
-    maxBackgroundConversions: _background, maxCachedEntries: _entries, maxCachedBytes: _cached,
-    maxSourceEntries: _aliases, ...options } = config
-  expect(kit.create).toHaveBeenCalledExactlyOnceWith(options)
+  expect(systemOffice.create).toHaveBeenCalledExactlyOnceWith({ executable: 'soffice', timeoutMs: 321, fontDirectories: [] })
   await ctx.fiber.dispose()
   expect(dispose).toHaveBeenCalledOnce()
   expect(result.pdf).toEqual(Uint8Array.from(pdf))
@@ -92,10 +91,10 @@ it('passes configured limits to the kit, reuses the converter, and removes all s
 it('refuses an oversized input before allocating a converter', async () => {
   const provider = await mount({ maxInputBytes: 3 })
   await expect(provider.convert(request)).rejects.toMatchObject({ code: 'input-too-large' })
-  expect(kit.create).not.toHaveBeenCalled()
+  expect(systemOffice.create).not.toHaveBeenCalled()
 })
 
-it.each(['missing', 'directory', 'not-pdf', 'incomplete', 'too-large'] as const)('rejects %s kit output and removes its directory', async (kind) => {
+it.each(['missing', 'directory', 'not-pdf', 'incomplete', 'too-large'] as const)('rejects %s output and removes its directory', async (kind) => {
   const provider = await mount({ maxOutputBytes: pdf.length })
   let scratch = ''
   render.mockImplementation(async ({ inputPath, outputPath }) => {
@@ -104,25 +103,25 @@ it.each(['missing', 'directory', 'not-pdf', 'incomplete', 'too-large'] as const)
     else if (kind === 'not-pdf') await writeFile(outputPath, 'engine diagnostic')
     else if (kind === 'incomplete') await writeFile(outputPath, '%PDF-1.7\n')
     else if (kind === 'too-large') await writeFile(outputPath, Buffer.concat([pdf, pdf]))
-    return { backend: 'wasm', missingFonts: [] }
+    return { backend: 'system', missingFonts: [] }
   })
   await expect(provider.convert(request)).rejects.toMatchObject({ code: kind === 'too-large' ? 'output-too-large' : 'invalid-output' })
   await expect(access(scratch)).rejects.toMatchObject({ code: 'ENOENT' })
 })
 
-it('retries initialization after a failed kit factory and reports unclassified errors', async () => {
+it('retries initialization after a failed adapter factory and reports unclassified errors', async () => {
   const provider = await mount()
-  kit.create.mockRejectedValueOnce(Object.assign(new Error('absent asset'), { code: 'unavailable' }))
+  systemOffice.create.mockRejectedValueOnce(Object.assign(new Error('absent executable'), { code: 'unavailable' }))
   await expect(provider.convert(request)).rejects.toMatchObject({ code: 'unavailable' })
   expect(await provider.convert(request)).toMatchObject({ pdf: Uint8Array.from(pdf), missingFonts: ['Missing Serif'] })
-  expect(kit.create).toHaveBeenCalledTimes(2)
+  expect(systemOffice.create).toHaveBeenCalledTimes(2)
   render.mockRejectedValueOnce(new Error('unexpected engine failure'))
   await expect(provider.convert(distinct(9))).rejects.toMatchObject({ code: 'failed' })
 })
 
 it.each([
   'input-too-large', 'output-too-large', 'invalid-document', 'unsupported-format', 'invalid-output', 'timeout', 'unavailable',
-] as const)('preserves the kit %s failure for the document consumer', async (code) => {
+] as const)('preserves the adapter %s failure for the document consumer', async (code) => {
   const provider = await mount()
   const cause = Object.assign(new Error('conversion failed'), { code })
   render.mockRejectedValueOnce(cause)
@@ -137,7 +136,7 @@ it('cancels a queued caller without starting or stopping another conversion', as
     entered.resolve(signal!)
     await release.promise
     await writeFile(outputPath, pdf)
-    return { backend: 'wasm', missingFonts: [] }
+    return { backend: 'system', missingFonts: [] }
   })
   const first = provider.convert(request)
   try {
@@ -163,19 +162,19 @@ it('bounds active converters and resumes queued work when a slot becomes free', 
     if (++calls === 2) both.resolve(undefined)
     await release.promise
     await writeFile(outputPath, pdf)
-    return { backend: 'native', missingFonts: [] }
+    return { backend: 'system', missingFonts: [] }
   })
   const work = [provider.convert(distinct(1)), provider.convert(distinct(2)), provider.convert(distinct(3))]
   try {
     await both.promise
-    expect(kit.create).toHaveBeenCalledTimes(2)
+    expect(systemOffice.create).toHaveBeenCalledTimes(2)
     expect(render).toHaveBeenCalledTimes(2)
   } finally { release.resolve(undefined); await Promise.all(work) }
   expect(render).toHaveBeenCalledTimes(3)
-  expect(kit.create).toHaveBeenCalledTimes(2)
+  expect(systemOffice.create).toHaveBeenCalledTimes(3)
 })
 
-it.each(['caller', 'provider'] as const)('joins late kit completion and scratch cleanup after %s cancellation', async (owner) => {
+it.each(['caller', 'provider'] as const)('joins late adapter completion and scratch cleanup after %s cancellation', async (owner) => {
   const provider = await mount()
   const entered = Promise.withResolvers<{ signal: AbortSignal; scratch: string }>()
   const release = Promise.withResolvers<undefined>()
@@ -183,7 +182,7 @@ it.each(['caller', 'provider'] as const)('joins late kit completion and scratch 
     entered.resolve({ signal: signal!, scratch: dirname(inputPath) })
     await release.promise
     await writeFile(outputPath, pdf)
-    return { backend: 'native', missingFonts: [] }
+    return { backend: 'system', missingFonts: [] }
   })
   const caller = new AbortController()
   const work = provider.convert(request, caller.signal)
@@ -205,28 +204,11 @@ it.each(['caller', 'provider'] as const)('joins late kit completion and scratch 
   if (owner === 'provider') expect(dispose).toHaveBeenCalledOnce()
 })
 
-it('joins initialization during disposal and never starts a render after cancellation', async () => {
-  const provider = await mount()
-  const entered = Promise.withResolvers<undefined>()
-  const release = Promise.withResolvers<Converter>()
-  kit.create.mockImplementationOnce(() => { entered.resolve(undefined); return release.promise })
-  const work = provider.convert(request)
-  const rejected = expect(work).rejects.toMatchObject({ code: 'unavailable' })
-  await entered.promise
-  const closing = ctx.fiber.dispose()
-  release.resolve({ backend: 'wasm', render, dispose })
-  await rejected
-  await closing
-  expect(render).not.toHaveBeenCalled()
-  expect(dispose).toHaveBeenCalledOnce()
-  await expect(provider.convert(request)).rejects.toMatchObject({ code: 'unavailable' })
-})
-
 it('rejects caller cancellation before allocating any conversion resources', async () => {
   const provider = await mount()
   const reason = new Error('caller cancelled')
   await expect(provider.convert(request, AbortSignal.abort(reason))).rejects.toBe(reason)
-  expect(kit.create).not.toHaveBeenCalled()
+  expect(systemOffice.create).not.toHaveBeenCalled()
 })
 
 it('rejects relative font directories during provider configuration', async () => {
@@ -237,32 +219,5 @@ it('rejects relative font directories during provider configuration', async () =
 it('rejects source capacity below one permitted input before allocating a converter', () => {
   expect(() => new OfficeToPdf(ctx, Config({ maxInputBytes: 4, maxSourceBytes: 3 })))
     .toThrow('maxSourceBytes must be at least maxInputBytes')
-  expect(kit.create).not.toHaveBeenCalled()
-})
-
-it('joins every converter disposal before reporting an engine cleanup failure', async () => {
-  const provider = await mount({ maxConcurrentConversions: 2 })
-  const entered = Promise.withResolvers<undefined>()
-  const released = Promise.withResolvers<undefined>()
-  const cleanupEntered = Promise.withResolvers<undefined>()
-  const cleanupRelease = Promise.withResolvers<undefined>()
-  let conversions = 0
-  render.mockImplementation(async ({ outputPath }) => {
-    if (++conversions === 2) entered.resolve(undefined)
-    await released.promise
-    await writeFile(outputPath, pdf)
-    return { backend: 'native', missingFonts: [] }
-  })
-  const failed = new Error('engine cleanup failed')
-  kit.create.mockReset()
-    .mockResolvedValueOnce({ backend: 'native', render, dispose: async () => { throw failed } })
-    .mockResolvedValueOnce({ backend: 'native', render, dispose: async () => { cleanupEntered.resolve(undefined); await cleanupRelease.promise } })
-  const work = [provider.convert(distinct(1)), provider.convert(distinct(2))]
-  try { await entered.promise } finally { released.resolve(undefined); await Promise.all(work) }
-  let disposed = false
-  const closing = ctx.fiber.dispose().then(() => { disposed = true })
-  try {
-    await cleanupEntered.promise
-    expect(disposed).toBe(false)
-  } finally { cleanupRelease.resolve(undefined); await closing }
+  expect(systemOffice.create).not.toHaveBeenCalled()
 })

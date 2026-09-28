@@ -63,21 +63,6 @@ describe('desktop package-set selection', () => {
     ]))).toThrow(/omit @averqel\/neosis-desktop-host/u)
   })
 
-  it('leaves independently published Office packages to npm resolution', () => {
-    const available = new Map<string, PackedDesktopPackage>([
-      ['@averqel/neosis', packed('@averqel/neosis', {
-        dependencies: {
-          '@averqel/libreoffice-kit': '0.0.1',
-          '@averqel/libreoffice-kit-wasm': '0.0.1',
-        },
-      })],
-      ['@averqel/neosis-desktop-host', packed('@averqel/neosis-desktop-host')],
-    ])
-    expect(selectDesktopPackageClosure(available).map(entry => entry.manifest.name)).toEqual([
-      '@averqel/neosis', '@averqel/neosis-desktop-host',
-    ])
-  })
-
   it('requires the Desktop Host entry', () => {
     const files = [
       'package/lib/index.js',

@@ -1,5 +1,5 @@
 ---
-description: "Host Office conversion with the independently published LibreOffice kit."
+description: "Host Office conversion through NeoSIS's verified LibreOffice runtime."
 kind: "package-reference"
 ---
 
@@ -9,7 +9,7 @@ English | [中文](README.zh.md)
 
 ## Summary
 
-Convert Office documents to PDFs on the Host computer. Targets with a declared native LibreOffice engine use it; other targets use Node WASM. The provider accepts DOC, DOCX, XLS, XLSX, PPT, and PPTX. OOXML conversion returns missing-font names; binary Office conversion returns an empty list.
+Convert LibreOffice-supported word-processing, spreadsheet, and presentation documents to PDFs on the Host computer through the configured LibreOffice executable. The provider accepts common binary Office, OOXML, OpenDocument, Flat XML, RTF, and legacy spreadsheet and presentation extensions. Desktop builds use the verified LibreOffice payload shipped in the installer; Web/Host deployments may set `executable` explicitly. Conversion reports no missing-font names for binary inputs.
 
 ## Table of Contents
 
@@ -29,7 +29,7 @@ The [Web bundle](../../bundle/web-app/README.md) mounts this provider as `office
 
 Callers submit authorized source identity, version, optional byte size, a deferred bounded read, Office extension, and scheduling priority through `ctx.officeToPdf.convert()`. A changed source version rejects conversion. Results contain caller-owned PDF bytes, missing fonts, a cache key, and a conversion generation that changes on configuration replacement. Cancellation rejects with its reason; conversion failures use `OfficeToPdfError`.
 
-The provider depends on the independently published [`@averqel/libreoffice-kit`](https://github.com/sainibhaowal-neosis/libreoffice-kit/tree/main/packages/entry) npm API at kit version `0.0.1`. Application packaging selects the matching native package declared in the kit’s `optionalDependencies`, or WASM when no native package is declared for that target. A missing declared native engine rejects packaging without selecting WASM. The [platform engine decision](../../../.agents/notes/implemented/architecture/2026-09-15-platform-office-engines.md) defines installation and packaging; the [release ownership decision](../../../.agents/notes/implemented/architecture/2026-09-14-independent-libreoffice-kit.md) defines the independent kit and Harness responsibilities.
+The provider starts one isolated LibreOffice child process per admitted conversion. In Desktop, the host resolves `NEOSIS_OFFICE_BUNDLE_ROOT` to the installer-owned payload and fails closed when that payload is missing. Development and standalone Host deployments default to `soffice` unless `executable` or `NEOSIS_OFFICE_EXECUTABLE` selects another path. NeoSIS does not require an npm LibreOffice package.
 
 Browsers request PDFs through the `officeToPdf.render` Remote method with a Session identity, Office path, and priority. This entry uses `workspaceFiles` for authorization and source versions, then reads raw bytes through `fs.readBytes` within the conversion reservation. In-process `convert()` does not require those services. Responses retain the source path and version and carry native PDF bytes through the binary Remote multipart transport, plus missing fonts and conversion generation. The `officeToPdf.generation` Remote method returns the current provider generation; `api/remotes` mounts the generated Client descriptor.
 
@@ -39,10 +39,10 @@ Browsers request PDFs through the `officeToPdf.render` Remote method with a Sess
 | `timeoutMs` | `60000` | Conversion deadline after a converter is acquired. |
 | `maxInputBytes` | `52428800` | Maximum source bytes. |
 | `maxOutputBytes` | `104857600` | Maximum complete PDF bytes. |
-| `maxImageResolution` | `192` | Maximum raster-image DPI; overrides the kit default of `144`. |
-| `fontFallbacks` | Kit defaults | Ordered font-family preference groups; each group requires at least two names containing non-whitespace characters. |
+| `executable` | Desktop bundle or `soffice` | LibreOffice executable name or absolute path. |
+| `fontFallbacks` | System defaults | Accepted for compatibility; system LibreOffice selects fallback families. |
 
-The [configuration catalog](../../../docs/config-catalog.md#averqelneosis-office-to-pdf) owns the full font, archive, and image settings. `fontDirectories` accepts absolute directories; omission uses the kit platform defaults. Explicit `fontFallbacks` replaces the kit's default groups. Installed requested fonts retain precedence, and other system fonts remain eligible for uncovered glyphs. Native engines can select installed metric-compatible fonts before these preferences.
+The [configuration catalog](../../../docs/config-catalog.md#averqelneosis-office-to-pdf) owns the full font, archive, and image settings. `fontDirectories` accepts absolute directories and is passed to LibreOffice through `SAL_FONTPATH`; omission uses the bundle's or host's font configuration. `fontFallbacks` remains accepted for configuration compatibility, but LibreOffice selects fallback families. Rasterization and font metrics follow the pinned Desktop LibreOffice version or the configured standalone Host version.
 
 The [bounded conversion decision](../../../.agents/notes/implemented/architecture/2026-09-15-bounded-office-conversion.md) explains queue admission, cache limits, and shared cancellation.
 
@@ -60,9 +60,9 @@ The defaults retain 8 PDFs/128 MiB and 64 source aliases, admit 32 readers and 8
 <details>
 <summary>Implementation internals — click to expand</summary>
 
-Invalid engine metadata, missing required assets, and conversion errors reject the request instead of switching engines. The shared WASM engine uses LibreOffice's CPU image filter. Native conversion uses its separate platform engine.
+Missing executables and conversion errors reject the request instead of switching to another engine. The adapter gives each conversion a private LibreOffice profile and passes no harness secrets to the child environment.
 
-Each concurrent slot lazily creates and reuses one kit converter. The provider writes authorized input into a private temporary directory, reads a bounded regular PDF, and removes the directory before settling. Canceling an admitted reader does not block later queued work. Reader cancellation releases only that reader; the final reader and provider disposal cancel shared work. Disposal reports `unavailable` to outstanding readers and joins conversions and converter teardown. No runtime invariant companion is published because active operations and scratch cleanup have one lifetime owner.
+The provider writes authorized input into a private temporary directory, starts LibreOffice with an isolated profile, reads a bounded regular PDF, and removes the directory before settling. Canceling an admitted reader terminates the child process through the shared signal and does not block later queued work. Reader cancellation releases only that reader; the final reader and provider disposal cancel shared work. No runtime invariant companion is published because active operations and scratch cleanup have one lifetime owner.
 
 Remote file reads recheck content authorization and source version before consulting the conversion cache. Deferred reads run after conversion admission and verify the source version after reading. Source-read failures pass through; conversion failures return `document-render/failed` with a classified reason and no engine diagnostics. Unload cancels and joins authorization reads, Remote requests, and conversion work.
 
@@ -91,8 +91,8 @@ None; conversion does not construct or modify model requests.
 
 <a id="known-limitations-and-deferred-work"></a>
 
-- Conversion fidelity and installed native/WASM assets belong to `@averqel/libreoffice-kit`; this provider neither searches for system LibreOffice nor downloads an engine at runtime.
-- Queue waiting time is not bounded by `timeoutMs`, which starts only when kit conversion begins.
+- Conversion fidelity and available filters belong to the LibreOffice version and fonts in use. Desktop releases pin and package one official payload per target; standalone Host deployments still require a compatible LibreOffice installation.
+- Queue waiting time is not bounded by `timeoutMs`, which starts when the LibreOffice child process is started.
 
 <a id="dev-note"></a>
 ### Dev Note
