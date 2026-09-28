@@ -127,6 +127,7 @@ jobs:
           DEEPSEEK_BASE_URL: https://api.deepseek.com/anthropic
           NEOSIS_E2E_MAX_WORKERS: 1
           NEOSIS_EXAMPLE_MODE: lib
+          NEOSIS_PTC_DIAGNOSTICS: '1'
         run: >-
           pnpm exec vitest run --config vitest.e2e.config.ts
           packages/experimental/auto-review/tests/auto-review.e2e.ts
@@ -144,6 +145,7 @@ jobs:
           DEEPSEEK_BASE_URL: https://api.deepseek.com/anthropic
           NEOSIS_E2E_MAX_WORKERS: 1
           NEOSIS_EXAMPLE_MODE: lib
+          NEOSIS_PTC_DIAGNOSTICS: '1'
         run: >-
           pnpm exec vitest run --config vitest.e2e.config.ts
           --exclude packages/experimental/auto-review/tests/auto-review.e2e.ts

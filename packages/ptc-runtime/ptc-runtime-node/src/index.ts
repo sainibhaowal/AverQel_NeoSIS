@@ -221,6 +221,9 @@ export class NodePtcRuntime extends PtcRuntime {
       const packaged = 'pkg' in process && this.config.bootstrapPath === undefined
       const heapFlag = `--max-old-space-size=${this.config.maxOldGenerationSizeMb}`
       const argv = [executable, ...packaged ? [] : [heapFlag], ...bootstrapArgs(this.ctx.fs, this.config, this.config.maxMessageBytes)]
+      if (process.env.NEOSIS_PTC_DIAGNOSTICS === '1') {
+        process.stderr.write(`[neosis-ptc] module=${import.meta.url} argv=${JSON.stringify(argv)} nodeOptions=${process.env.NODE_OPTIONS !== undefined}\n`)
+      }
       confined = policy.mode === 'danger-full-access' ? undefined : await this.ctx.sandbox.confine(argv, { ...policy, mode: policy.mode }, signal)
       // oxlint-disable-next-line typescript/no-unnecessary-condition -- Cancellation can settle during awaited confinement.
       if (settled) return await result.promise
