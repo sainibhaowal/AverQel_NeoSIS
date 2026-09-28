@@ -1,7 +1,9 @@
 /** Host controller that owns the Inspector Worker and Host observation source. */
 
 import { randomBytes, randomUUID } from 'node:crypto'
+import { createRequire } from 'node:module'
 import { tmpdir } from 'node:os'
+import { pathToFileURL } from 'node:url'
 import { MessageChannel, Worker, type MessagePort, type WorkerOptions } from 'node:worker_threads'
 import type { InspectorClientBootstrap, InspectorWorkerBoot, InspectorWorkerConfig } from '../../shared/bridge/messages/control.ts'
 import { INSPECTOR_PROTOCOL_VERSION } from '../../shared/bridge/version.ts'
@@ -30,6 +32,7 @@ const DEFAULT_MAX_CLIENT_RUNTIME_PROPERTIES = 2_000
 const DEFAULT_MAX_CLIENT_SOURCE_BYTES = 8 * 1024 * 1024
 const DEFAULT_MAX_CORDIS_NODES = 2_048
 const DEFAULT_MAX_DISCONNECTED_CORDIS_TREES = 8
+const resolvePackage = createRequire(import.meta.url).resolve
 
 /** User-facing Host options; every memory and lifecycle bound is configurable. */
 export interface InspectorOptions {
@@ -295,7 +298,7 @@ function spawnWorker(boot: InspectorWorkerBoot<MessagePort>): Worker {
     return new Worker(new URL('./worker.js', import.meta.url), options)
   }
   const workerEntry = new URL('../../worker/entry.ts', import.meta.url)
-  const tsxEsmApiEntry = import.meta.resolve('tsx/esm/api')
+  const tsxEsmApiEntry = pathToFileURL(resolvePackage('tsx/esm/api')).href
   const bootstrap = [
     `import { register } from ${JSON.stringify(tsxEsmApiEntry)}`,
     'register()',

@@ -1,9 +1,13 @@
 /** Host-side controller for the isolated Client test fixture. */
 
+import { createRequire } from 'node:module'
+import { pathToFileURL } from 'node:url'
 import { Worker } from 'node:worker_threads'
 import type { InspectorClientBootstrap } from '../../src/shared/bridge/messages/control.ts'
 import type { CordisRuntimeTree } from '../../src/shared/cordis/model.ts'
 import type { InspectorJsonValue } from '../../src/shared/json.ts'
+
+const resolvePackage = createRequire(import.meta.url).resolve
 
 /** Optional source artifact exposed by the Client fixture. */
 interface ClientFixtureSourceCatalog {
@@ -52,7 +56,7 @@ export class InspectorClientFixture {
   ): Promise<InspectorClientFixture> {
     const ready = Promise.withResolvers<number>()
     const entry = new URL('./client-source.client.ts', import.meta.url)
-    const tsxApi = import.meta.resolve('tsx/esm/api')
+    const tsxApi = pathToFileURL(resolvePackage('tsx/esm/api')).href
     const source = `import { register } from ${JSON.stringify(tsxApi)}\nregister()\nawait import(${JSON.stringify(entry.href)})`
     const worker = new Worker(new URL(`data:text/javascript,${encodeURIComponent(source)}`), {
       execArgv: [],
