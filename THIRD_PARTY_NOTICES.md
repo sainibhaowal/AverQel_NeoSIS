@@ -36,6 +36,7 @@ External packages installed for runtime use or distributed inside the prebuilt b
 | [`@anthropic-ai/sdk`](https://github.com/anthropics/anthropic-sdk-typescript) | MIT |
 | [`@babel/code-frame`](https://github.com/babel/babel) | MIT |
 | [`@browserbasehq/stagehand`](https://github.com/browserbase/stagehand) | MIT |
+| [`@averqel/libreoffice-kit`](https://github.com/sainibhaowal-neosis/libreoffice-kit) | MPL-2.0 |
 | [`@earendil-works/pi-ai`](https://github.com/earendil-works/pi) | MIT |
 | [`@eslint-community/regexpp`](https://github.com/eslint-community/regexpp) | MIT |
 | [`@fortune-sheet/core`](https://github.com/ruilisi/fortune-sheet) | MIT |
@@ -163,9 +164,12 @@ The installed SDK 0.3.263 declares the following optional platform packages. Eac
 | [`@anthropic-ai/claude-agent-sdk-win32-x64`](https://www.npmjs.com/package/@anthropic-ai/claude-agent-sdk-win32-x64) | 0.3.263 | SEE LICENSE IN LICENSE.md |
 
 
-## Official LibreOffice Desktop payloads
+## LibreOffice conversion kit
 
-Desktop installers contain an official LibreOffice payload selected by platform and architecture. The preparation manifest pins the upstream download URL and SHA-256 digest; the payload's own license and notice files remain inside the packaged `resources/office` directory. LibreOffice is distributed under its published combination of MPL 2.0, LGPL, Apache, and other component licenses; consult the included license files and the [official licensing page](https://www.libreoffice.org/about-us/licenses/) for the applicable terms.
+`@averqel/libreoffice-kit`, `@averqel/libreoffice-kit-wasm`, `@averqel/libreoffice-kit-darwin-arm64`, `@averqel/libreoffice-kit-darwin-x64`, `@averqel/libreoffice-kit-win32-arm64`, `@averqel/libreoffice-kit-win32-x64` declare MPL-2.0, which remains outside the permissive-license allowlist; the notices check accepts only these package identities at those terms. The [distribution decision](.agents/notes/implemented/architecture/2026-09-14-independent-libreoffice-kit.md) records the source obligations.
+
+The [kit repository](https://github.com/sainibhaowal-neosis/libreoffice-kit) supplies the corresponding LibreOffice source pin, modifications, build instructions, Node API, and artifact validation. Its engine packages retain their license and third-party notices; the Node API retains its MPL-2.0 declaration and NOTICE. Recipients must have access to those corresponding sources and notices.
+
 
 ## Development-only npm dependencies
 
