@@ -34,7 +34,7 @@
   "dependencies": {
     "@averqel/neosis-host-directory-picker": "workspace:*",
     "@averqel/neosis-native-command": "workspace:*",
-    "koffi": "^3.1.0"
+    "koffi": "3.3.1"
   },
   "peerDependencies": {
     "@averqel/cordis": "workspace:~"

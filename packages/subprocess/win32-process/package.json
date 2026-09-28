@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "@averqel/neosis-lazy-require": "workspace:*",
-    "koffi": "^3.1.0"
+    "koffi": "3.3.1"
   },
   "devDependencies": {
     "@averqel/cordis": "workspace:~"

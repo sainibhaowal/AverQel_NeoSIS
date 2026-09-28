@@ -39,7 +39,7 @@
   "dependencies": {
     "@averqel/neosis-lazy-require": "workspace:*",
     "@averqel/neosis-win32-process": "workspace:*",
-    "koffi": "^3.1.0"
+    "koffi": "3.3.1"
   },
   "devDependencies": {
     "@averqel/neosis-pwsh-local": "workspace:*",

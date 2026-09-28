@@ -39,7 +39,7 @@
     "@averqel/neosis-session-format-v3-to-v4": "workspace:*",
     "@averqel/node-addon-system": "workspace:~",
     "@averqel/schemastery": "workspace:~",
-    "koffi": "^3.1.0"
+    "koffi": "3.3.1"
   },
   "devDependencies": {
     "@averqel/neosis-session": "workspace:*",
