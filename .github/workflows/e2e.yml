@@ -62,9 +62,11 @@ jobs:
     if: >-
       github.event_name != 'pull_request'
       || !(github.event.pull_request.head.repo.fork || github.event.pull_request.user.login == 'dependabot[bot]')
-    # Profile e2e files can each own several complete neosis subprocess trees, so
-    # four file workers preserve process/PTY headroom. Tests retain 120s/test
-    # and retry 2; 45m still bounds retry storms against a slow API.
+    # Each e2e file can own several complete NeoSIS subprocess trees. Keep the
+    # hosted runner serial so PTC workers, Office conversion processes, and the
+    # real-provider tests cannot exhaust one another's process/PTY capacity.
+    # Tests retain 120s/test and retry 2; 45m still bounds retry storms against
+    # a slow API.
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v6
@@ -123,6 +125,6 @@ jobs:
         env:
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY_EXTERNAL }}
           DEEPSEEK_BASE_URL: https://api.deepseek.com/anthropic
-          NEOSIS_E2E_MAX_WORKERS: 4
+          NEOSIS_E2E_MAX_WORKERS: 1
           NEOSIS_EXAMPLE_MODE: lib
         run: pnpm run test:e2e
