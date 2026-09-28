@@ -3029,9 +3029,9 @@ importers:
         version: 18.3.1(react@18.3.1)
 
   packages/client/ui-brand-averqel:
-    dependencies:
+    devDependencies:
       '@averqel/cordis':
-        specifier: workspace:*
+        specifier: workspace:~
         version: link:../../../vendor/cordis
       '@averqel/neosis-client-ui-primitives':
         specifier: workspace:*
@@ -3042,7 +3042,6 @@ importers:
       '@averqel/neosis-client-ui-sidebar':
         specifier: workspace:*
         version: link:../ui-sidebar
-    devDependencies:
       '@types/react':
         specifier: ~18.3.1
         version: 18.3.31
