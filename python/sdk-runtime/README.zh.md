@@ -10,7 +10,7 @@ wheel 包会安装 `neosis` 控制台命令和 `averqel_neosis_runtime` Python �
 
 生产可执行程序位于模块的 `runtime/` 目录，命名为 `averqel-neosis-sdk-runtime-<platform>-<arch>`；Windows 使用 `.exe` 后缀。Linux 与 macOS wheel 包含目标平台原生的 `-rg` 伴随程序，Windows 包含 `-rg.exe`，macOS 还包含 `node-pty` 使用的 `-spawn-helper`。已发布目标是 Linux x64、Linux arm64、macOS arm64、macOS x64 与 Windows x64。wheel 包标签必须与载荷严格匹配；不发布 Windows arm64 wheel 包。
 
-每个目标还要求 `<executable-stem>-office/`，其中 stem 不含 `.exe`。该目录包含完整的已安装 Office 包及其依赖，保留引擎资源、清单、许可证、源码清单与辅助程序权限。复制可执行文件时必须一并复制此目录。缺少目标引擎会使 sidecar 构建失败，错误会指出其 npm 包名与目标平台／架构。
+Office 转换使用目标机器上安装的系统 LibreOffice 可执行文件。runtime wheel 不会打包或下载 Office 引擎。请安装 LibreOffice 并确保 `soffice` 位于 `PATH` 中，或者使用绝对路径配置 NeoSIS Office 提供方。
 
 每个 wheel 还包含 `<platform>-<arch>/primary-runtime/`（CPython 与锁定版本的 Office Python 库）及同级 `office-skills/`（三个默认工作流与共用检查脚本）。它们是可重定位的普通文件，不嵌入可执行文件。共享构建器为全部五个 wheel 目标选择原生归档，并在对应构建主机上执行冒烟检查。打包与已安装运行时定位会拒绝缺失资源、平台不符的元数据及 Python 执行权限丢失。 较短的平台目录避免在 Windows Python DLL 路径中重复可执行文件名称。
 
@@ -42,7 +42,7 @@ wheel 包会安装 `neosis` 控制台命令和 `averqel_neosis_runtime` Python �
 
 `neosis` 在显式指定的主目录下初始化随附 profile、组合其 bundle patch，并从可执行程序的虚拟文件系统加载内置插件。运行时解析使用内存中的 generation，不创建磁盘符号链接或代理包。fallback 导入使用记录的声明包路径，包括可执行程序虚拟文件系统内的路径，因此内置配置项与外部插件 peer 共享内置的 Cordis／模块实例。原生共享库与 Windows ConPTY addon 会同其他原生 addon 一起打包；ripgrep 与 macOS PTY helper 仍是可执行伴随程序。
 
-Python bootstrap 从相邻目录解析 Office kit，让原生辅助程序与 URL Worker 使用真实文件系统路径。kit 负责引擎选择与校验；Python bootstrap 不增加运行时下载或编译。
+Python runtime 通过 NeoSIS Office 提供方使用系统 LibreOffice 可执行文件。runtime wheel 不增加 Office 下载、引擎打包或编译。
 
 外部 profile 管理使用 `neosis plugin --profile <name> ...`。该命令要求 `PATH` 中存在 `pnpm`；普通 SDK／profile 运行不需要它。
 
@@ -52,4 +52,4 @@ Python bootstrap 从相邻目录解析 Office kit，让原生辅助程序与 URL
 
 在仓库根目录运行 `pnpm exec tsx scripts/build-exe-for-python-sdk.ts`，会校验闭包、构建包、部署无符号链接的文件树、打包所选目标，并把可执行程序及伴随文件同步到本模块。`scripts/build-python-release.py` 按仓库根版本暂存发布形态的 wheel 包，并将 `averqel-neosis-sdk` 固定到完全相同的运行时版本。
 
-已安装 wheel 包冒烟测试会在检出目录外创建干净的虚拟环境，验证分发物与可执行程序的来源，然后覆盖默认及自定义 SDK profile、外部插件、MCP、原生工具、直接 JSON-RPC、检入快照，以及可信运行中的真实提供方。Office 场景会迁移完整的目标载荷目录，并使用所需的平台引擎转换 DOCX：使用目标已声明的原生引擎，未声明原生引擎时使用 WASM。另见 [Python 贡献者工作流](../development.zh.md) 与 [installed-wheel 测试决策](../../.agents/notes/implemented/testing/2026-08-23-installed-python-wheel-black-box-ci.zh.md)。
+已安装 wheel 包冒烟测试会在检出目录外创建干净的虚拟环境，验证分发物与可执行程序的来源，然后覆盖默认及自定义 SDK profile、外部插件、MCP、原生工具、直接 JSON-RPC、检入快照，以及可信运行中的真实提供方。Office 场景会迁移目标载荷目录，并通过系统 LibreOffice 可执行文件转换 DOCX。另见 [Python 贡献者工作流](../development.zh.md) 与 [installed-wheel 测试决策](../../.agents/notes/implemented/testing/2026-08-23-installed-python-wheel-black-box-ci.zh.md)。

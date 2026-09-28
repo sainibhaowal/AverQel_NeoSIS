@@ -20,7 +20,7 @@ Source = "https://github.com/sainibhaowal/AverQel_Neosis"
 [project.scripts]
 neosis = "averqel_neosis_runtime:main"
 
-# Include the injected neosis executable and sidecars; exclude the dev-only node closure.
+# Include the injected neosis executable and runtime sidecars; exclude the dev-only node closure.
 [tool.hatch.build]
 artifacts = [
   "src/averqel_neosis_runtime/runtime/averqel-neosis-sdk-runtime-*",

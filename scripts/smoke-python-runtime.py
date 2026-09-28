@@ -878,18 +878,6 @@ def smoke_sdk_office(executable: Path) -> None:
                 shutil.copytree(source, destination)
             else:
                 shutil.copy2(source, destination)
-        office = root / f"{stem}-office"
-        adapter = office / "node_modules/@deepseek-ai/libreoffice-kit/package.json"
-        native = stem.removeprefix("averqel-neosis-sdk-runtime-").replace("win-", "win32-").replace("macos-", "darwin-")
-        declared = json.loads(adapter.read_text(encoding="utf-8")).get("optionalDependencies", {})
-        selected = native if f"@deepseek-ai/libreoffice-kit-{native}" in declared else "wasm"
-        expected_backend = "wasm" if selected == "wasm" else "native"
-        engines = [
-            json.loads(manifest.read_text())["engine"]["kind"]
-            for manifest in (office / "node_modules/@deepseek-ai").glob("libreoffice-kit-*/prebuilds.json")
-        ]
-        if engines != [expected_backend]:
-            raise AssertionError(f"Office sidecar must contain only {expected_backend}: {engines}")
         plugin = root / "office.mjs"
         shutil.copy2(Path(__file__).resolve().parent / "fixtures/python-sdk-office.mjs", plugin)
         document = root / "document.docx"
@@ -898,7 +886,7 @@ def smoke_sdk_office(executable: Path) -> None:
             archive.writestr("_rels/.rels", '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>')
             archive.writestr("word/document.xml", '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body><w:p><w:r><w:t>Python Office wheel</w:t></w:r></w:p><w:sectPr><w:pgSz w:w="12240" w:h="15840"/></w:sectPr></w:body></w:document>')
 
-        mode = expected_backend
+        mode = "system"
         output = root / f"{mode}.pdf"
         result_path = root / f"{mode}.json"
         patch = root / f"{mode}.patch.yml"
@@ -923,10 +911,10 @@ def smoke_sdk_office(executable: Path) -> None:
         ):
             pass
         result = json.loads(result_path.read_text())
-        if result["backend"] != expected_backend:
-            raise AssertionError(f"Office conversion did not use {expected_backend}: {result}")
-        if not result["moduleUrl"].startswith(office.as_uri() + "/"):
-            raise AssertionError(f"Office module was not loaded from the relocated wheel: {result}")
+        if result["backend"] != "system":
+            raise AssertionError(f"Office conversion did not use system LibreOffice: {result}")
+        if "@averqel/neosis-office-to-pdf" not in result["moduleUrl"]:
+            raise AssertionError(f"Office adapter was not loaded from NeoSIS: {result}")
         pdf = output.read_bytes()
         if len(pdf) < 100 or not pdf.startswith(b"%PDF-"):
             raise AssertionError(f"Office conversion produced an invalid PDF at {output}")

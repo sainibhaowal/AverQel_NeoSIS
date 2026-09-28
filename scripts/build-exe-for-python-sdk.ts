@@ -13,7 +13,6 @@ import { tmpdir } from 'node:os'
 import { basename, dirname, extname, join, resolve, sep } from 'node:path'
 import { parseArgs } from 'node:util'
 import { resolveLinuxNodePtyAddon, resolveWindowsNodePtyAddons } from './build-exe-for-python-sdk-native-pty.ts'
-import { copyOfficeSidecar, OFFICE_ASSET_IGNORES } from './build-exe-for-python-sdk-office.ts'
 import { preparePrimaryRuntime, smokePrimaryRuntime, type PrimaryRuntimeTarget } from './primary-runtime/prepare.ts'
 
 const root = resolve(import.meta.dirname, '..')
@@ -401,7 +400,7 @@ class SingleExeBuild {
 
   /** Add the executable entry and pkg assets to the staged manifest. */
   async injectPkgConfig(): Promise<void> {
-    const patch = { bin: ENTRY_BIN, pkg: { assets: ASSET_GLOBS, ignore: OFFICE_ASSET_IGNORES } }
+    const patch = { bin: ENTRY_BIN, pkg: { assets: ASSET_GLOBS } }
     const manifestPath = join(this.staging, 'package.json')
     if (this.cli.dryRun) {
       console.log(`build-exe-for-python-sdk: [dry-run] patch ${manifestPath} with ${JSON.stringify(patch)}`)
@@ -441,14 +440,6 @@ class SingleExeBuild {
     if (!this.cli.dryRun && !existsSync(product)) {
       throw new Error(`build-exe-for-python-sdk: product ${product} is missing after the pkg run; inspect ${this.outDir}.`)
     }
-    const office = `${productBase}-office`
-    if (this.cli.dryRun) {
-      console.log(`build-exe-for-python-sdk: [dry-run] copy Office dependency closure from ${this.staging} to ${office}`)
-    } else {
-      const platform = target.platform === 'macos' ? 'darwin' : target.platform === 'win' ? 'win32' : target.platform
-      const packages = await copyOfficeSidecar(this.staging, office, { platform, arch: target.arch })
-      console.log(`build-exe-for-python-sdk: copied ${packages.length} Office packages to ${office}`)
-    }
     const ripgrep = await this.copyRipgrepSidecar(target, product)
     const resources = join(this.outDir, `${target.platform}-${target.arch}`)
     const runtimeTarget = `${target.platform === 'macos' ? 'mac' : target.platform}-${target.arch}` as PrimaryRuntimeTarget
@@ -460,7 +451,7 @@ class SingleExeBuild {
         cache: join(tmpdir(), 'neosis-primary-runtime-downloads'), version, pythonOnly: true })
       smokePrimaryRuntime(join(resources, 'primary-runtime'))
     }
-    if (target.platform !== 'macos') return [product, ripgrep, office, resources]
+    if (target.platform !== 'macos') return [product, ripgrep, resources]
     const spawnHelper = `${product}-spawn-helper`
     const source = join(this.staging, 'node_modules', 'node-pty', 'prebuilds', `darwin-${target.arch}`, 'spawn-helper')
     if (this.cli.dryRun) {
@@ -469,7 +460,7 @@ class SingleExeBuild {
       await copyFile(source, spawnHelper)
       await chmod(spawnHelper, 0o755)
     }
-    return [product, ripgrep, spawnHelper, office, resources]
+    return [product, ripgrep, spawnHelper, resources]
   }
 
   /** Copy the target ripgrep binary beside the executable so Node can spawn it outside pkg's virtual filesystem. */
