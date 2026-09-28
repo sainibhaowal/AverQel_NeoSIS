@@ -1,7 +1,10 @@
 /** Select source or built bootstrap assets in the mounted execution world. */
 import { dirname, resolve } from 'node:path'
+import { createRequire } from 'node:module'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import type { FileSystem } from '@averqel/neosis-fs'
+
+const require = createRequire(import.meta.url)
 
 /** Deployment-owned Node executable and optional preinstalled built bootstrap. */
 export interface LaunchConfig {
@@ -31,7 +34,7 @@ export function bootstrapArgs(fs: FileSystem, config: LaunchConfig, maxMessageBy
     return [mapped(fileURLToPath(new URL('./process.js', import.meta.url))), String(maxMessageBytes)]
   }
   const entry = mapped(fileURLToPath(new URL('./process.ts', import.meta.url)))
-  const subprocess = dirname(fileURLToPath(import.meta.resolve('@averqel/neosis-subprocess/package.json')))
+  const subprocess = dirname(require.resolve('@averqel/neosis-subprocess/package.json'))
   const helper = mapped(resolve(subprocess, 'src/control.ts'))
   const source = `const {openInheritedControlChannel}=await import(${JSON.stringify(pathToFileURL(helper).href)});const {runNodeMain}=await import(${JSON.stringify(pathToFileURL(entry).href)});await runNodeMain(openInheritedControlChannel(),${maxMessageBytes},process);`
   return ['--input-type=module', '--eval', source]
