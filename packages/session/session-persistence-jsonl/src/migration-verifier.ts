@@ -1,5 +1,7 @@
 /** Isolated verification for a staged or competing current JSONL generation. */
 
+import { createRequire } from 'node:module'
+import { pathToFileURL } from 'node:url'
 import { Worker } from 'node:worker_threads'
 import type { WorkerOptions } from 'node:worker_threads'
 import type { JsonlCompression } from './format.ts'
@@ -19,6 +21,7 @@ type VerificationResponse =
 
 /** Process-wide memory bound for full-generation verification isolates. */
 const MAX_CONCURRENT_VERIFIERS = 2
+const resolvePackage = createRequire(import.meta.url).resolve
 
 class VerificationScheduler {
   private active = 0
@@ -80,8 +83,8 @@ function workerSpawn(request: VerificationRequest): { readonly entry: string | U
   }
   const workerEntry = new URL('./worker.ts', import.meta.url)
   const bootstrap = [
-    `import { register as registerEsm } from ${JSON.stringify(import.meta.resolve('tsx/esm/api'))}`,
-    `import { register as registerCjs } from ${JSON.stringify(import.meta.resolve('tsx/cjs/api'))}`,
+    `import { register as registerEsm } from ${JSON.stringify(pathToFileURL(resolvePackage('tsx/esm/api')).href)}`,
+    `import { register as registerCjs } from ${JSON.stringify(pathToFileURL(resolvePackage('tsx/cjs/api')).href)}`,
     'registerCjs()',
     'registerEsm()',
     `await import(${JSON.stringify(workerEntry.href)})`,
