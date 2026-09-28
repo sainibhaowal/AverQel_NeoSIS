@@ -1,8 +1,15 @@
 {
   "name": "@averqel/neosis-ui-brand",
-  "version": "1.0.0",
+  "version": "0.1.7-alpha.2",
   "type": "module",
-  "private": true,
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sainibhaowal/AverQel_Neosis.git",
+    "directory": "packages/client/ui-brand-averqel"
+  },
   "license": "Apache-2.0",
   "description": "AverQel NeoSIS brand occupants for the sidebar and UI",
   "main": "lib/index.js",
@@ -22,11 +29,8 @@
       "external": []
     }
   },
-  "dependencies": {
-    "@averqel/cordis": "workspace:*",
-    "@averqel/neosis-client-ui-primitives": "workspace:*",
-    "@averqel/neosis-client-ui-sidebar": "workspace:*",
-    "@averqel/neosis-client-ui-renderer": "workspace:*"
+  "peerDependencies": {
+    "@averqel/cordis": "workspace:~"
   },
   "files": [
     "lib/index.js",
@@ -38,7 +42,7 @@
     "watch": "tsdown --watch"
   },
   "devDependencies": {
-    "@averqel/cordis": "workspace:*",
+    "@averqel/cordis": "workspace:~",
     "@averqel/neosis-client-ui-primitives": "workspace:*",
     "@averqel/neosis-client-ui-sidebar": "workspace:*",
     "@averqel/neosis-client-ui-renderer": "workspace:*",

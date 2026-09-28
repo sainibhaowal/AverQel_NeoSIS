@@ -1,5 +1,6 @@
 import { FishLogo } from '@averqel/neosis-client-ui-primitives'
 import type { SidebarBrandMarkOwnerProps } from '@averqel/neosis-client-ui-sidebar/client'
+import { en } from './locales.ts'
 
 /**
  * Render the AverQel NeoSIS mascot mark.
@@ -22,7 +23,7 @@ export function AverQelBrandName() {
       fontSize: '14px',
       letterSpacing: '0.25px',
     }}>
-      AverQel NeoSIS
+      {en.brandName}
     </span>
   )
 }
