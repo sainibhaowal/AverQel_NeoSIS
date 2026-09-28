@@ -116,23 +116,22 @@ jobs:
       - name: Build (lib for the e2e example bins)
         run: pnpm run build:official
 
-      # These three suites own long-lived PTC/auto-review subprocess state. Run
-      # them in a fresh Vitest process so state from unrelated provider suites
-      # cannot replace the real Node child with Vite's module-runner context.
-      # The files are excluded from the general invocation below, so every test
-      # still runs exactly once with the same real API credentials.
-      - name: PTC and auto-review E2E (isolated process)
+      # These suites own long-lived PTC/auto-review subprocess state. Give
+      # each file a separate Vitest process so one suite cannot leave module
+      # runner state behind for the next suite. The files are excluded from
+      # the general invocation below, so every test still runs exactly once
+      # with the same real API credentials.
+      - name: PTC and auto-review E2E (separate processes)
         env:
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY_EXTERNAL }}
           DEEPSEEK_BASE_URL: https://api.deepseek.com/anthropic
           NEOSIS_E2E_MAX_WORKERS: 1
           NEOSIS_EXAMPLE_MODE: lib
-          NEOSIS_PTC_DIAGNOSTICS: '1'
-        run: >-
-          pnpm exec vitest run --config vitest.e2e.config.ts
-          packages/experimental/auto-review/tests/auto-review.e2e.ts
-          apps/cli/tests/profiles/headless/tests/ptc.e2e.ts
-          packages/workflow/workflow-ptc/tests/workflow-ptc.e2e.ts
+        run: |
+          set -euo pipefail
+          pnpm exec vitest run --config vitest.e2e.config.ts packages/experimental/auto-review/tests/auto-review.e2e.ts
+          pnpm exec vitest run --config vitest.e2e.config.ts apps/cli/tests/profiles/headless/tests/ptc.e2e.ts
+          pnpm exec vitest run --config vitest.e2e.config.ts packages/workflow/workflow-ptc/tests/workflow-ptc.e2e.ts
 
       # Real-API end-to-end tests only. The keyless gates (lint/typecheck/
       # coverage/snapshot/etc.) already run in ci.yml (pull requests) and
@@ -145,7 +144,6 @@ jobs:
           DEEPSEEK_BASE_URL: https://api.deepseek.com/anthropic
           NEOSIS_E2E_MAX_WORKERS: 1
           NEOSIS_EXAMPLE_MODE: lib
-          NEOSIS_PTC_DIAGNOSTICS: '1'
         run: >-
           pnpm exec vitest run --config vitest.e2e.config.ts
           --exclude packages/experimental/auto-review/tests/auto-review.e2e.ts
