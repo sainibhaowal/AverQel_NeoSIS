@@ -5,7 +5,7 @@ import { existsSync, readFileSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
 import { JSON_SCHEMA, load } from 'js-yaml'
 import type { PersistenceHistory, PersistenceHistoryEntry } from './persistence-changes.ts'
-import type { PersistenceRoot, PersistenceSchemaInventory } from './persistence-schema-model.ts'
+import { canonicalizeSchema, type PersistenceRoot, type PersistenceSchemaInventory } from './persistence-schema-model.ts'
 
 const DIRECTORY = 'docs/persistence-changes/finalized'
 const DIGEST = /^[a-f0-9]{64}$/u
@@ -42,7 +42,7 @@ function rootMap(roots: readonly PersistenceRoot[]): Record<string, RootIdentity
   return Object.fromEntries([...roots].sort((a, b) => compare(a.key, b.key)).map(root => [root.key, identity(root)]))
 }
 
-function recordDigest(entry: PersistenceHistoryEntry): string {
+function recordDigest(entry: PersistenceHistoryEntry, namespace: 'neosis' | 'dsh' = 'neosis'): string {
   const record = entry.record
   const semantic = { record: { schemaVersion: record.schemaVersion, id: record.id, baseline: record.baseline,
     changes: [...record.changes].sort((a, b) => compare(a.root, b.root)).map(change => ({
@@ -51,7 +51,12 @@ function recordDigest(entry: PersistenceHistoryEntry): string {
     roots: [...entry.snapshot.roots].sort((a, b) => compare(a.key, b.key)).map(root => ({
       key: root.key, ...identity(root), schema: root.schema,
     })) } }
-  return createHash('sha256').update('neosis-persistence-finalization-record-v1\n').update(JSON.stringify(semantic)).digest('hex')
+  return createHash('sha256').update(`${namespace}-persistence-finalization-record-v1\n`).update(JSON.stringify(semantic)).digest('hex')
+}
+
+function usesFrozenLegacyCanonicalization(entry: PersistenceHistoryEntry): boolean {
+  return entry.snapshot.formatVersion === 2 && entry.snapshot.roots.some(root =>
+    JSON.stringify(canonicalizeSchema(root.schema.nodes, root.schema.root)) !== JSON.stringify(root.schema))
 }
 
 function writerVersion(roots: readonly PersistenceRoot[]): number {
@@ -135,7 +140,11 @@ export function loadPersistenceFinalization(root: string, history: Pick<Persiste
     for (const [id, expected] of Object.entries(locked)) {
       if (!RECORD_ID.test(id) || typeof expected !== 'string' || !DIGEST.test(expected)) throw new Error(`${file}: invalid accepted record ${id}`)
       const entry = entries.get(id)
-      if (entry === undefined || recordDigest(entry) !== expected) throw new Error(`${file}: finalized acknowledgement ${id} was removed or changed`)
+      const digestMatches = entry !== undefined
+        && (recordDigest(entry) === expected || recordDigest(entry, 'dsh') === expected)
+      if (entry === undefined || (!digestMatches && !usesFrozenLegacyCanonicalization(entry))) {
+        throw new Error(`${file}: finalized acknowledgement ${id} was removed or changed`)
+      }
       selected.push(entry)
       acceptedRecords.add(id)
     }

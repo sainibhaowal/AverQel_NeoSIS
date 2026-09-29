@@ -7,7 +7,7 @@ import { JSON_SCHEMA, load } from 'js-yaml'
 import { readCurrentSessionFormatVersion } from './gen-session-format-catalog.ts'
 import { parseHistoricalPersistenceSnapshot, parsePersistenceSnapshot } from './persistence-changes.ts'
 import { persistenceFormatFactArtifacts } from './persistence-format-facts.ts'
-import { canonicalizeSchema, schemaDigest } from './persistence-schema-model.ts'
+import { canonicalizeSchema, historicalSchemaDigest, schemaDigest } from './persistence-schema-model.ts'
 import type { PersistenceSchemaInventory } from './persistence-schema-model.ts'
 import { withoutPersistenceSourceLines } from './persistence-source-metadata.ts'
 
@@ -64,7 +64,7 @@ function machineBlock(document: string, label: string): string {
 function parseSource(source: unknown, label: string): PersistenceFormatSource {
   if (source !== null && typeof source === 'object' && 'tag' in source) {
     const tag = fields(source, ['tag'], `${label} source`).tag
-    if (typeof tag !== 'string' || !/^neosis-[A-Za-z0-9][A-Za-z0-9._-]*$/u.test(tag)) throw new Error(`${label}: invalid source tag`)
+    if (typeof tag !== 'string' || !/^(?:neosis|dsh)-[A-Za-z0-9][A-Za-z0-9._-]*$/u.test(tag)) throw new Error(`${label}: invalid source tag`)
     return { tag }
   }
   const pullRequest = fields(source, ['pullRequest'], `${label} source`).pullRequest
@@ -102,8 +102,10 @@ function validateInventory(inventory: PersistenceSchemaInventory, version: numbe
     }
   }
   if (!inventory.roots.some(root => root.kind === 'event')) throw new Error(`${label}: complete inventory must include an event root`)
+  const historicalDomain = !current && inventory.roots.some(root => root.digest === historicalSchemaDigest(root.schema))
+  const digest = current || !historicalDomain ? schemaDigest : historicalSchemaDigest
   const reachable = new Set(inventory.roots.flatMap(root => root.schema.nodes
-    .map((_, index) => schemaDigest(canonicalizeSchema(root.schema.nodes, index)))))
+    .map((_, index) => digest(canonicalizeSchema(root.schema.nodes, index)))))
   const remaining = new Set(reachable)
   const listed = new Set<string>()
   for (const type of inventory.types) {

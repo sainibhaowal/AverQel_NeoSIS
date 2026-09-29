@@ -259,7 +259,7 @@ Host service backing the generated `ctx.remote.credentials` namespace. It carrie
 
 Source: [`packages/api/settings-controller/src/credentials.ts`](../../packages/api/settings-controller/src/credentials.ts)
 
-<a id="ctxdeepseekaccount--deepseekaccount-abstract-seam"></a>
+<a id="ctxdeepseekaccount--averqelaccount-abstract-seam"></a>
 
 ### `ctx.deepseekAccount` — `AverQelAccount` (abstract seam)
 

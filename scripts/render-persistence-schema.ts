@@ -6,6 +6,7 @@ import { sourceKindGroups } from './persistence-source-policy.ts'
 import {
   canonicalizeSchema,
   schemaChildren,
+  historicalSchemaDigest,
   schemaDigest,
   type CanonicalSchema,
   type PersistenceSchemaInventory,
@@ -22,6 +23,10 @@ interface TypeDisplay {
 
 /** Current catalogs use structural links; historical references retain their original labels and anchors. */
 export type PersistenceSchemaRendering = 'current' | 'historical'
+
+function usesHistoricalSessionDomain(inventory: PersistenceSchemaInventory, rendering: PersistenceSchemaRendering): boolean {
+  return rendering === 'historical' && inventory.roots.some(root => root.key === 'SessionHeader')
+}
 
 function code(text: string): string {
   return '`' + text.replaceAll('`', '\\`').replaceAll('|', '\\|') + '`'
@@ -51,20 +56,22 @@ function childPath(node: SchemaNode, position: number): string {
 }
 
 function historicalDisplays(inventory: PersistenceSchemaInventory): Map<string, TypeDisplay> {
+  const digest = inventory.roots.some(root => root.key === 'SessionHeader') ? historicalSchemaDigest : schemaDigest
   const paths = new Map<string, string>()
   for (const root of inventory.roots) {
     const seen = new Set<number>()
     const visit = (index: number, path: string): void => {
       if (seen.has(index)) return
       seen.add(index)
-      const digest = schemaDigest(canonicalizeSchema(root.schema.nodes, index))
-      if (!paths.has(digest)) paths.set(digest, path)
+      const typeDigest = digest(canonicalizeSchema(root.schema.nodes, index))
+      if (!paths.has(typeDigest)) paths.set(typeDigest, path)
       const node = nodeAt(root.schema, index)
       schemaChildren(node).forEach((child, position) => { visit(child, `${path}.${childPath(node, position)}`) })
     }
     visit(0, root.key)
   }
-  const labels = inventory.types.map((type) => {
+  const labels = inventory.types.map((originalType) => {
+    const type = { ...originalType, digest: digest(originalType.schema) }
     const node = nodeAt(type.schema, 0)
     const label = node.kind === 'primitive' ? node.type
       : node.kind === 'literal' ? JSON.stringify(node.value)
@@ -175,12 +182,13 @@ function typeExpression(
   index: number,
   entries: ReadonlyMap<string, TypeDisplay>,
   locale: PersistenceCatalogLocale,
+  digest: (schema: CanonicalSchema) => string,
 ): string {
   const node = nodeAt(schema, index)
   if (node.kind === 'primitive') return code(node.type)
   if (node.kind === 'literal') return code(JSON.stringify(node.value))
   if (node.kind === 'opaque') return `${code(node.reason)}${persistenceCatalogText[locale].opaque}`
-  return reference(schemaDigest(canonicalizeSchema(schema.nodes, index)), entries)
+  return reference(digest(canonicalizeSchema(schema.nodes, index)), entries)
 }
 
 function definition(
@@ -201,7 +209,8 @@ function definition(
       return href === undefined ? code(source) : `[${code(source)}](${href})`
     }).join(' · ')}`, '')
   }
-  const expression = (index: number): string => typeExpression(schema, index, entries, locale)
+  const digest = rendering === 'current' || entries.has(schemaDigest(schema)) ? schemaDigest : historicalSchemaDigest
+  const expression = (index: number): string => typeExpression(schema, index, entries, locale, digest)
   switch (node.kind) {
     case 'object':
       if (node.properties.length === 0 && node.indices.length === 0) lines.push(text.emptyObject, '')
@@ -282,7 +291,10 @@ export function renderPersistenceSchemaIndex(
   return [
     `${'#'.repeat(headingLevel)} ${text.fingerprints}`, '', ...introduction.flatMap(paragraph => [paragraph, '']),
     text.rootColumns, '|---|---|---|---|',
-    ...inventory.roots.map(root => `| ${code(root.key)} | ${root.kind} | ${code(root.digest)} | ${reference(root.digest, entries)} |`), '',
+    ...inventory.roots.map((root) => {
+      const digest = usesHistoricalSessionDomain(inventory, rendering) ? historicalSchemaDigest(root.schema) : schemaDigest(root.schema)
+      return `| ${code(root.key)} | ${root.kind} | ${code(digest)} | ${reference(digest, entries)} |`
+    }), '',
   ].join('\n')
 }
 

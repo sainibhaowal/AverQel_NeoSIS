@@ -4458,6 +4458,22 @@ export const TYPE_API: readonly TypeApiEntry[] = [
     declaration: 'export type AuthorizationStatus = \'authorized\' | \'cancelled\';',
   },
   {
+    name: 'AverQelLlmApiExtensionMap',
+    declaration: 'export interface AverQelLlmApiExtensionMap {\n}',
+  },
+  {
+    name: 'AverQelLlmApiExtensionProvider',
+    declaration: 'export interface AverQelLlmApiExtensionProvider<T extends AverQelLlmApiJson> {\n    prepare(request: AverQelLlmApiExtensionRequest): PreparedAverQelLlmApiExtension<T> | undefined | Promise<PreparedAverQelLlmApiExtension<T> | undefined>;\n}',
+  },
+  {
+    name: 'AverQelLlmApiExtensionRequest',
+    declaration: 'export interface AverQelLlmApiExtensionRequest {\n    readonly body: Readonly<Record<string, AverQelLlmApiJson>>;\n    readonly sessionId?: string;\n    readonly purpose?: \'compaction\' | \'session-title\';\n    readonly signal: AbortSignal;\n}',
+  },
+  {
+    name: 'AverQelLlmApiJson',
+    declaration: 'export type AverQelLlmApiJson = null | boolean | number | string | AverQelLlmApiJson[] | {\n    [key: string]: AverQelLlmApiJson;\n};',
+  },
+  {
     name: 'BackendRegistry',
     declaration: 'export class BackendRegistry {\n    register(name: string, backend: StorageBackend): () => void;\n    get(name: string): StorageBackend;\n    names(): string[];\n}',
   },
@@ -4774,22 +4790,6 @@ export const TYPE_API: readonly TypeApiEntry[] = [
     declaration: 'export type CredentialRef = Branded<\'CredentialRef\'>;',
   },
   {
-    name: 'AverQelLlmApiExtensionMap',
-    declaration: 'export interface AverQelLlmApiExtensionMap {\n}',
-  },
-  {
-    name: 'AverQelLlmApiExtensionProvider',
-    declaration: 'export interface AverQelLlmApiExtensionProvider<T extends AverQelLlmApiJson> {\n    prepare(request: AverQelLlmApiExtensionRequest): PreparedAverQelLlmApiExtension<T> | undefined | Promise<PreparedAverQelLlmApiExtension<T> | undefined>;\n}',
-  },
-  {
-    name: 'AverQelLlmApiExtensionRequest',
-    declaration: 'export interface AverQelLlmApiExtensionRequest {\n    readonly body: Readonly<Record<string, AverQelLlmApiJson>>;\n    readonly sessionId?: string;\n    readonly purpose?: \'compaction\' | \'session-title\';\n    readonly signal: AbortSignal;\n}',
-  },
-  {
-    name: 'AverQelLlmApiJson',
-    declaration: 'export type AverQelLlmApiJson = null | boolean | number | string | AverQelLlmApiJson[] | {\n    [key: string]: AverQelLlmApiJson;\n};',
-  },
-  {
     name: 'DeveloperMessage',
     declaration: 'export interface DeveloperMessage extends MessageBase {\n    readonly role: \'developer\';\n}',
   },
@@ -4872,14 +4872,6 @@ export const TYPE_API: readonly TypeApiEntry[] = [
   {
     name: 'DomainTableSpec',
     declaration: 'export interface DomainTableSpec<K extends string = string, V = unknown> {\n    readonly valueSchema: ZodType<V>;\n    readonly __key?: K;\n}',
-  },
-  {
-    name: 'NeosisEnvironment',
-    declaration: 'export type NeosisEnvironment = Readonly<Record<NeosisEnvironmentKey, string>>;',
-  },
-  {
-    name: 'NeosisEnvironmentKey',
-    declaration: 'export type NeosisEnvironmentKey = `${typeof NEOSIS_ENV_PREFIX}${string}`;',
   },
   {
     name: 'DynamicCordisPackage',
@@ -5554,12 +5546,20 @@ export const TYPE_API: readonly TypeApiEntry[] = [
     declaration: 'export interface NativeFileApplication {\n    readonly id: string;\n    readonly name: string;\n    readonly default: boolean;\n    readonly icon: string | null;\n}',
   },
   {
+    name: 'NeosisEnvironment',
+    declaration: 'export type NeosisEnvironment = Readonly<Record<NeosisEnvironmentKey, string>>;',
+  },
+  {
+    name: 'NeosisEnvironmentKey',
+    declaration: 'export type NeosisEnvironmentKey = `${typeof NEOSIS_ENV_PREFIX}${string}`;',
+  },
+  {
     name: 'ObjectJsonSchema',
     declaration: 'export type ObjectJsonSchema = JsonSchemaNode & {\n    type: \'object\';\n};',
   },
   {
     name: 'OfficeExtension',
-    declaration: 'export type OfficeExtension = \'doc\' | \'docx\' | \'xls\' | \'xlsx\' | \'ppt\' | \'pptx\';',
+    declaration: 'export type OfficeExtension = \'doc\' | \'docx\' | \'docm\' | \'dot\' | \'dotx\' | \'dotm\' | \'odt\' | \'ott\' | \'fodt\' | \'rtf\' | \'xls\' | \'xlsx\' | \'xlsm\' | \'xlt\' | \'xltx\' | \'xltm\' | \'ods\' | \'ots\' | \'fods\' | \'ppt\' | \'pptx\' | \'pptm\' | \'pot\' | \'potx\' | \'potm\' | \'pps\' | \'ppsx\' | \'ppsm\' | \'odp\' | \'otp\' | \'fodp\';',
   },
   {
     name: 'OfficeSourceKey',

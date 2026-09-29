@@ -11,7 +11,9 @@ import type { PersistenceRoot, PersistenceSchemaInventory } from './persistence-
 import { persistenceReleaseFactArtifacts } from './persistence-release-facts.ts'
 
 const ARCHIVE_DIRECTORY = 'docs/persistence-changes/releases'
-const TAG_PATTERN = /^neosis-v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)-(alpha|rc)\.(0|[1-9]\d*)$/u
+// Historical archives retain their original dsh-* tags; new releases use the
+// NeoSIS identity. Both spellings are valid only inside this frozen archive.
+const TAG_PATTERN = /^(?:neosis|dsh)-v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)-(alpha|rc)\.(0|[1-9]\d*)$/u
 const DIGEST_PATTERN = /^[a-f0-9]{64}$/u
 
 /** Published identity and version constants observed in one pinned tag. */

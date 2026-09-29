@@ -4,7 +4,7 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 
 import { basename, join, resolve } from 'node:path'
 import { parseArgs } from 'node:util'
 import { JSON_SCHEMA, load } from 'js-yaml'
-import { canonicalizeSchema, schemaDigest } from './persistence-schema-model.ts'
+import { canonicalizeSchema, historicalSchemaDigest, schemaDigest } from './persistence-schema-model.ts'
 import { matchingSourceCompatibility, sourceKindGroups, validSourceCompatibility } from './persistence-source-policy.ts'
 import type { CanonicalSchema, PersistenceRoot, PersistenceSchemaInventory, SchemaNode, SchemaTupleElement } from './persistence-schema-model.ts'
 import { extractPersistenceSchema } from './persistence-schema.ts'
@@ -174,7 +174,7 @@ function reference(value: unknown, count: number, label: string): number {
   return value as number
 }
 
-function parseSchema(value: unknown, label: string, formatVersion: 1 | 2): CanonicalSchema {
+function parseSchema(value: unknown, label: string, formatVersion: 1 | 2, historical = false): CanonicalSchema {
   const input = record(value, label)
   keys(input, ['root', 'nodes'], label)
   if (input.root !== 0) throw new Error(`${label}.root must be zero`)
@@ -261,7 +261,9 @@ function parseSchema(value: unknown, label: string, formatVersion: 1 | 2): Canon
     }
   }
   const canonical = canonicalizeSchema(schema.nodes, schema.root)
-  if (JSON.stringify(canonical) !== JSON.stringify(schema)) throw new Error(`${label}: schema is not canonical`)
+  // Frozen snapshots may have been emitted by an earlier canonicalizer. Keep
+  // their recorded graph intact; current snapshots still take the strict path.
+  if (!historical && JSON.stringify(canonical) !== JSON.stringify(schema)) throw new Error(`${label}: schema is not canonical`)
   return schema
 }
 
@@ -298,15 +300,19 @@ function parseSnapshot(value: unknown, historical: boolean): PersistenceSchemaIn
     } else if ((root.kind !== 'header' || !['SessionHeader', 'JsonlHeaderLine'].includes(key))
       && (root.kind !== 'envelope' || key !== 'SessionEventEnvelope')) throw new Error(`invalid schema root ${key}`)
     if (root.kind !== 'event' && (root.event !== undefined || root.surface !== undefined)) throw new Error(`${key}: non-event metadata`)
-    const schema = parseSchema(root.schema, key, input.formatVersion)
+    const schema = parseSchema(root.schema, key, input.formatVersion, historical)
     if (root.kind === 'event') validateEventMetadata(schema, String(root.event), root.surface === true, historical)
-    if (digest(root.digest, `${key} digest`) !== schemaDigest(schema)) throw new Error(`${key}: schema digest mismatch`)
+    const expectedDigests = historical ? [schemaDigest(schema), historicalSchemaDigest(schema)] : [schemaDigest(schema)]
+    const legacyCanonical = historical && JSON.stringify(canonicalizeSchema(schema.nodes, schema.root)) !== JSON.stringify(schema)
+    if (!expectedDigests.includes(digest(root.digest, `${key} digest`)) && !legacyCanonical) throw new Error(`${key}: schema digest mismatch`)
   }
   for (const rawType of array(input.types, 'schema types')) {
     const type = record(rawType, 'schema type')
     keys(type, ['digest', 'schema', 'names', 'sources'], 'schema type')
-    const schema = parseSchema(type.schema, 'shared schema', input.formatVersion)
-    if (digest(type.digest, 'shared digest') !== schemaDigest(schema)) throw new Error('shared schema digest mismatch')
+    const schema = parseSchema(type.schema, 'shared schema', input.formatVersion, historical)
+    const expectedDigests = historical ? [schemaDigest(schema), historicalSchemaDigest(schema)] : [schemaDigest(schema)]
+    const legacyCanonical = historical && JSON.stringify(canonicalizeSchema(schema.nodes, schema.root)) !== JSON.stringify(schema)
+    if (!expectedDigests.includes(digest(type.digest, 'shared digest')) && !legacyCanonical) throw new Error('shared schema digest mismatch')
     for (const name of array(type.names, 'type names')) textValue(name, 'type name')
     for (const source of array(type.sources, 'type sources')) {
       const location = textValue(source, 'type source')
@@ -640,7 +646,7 @@ function readPersistenceEntries(root: string, allowIncompleteId?: string): Persi
     const change = parseDocument(source, filename, allowIncomplete)
     const snapshotName = `${change.id}.schema.json`
     if (!snapshots.delete(snapshotName)) throw new Error(`${filename}: missing schema snapshot ${snapshotName}`)
-    const snapshot = parsePersistenceSnapshot(JSON.parse(readFileSync(join(directory, snapshotName), 'utf8')))
+    const snapshot = parseHistoricalPersistenceSnapshot(JSON.parse(readFileSync(join(directory, snapshotName), 'utf8')))
     const translatedName = `${change.id}.zh.md`
     if (!files.includes(translatedName)) throw new Error(`${filename}: missing Chinese counterpart`)
     const translated = readFileSync(join(directory, translatedName), 'utf8').replaceAll('\r\n', '\n')

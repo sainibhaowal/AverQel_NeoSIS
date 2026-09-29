@@ -237,6 +237,16 @@ export function schemaDigest(schema: CanonicalSchema): string {
 }
 
 /**
+ * Compute the fingerprint used by the frozen pre-NeoSIS persistence snapshots.
+ * @param schema - canonical resolved persisted type.
+ * @returns lowercase hexadecimal digest from the historical fingerprint domain.
+ */
+export function historicalSchemaDigest(schema: CanonicalSchema): string {
+  const version = schemaHasCompatibility(schema) ? 2 : 1
+  return createHash('sha256').update(`dsh-persistence-schema-v${String(version)}\n`).update(JSON.stringify(schema)).digest('hex')
+}
+
+/**
  * Identify graphs that require the policy-aware fingerprint domain.
  * @param schema - resolved persisted type.
  * @returns whether any reachable property records compatibility metadata.

@@ -37,342 +37,6 @@
       ]
     },
     {
-      "name": "@aws-crypto/sha256-browser",
-      "version": "5.2.0",
-      "installations": [
-        {
-          "location": "node_modules/@aws-crypto/sha256-browser",
-          "direct": false,
-          "optional": false,
-          "peer": false
-        }
-      ]
-    },
-    {
-      "name": "@aws-crypto/sha256-js",
-      "version": "5.2.0",
-      "installations": [
-        {
-          "location": "node_modules/@aws-crypto/sha256-js",
-          "direct": false,
-          "optional": false,
-          "peer": false
-        }
-      ]
-    },
-    {
-      "name": "@aws-crypto/supports-web-crypto",
-      "version": "5.2.0",
-      "installations": [
-        {
-          "location": "node_modules/@aws-crypto/supports-web-crypto",
-          "direct": false,
-          "optional": false,
-          "peer": false
-        }
-      ]
-    },
-    {
-      "name": "@aws-crypto/util",
-      "version": "5.2.0",
-      "installations": [
-        {
-          "location": "node_modules/@aws-crypto/util",
-          "direct": false,
-          "optional": false,
-          "peer": false
-        }
-      ]
-    },
-    {
-      "name": "@aws-sdk/client-bedrock-runtime",
-      "version": "3.1048.0",
-      "installations": [
-        {
-          "location": "node_modules/@aws-sdk/client-bedrock-runtime",
-          "direct": false,
-          "optional": false,
-          "peer": false
-        }
-      ]
-    },
-    {
-      "name": "@aws-sdk/core",
-      "version": "3.978.0",
-      "installations": [
-        {
-          "location": "node_modules/@aws-sdk/core",
-          "direct": false,
-          "optional": false,
-          "peer": false
-        }
-      ]
-    },
-    {
-      "name": "@aws-sdk/credential-provider-env",
-      "version": "3.972.71",
-      "installations": [
-        {
-          "location": "node_modules/@aws-sdk/credential-provider-env",
-          "direct": false,
-          "optional": false,
-          "peer": false
-        }
-      ]
-    },
-    {
-      "name": "@aws-sdk/credential-provider-http",
-      "version": "3.972.73",
-      "installations": [
-        {
-          "location": "node_modules/@aws-sdk/credential-provider-http",
-          "direct": false,
-          "optional": false,
-          "peer": false
-        }
-      ]
-    },
-    {
-      "name": "@aws-sdk/credential-provider-ini",
-      "version": "3.973.16",
-      "installations": [
-        {
-          "location": "node_modules/@aws-sdk/credential-provider-ini",
-          "direct": false,
-          "optional": false,
-          "peer": false
-        }
-      ]
-    },
-    {
-      "name": "@aws-sdk/credential-provider-login",
-      "version": "3.972.78",
-      "installations": [
-        {
-          "location": "node_modules/@aws-sdk/credential-provider-login",
-          "direct": false,
-          "optional": false,
-          "peer": false
-        }
-      ]
-    },
-    {
-      "name": "@aws-sdk/credential-provider-node",
-      "version": "3.972.83",
-      "installations": [
-        {
-          "location": "node_modules/@aws-sdk/credential-provider-node",
-          "direct": false,
-          "optional": false,
-          "peer": false
-        }
-      ]
-    },
-    {
-      "name": "@aws-sdk/credential-provider-process",
-      "version": "3.972.71",
-      "installations": [
-        {
-          "location": "node_modules/@aws-sdk/credential-provider-process",
-          "direct": false,
-          "optional": false,
-          "peer": false
-        }
-      ]
-    },
-    {
-      "name": "@aws-sdk/credential-provider-sso",
-      "version": "3.973.15",
-      "installations": [
-        {
-          "location": "node_modules/@aws-sdk/credential-provider-sso",
-          "direct": false,
-          "optional": false,
-          "peer": false
-        }
-      ]
-    },
-    {
-      "name": "@aws-sdk/credential-provider-web-identity",
-      "version": "3.972.77",
-      "installations": [
-        {
-          "location": "node_modules/@aws-sdk/credential-provider-web-identity",
-          "direct": false,
-          "optional": false,
-          "peer": false
-        }
-      ]
-    },
-    {
-      "name": "@aws-sdk/eventstream-handler-node",
-      "version": "3.972.34",
-      "installations": [
-        {
-          "location": "node_modules/@aws-sdk/eventstream-handler-node",
-          "direct": false,
-          "optional": false,
-          "peer": false
-        }
-      ]
-    },
-    {
-      "name": "@aws-sdk/middleware-eventstream",
-      "version": "3.972.29",
-      "installations": [
-        {
-          "location": "node_modules/@aws-sdk/middleware-eventstream",
-          "direct": false,
-          "optional": false,
-          "peer": false
-        }
-      ]
-    },
-    {
-      "name": "@aws-sdk/middleware-websocket",
-      "version": "3.972.53",
-      "installations": [
-        {
-          "location": "node_modules/@aws-sdk/middleware-websocket",
-          "direct": false,
-          "optional": false,
-          "peer": false
-        }
-      ]
-    },
-    {
-      "name": "@aws-sdk/nested-clients",
-      "version": "3.997.45",
-      "installations": [
-        {
-          "location": "node_modules/@aws-sdk/nested-clients",
-          "direct": false,
-          "optional": false,
-          "peer": false
-        }
-      ]
-    },
-    {
-      "name": "@aws-sdk/signature-v4-multi-region",
-      "version": "3.996.46",
-      "installations": [
-        {
-          "location": "node_modules/@aws-sdk/signature-v4-multi-region",
-          "direct": false,
-          "optional": false,
-          "peer": false
-        }
-      ]
-    },
-    {
-      "name": "@aws-sdk/token-providers",
-      "version": "3.1048.0",
-      "installations": [
-        {
-          "location": "node_modules/@aws-sdk/token-providers",
-          "direct": false,
-          "optional": false,
-          "peer": false
-        }
-      ]
-    },
-    {
-      "name": "@aws-sdk/token-providers",
-      "version": "3.1129.0",
-      "installations": [
-        {
-          "location": "node_modules/@aws-sdk/credential-provider-sso/node_modules/@aws-sdk/token-providers",
-          "direct": false,
-          "optional": false,
-          "peer": false
-        }
-      ]
-    },
-    {
-      "name": "@aws-sdk/types",
-      "version": "3.974.5",
-      "installations": [
-        {
-          "location": "node_modules/@aws-sdk/types",
-          "direct": false,
-          "optional": false,
-          "peer": false
-        }
-      ]
-    },
-    {
-      "name": "@aws-sdk/util-locate-window",
-      "version": "3.965.10",
-      "installations": [
-        {
-          "location": "node_modules/@aws-sdk/util-locate-window",
-          "direct": false,
-          "optional": false,
-          "peer": false
-        }
-      ]
-    },
-    {
-      "name": "@aws-sdk/xml-builder",
-      "version": "3.972.40",
-      "installations": [
-        {
-          "location": "node_modules/@aws-sdk/xml-builder",
-          "direct": false,
-          "optional": false,
-          "peer": false
-        }
-      ]
-    },
-    {
-      "name": "@aws/lambda-invoke-store",
-      "version": "0.3.0",
-      "installations": [
-        {
-          "location": "node_modules/@aws/lambda-invoke-store",
-          "direct": false,
-          "optional": false,
-          "peer": false
-        }
-      ]
-    },
-    {
-      "name": "@babel/code-frame",
-      "version": "7.29.7",
-      "installations": [
-        {
-          "location": "node_modules/@babel/code-frame",
-          "direct": false,
-          "optional": false,
-          "peer": false
-        }
-      ]
-    },
-    {
-      "name": "@babel/helper-validator-identifier",
-      "version": "7.29.7",
-      "installations": [
-        {
-          "location": "node_modules/@babel/helper-validator-identifier",
-          "direct": false,
-          "optional": false,
-          "peer": false
-        }
-      ]
-    },
-    {
-      "name": "@babel/runtime",
-      "version": "7.29.7",
-      "installations": [
-        {
-          "location": "node_modules/@babel/runtime",
-          "direct": false,
-          "optional": false,
-          "peer": false
-        }
-      ]
-    },
-    {
       "name": "@averqel/cordis",
       "version": "4.0.2",
       "installations": [
@@ -3307,6 +2971,342 @@
         {
           "location": "node_modules/@averqel/schemastery",
           "direct": true,
+          "optional": false,
+          "peer": false
+        }
+      ]
+    },
+    {
+      "name": "@aws-crypto/sha256-browser",
+      "version": "5.2.0",
+      "installations": [
+        {
+          "location": "node_modules/@aws-crypto/sha256-browser",
+          "direct": false,
+          "optional": false,
+          "peer": false
+        }
+      ]
+    },
+    {
+      "name": "@aws-crypto/sha256-js",
+      "version": "5.2.0",
+      "installations": [
+        {
+          "location": "node_modules/@aws-crypto/sha256-js",
+          "direct": false,
+          "optional": false,
+          "peer": false
+        }
+      ]
+    },
+    {
+      "name": "@aws-crypto/supports-web-crypto",
+      "version": "5.2.0",
+      "installations": [
+        {
+          "location": "node_modules/@aws-crypto/supports-web-crypto",
+          "direct": false,
+          "optional": false,
+          "peer": false
+        }
+      ]
+    },
+    {
+      "name": "@aws-crypto/util",
+      "version": "5.2.0",
+      "installations": [
+        {
+          "location": "node_modules/@aws-crypto/util",
+          "direct": false,
+          "optional": false,
+          "peer": false
+        }
+      ]
+    },
+    {
+      "name": "@aws-sdk/client-bedrock-runtime",
+      "version": "3.1048.0",
+      "installations": [
+        {
+          "location": "node_modules/@aws-sdk/client-bedrock-runtime",
+          "direct": false,
+          "optional": false,
+          "peer": false
+        }
+      ]
+    },
+    {
+      "name": "@aws-sdk/core",
+      "version": "3.978.0",
+      "installations": [
+        {
+          "location": "node_modules/@aws-sdk/core",
+          "direct": false,
+          "optional": false,
+          "peer": false
+        }
+      ]
+    },
+    {
+      "name": "@aws-sdk/credential-provider-env",
+      "version": "3.972.71",
+      "installations": [
+        {
+          "location": "node_modules/@aws-sdk/credential-provider-env",
+          "direct": false,
+          "optional": false,
+          "peer": false
+        }
+      ]
+    },
+    {
+      "name": "@aws-sdk/credential-provider-http",
+      "version": "3.972.73",
+      "installations": [
+        {
+          "location": "node_modules/@aws-sdk/credential-provider-http",
+          "direct": false,
+          "optional": false,
+          "peer": false
+        }
+      ]
+    },
+    {
+      "name": "@aws-sdk/credential-provider-ini",
+      "version": "3.973.16",
+      "installations": [
+        {
+          "location": "node_modules/@aws-sdk/credential-provider-ini",
+          "direct": false,
+          "optional": false,
+          "peer": false
+        }
+      ]
+    },
+    {
+      "name": "@aws-sdk/credential-provider-login",
+      "version": "3.972.78",
+      "installations": [
+        {
+          "location": "node_modules/@aws-sdk/credential-provider-login",
+          "direct": false,
+          "optional": false,
+          "peer": false
+        }
+      ]
+    },
+    {
+      "name": "@aws-sdk/credential-provider-node",
+      "version": "3.972.83",
+      "installations": [
+        {
+          "location": "node_modules/@aws-sdk/credential-provider-node",
+          "direct": false,
+          "optional": false,
+          "peer": false
+        }
+      ]
+    },
+    {
+      "name": "@aws-sdk/credential-provider-process",
+      "version": "3.972.71",
+      "installations": [
+        {
+          "location": "node_modules/@aws-sdk/credential-provider-process",
+          "direct": false,
+          "optional": false,
+          "peer": false
+        }
+      ]
+    },
+    {
+      "name": "@aws-sdk/credential-provider-sso",
+      "version": "3.973.15",
+      "installations": [
+        {
+          "location": "node_modules/@aws-sdk/credential-provider-sso",
+          "direct": false,
+          "optional": false,
+          "peer": false
+        }
+      ]
+    },
+    {
+      "name": "@aws-sdk/credential-provider-web-identity",
+      "version": "3.972.77",
+      "installations": [
+        {
+          "location": "node_modules/@aws-sdk/credential-provider-web-identity",
+          "direct": false,
+          "optional": false,
+          "peer": false
+        }
+      ]
+    },
+    {
+      "name": "@aws-sdk/eventstream-handler-node",
+      "version": "3.972.34",
+      "installations": [
+        {
+          "location": "node_modules/@aws-sdk/eventstream-handler-node",
+          "direct": false,
+          "optional": false,
+          "peer": false
+        }
+      ]
+    },
+    {
+      "name": "@aws-sdk/middleware-eventstream",
+      "version": "3.972.29",
+      "installations": [
+        {
+          "location": "node_modules/@aws-sdk/middleware-eventstream",
+          "direct": false,
+          "optional": false,
+          "peer": false
+        }
+      ]
+    },
+    {
+      "name": "@aws-sdk/middleware-websocket",
+      "version": "3.972.53",
+      "installations": [
+        {
+          "location": "node_modules/@aws-sdk/middleware-websocket",
+          "direct": false,
+          "optional": false,
+          "peer": false
+        }
+      ]
+    },
+    {
+      "name": "@aws-sdk/nested-clients",
+      "version": "3.997.45",
+      "installations": [
+        {
+          "location": "node_modules/@aws-sdk/nested-clients",
+          "direct": false,
+          "optional": false,
+          "peer": false
+        }
+      ]
+    },
+    {
+      "name": "@aws-sdk/signature-v4-multi-region",
+      "version": "3.996.46",
+      "installations": [
+        {
+          "location": "node_modules/@aws-sdk/signature-v4-multi-region",
+          "direct": false,
+          "optional": false,
+          "peer": false
+        }
+      ]
+    },
+    {
+      "name": "@aws-sdk/token-providers",
+      "version": "3.1048.0",
+      "installations": [
+        {
+          "location": "node_modules/@aws-sdk/token-providers",
+          "direct": false,
+          "optional": false,
+          "peer": false
+        }
+      ]
+    },
+    {
+      "name": "@aws-sdk/token-providers",
+      "version": "3.1129.0",
+      "installations": [
+        {
+          "location": "node_modules/@aws-sdk/credential-provider-sso/node_modules/@aws-sdk/token-providers",
+          "direct": false,
+          "optional": false,
+          "peer": false
+        }
+      ]
+    },
+    {
+      "name": "@aws-sdk/types",
+      "version": "3.974.5",
+      "installations": [
+        {
+          "location": "node_modules/@aws-sdk/types",
+          "direct": false,
+          "optional": false,
+          "peer": false
+        }
+      ]
+    },
+    {
+      "name": "@aws-sdk/util-locate-window",
+      "version": "3.965.10",
+      "installations": [
+        {
+          "location": "node_modules/@aws-sdk/util-locate-window",
+          "direct": false,
+          "optional": false,
+          "peer": false
+        }
+      ]
+    },
+    {
+      "name": "@aws-sdk/xml-builder",
+      "version": "3.972.40",
+      "installations": [
+        {
+          "location": "node_modules/@aws-sdk/xml-builder",
+          "direct": false,
+          "optional": false,
+          "peer": false
+        }
+      ]
+    },
+    {
+      "name": "@aws/lambda-invoke-store",
+      "version": "0.3.0",
+      "installations": [
+        {
+          "location": "node_modules/@aws/lambda-invoke-store",
+          "direct": false,
+          "optional": false,
+          "peer": false
+        }
+      ]
+    },
+    {
+      "name": "@babel/code-frame",
+      "version": "7.29.7",
+      "installations": [
+        {
+          "location": "node_modules/@babel/code-frame",
+          "direct": false,
+          "optional": false,
+          "peer": false
+        }
+      ]
+    },
+    {
+      "name": "@babel/helper-validator-identifier",
+      "version": "7.29.7",
+      "installations": [
+        {
+          "location": "node_modules/@babel/helper-validator-identifier",
+          "direct": false,
+          "optional": false,
+          "peer": false
+        }
+      ]
+    },
+    {
+      "name": "@babel/runtime",
+      "version": "7.29.7",
+      "installations": [
+        {
+          "location": "node_modules/@babel/runtime",
+          "direct": false,
           "optional": false,
           "peer": false
         }

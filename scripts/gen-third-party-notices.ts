@@ -53,15 +53,6 @@ const FIRST_PARTY = new Set([
 export const CLAUDE_AGENT_SDK_PACKAGE = '@anthropic-ai/claude-agent-sdk'
 const CLAUDE_PLATFORM_PACKAGE_PREFIX = `${CLAUDE_AGENT_SDK_PACKAGE}-`
 const CLAUDE_PLATFORM_DECLARED_LICENSE = 'SEE LICENSE IN LICENSE.md'
-const LIBREOFFICE_KIT_PACKAGE = '@averqel/libreoffice-kit'
-const LIBREOFFICE_PACKAGES = new Set([
-  LIBREOFFICE_KIT_PACKAGE,
-  '@averqel/libreoffice-kit-wasm',
-  '@averqel/libreoffice-kit-darwin-arm64',
-  '@averqel/libreoffice-kit-darwin-x64',
-  '@averqel/libreoffice-kit-win32-arm64',
-  '@averqel/libreoffice-kit-win32-x64',
-])
 
 /**
  * Whether a non-permissive runtime declaration has an identity-scoped owner
@@ -690,8 +681,7 @@ export function isPermissive(license: string): boolean {
  */
 export function assertRuntimeLicenses(dependencies: readonly { name: string; license: string }[]): void {
   const rejected = dependencies.filter(dep => !isPermissive(dep.license)
-    && !isOwnerAuthorizedRuntime(dep.name)
-    && !(LIBREOFFICE_PACKAGES.has(dep.name) && dep.license === 'MPL-2.0'))
+    && !isOwnerAuthorizedRuntime(dep.name))
   if (rejected.length > 0) {
     throw new Error(`gen-third-party-notices: runtime ${rejected.map(dep => `${dep.name} (${dep.license})`).join(', ')} is not a permissive license; review the distribution terms and record the decision before regenerating.`)
   }
@@ -737,6 +727,15 @@ ${rows.join('\n')}
 `
 }
 
+/** Render the official LibreOffice payload disclosure kept with Desktop installers. */
+function renderLibreOfficeRuntime(): string {
+  return `
+## Official LibreOffice Desktop payloads
+
+Desktop installers contain an official LibreOffice payload selected by platform and architecture. The preparation manifest pins the upstream download URL and SHA-256 digest; the payload's own license and notice files remain inside the packaged \`resources/office\` directory. LibreOffice is distributed under its published combination of MPL 2.0, LGPL, Apache, and other component licenses; consult the included license files and the [official licensing page](https://www.libreoffice.org/about-us/licenses/) for the applicable terms.
+`
+}
+
 /**
  * Render the complete notices document.
  * @returns The exact bytes THIRD_PARTY_NOTICES.md must hold after resolving browser inputs.
@@ -750,7 +749,6 @@ export async function render(): Promise<string> {
   const npm = collectNpmDeps(manifests, names, browser)
   const runtimeDeps = npm.filter(dep => dep.runtime)
   const devDeps = npm.filter(dep => !dep.runtime)
-  const kitRuntime = runtimeDeps.some(dep => dep.name === LIBREOFFICE_KIT_PACKAGE)
   const vendored = collectVendored()
   const python = collectPython()
   const bundledPython = collectBundledPythonDependencies(primaryRuntimeLock.pythonPackages)
@@ -794,14 +792,7 @@ pnpm applies local patches to the following packages at install time, so shipped
 
 ${patchedLines.join('\n')}
 ${renderClaudeDistribution(claudeDistribution)}
-${kitRuntime ? `
-## LibreOffice conversion kit
-
-${[...LIBREOFFICE_PACKAGES].map(name => `\`${name}\``).join(', ')} declare MPL-2.0, which remains outside the permissive-license allowlist; the notices check accepts only these package identities at those terms. The [distribution decision](.agents/notes/implemented/architecture/2026-09-14-independent-libreoffice-kit.md) records the source obligations.
-
-The [kit repository](https://github.com/sainibhaowal-neosis/libreoffice-kit) supplies the corresponding LibreOffice source pin, modifications, build instructions, Node API, and artifact validation. Its engine packages retain their license and third-party notices; the Node API retains its MPL-2.0 declaration and NOTICE. Recipients must have access to those corresponding sources and notices.
-` : ''}
-
+${renderLibreOfficeRuntime()}
 ## Development-only npm dependencies
 
 External packages **directly declared** for development, tests, types, or tooling, without a runtime installation or browser-build relationship. A package here may still be pulled in transitively by a runtime dependency — \`pnpm-lock.yaml\` is the authority on that full closure.
