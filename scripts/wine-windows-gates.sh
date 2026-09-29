@@ -171,7 +171,7 @@ EOF
   # the final attempt, fails loud with the log tail.
   local attempt
   for attempt in 1 2 3 4 5; do
-    (cd "$scratch/tree" && pnpm install --frozen-lockfile --ignore-scripts > "$scratch/logs/install.log" 2>&1) \
+    (cd "$scratch/tree" && pnpm install --frozen-lockfile --ignore-scripts --workspace-concurrency=1 > "$scratch/logs/install.log" 2>&1) \
       && return 0
     grep -q 'ERR_PNPM_ENOENT.*rename.*_tmp_' "$scratch/logs/install.log" || break
     (( attempt < 5 )) || break
