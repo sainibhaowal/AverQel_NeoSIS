@@ -4,7 +4,7 @@
   "license": "Apache-2.0",
   "private": true,
   "type": "module",
-  "packageManager": "pnpm@11.7.0",
+  "packageManager": "pnpm@11.28.0",
   "engines": {
     "node": "^22.19.0 || >=24.0.0"
   },
@@ -38,9 +38,13 @@
     "package:desktop:win:x64": "pnpm --filter @averqel/neosis-desktop run package:win:x64",
     "package:desktop:win:x64:unsigned": "pnpm --filter @averqel/neosis-desktop run package:win:x64:unsigned",
     "package:desktop:win:x64:dir": "pnpm --filter @averqel/neosis-desktop run package:win:x64:dir",
+    "package:desktop:linux:x64": "pnpm --filter @averqel/neosis-desktop run package:linux:x64",
+    "package:desktop:linux:arm64": "pnpm --filter @averqel/neosis-desktop run package:linux:arm64",
     "upload:mac:arm64": "pnpm --filter @averqel/neosis-desktop run upload:mac:arm64",
     "upload:mac:x64": "pnpm --filter @averqel/neosis-desktop run upload:mac:x64",
     "upload:win:x64": "pnpm --filter @averqel/neosis-desktop run upload:win:x64",
+    "upload:linux:x64": "pnpm --filter @averqel/neosis-desktop run upload:linux:x64",
+    "upload:linux:arm64": "pnpm --filter @averqel/neosis-desktop run upload:linux:arm64",
     "clean": "tsx scripts/clean.ts",
     "change-scope": "tsx scripts/change-scope.ts",
     "typecheck": "npm run build:lib:host && npm run typecheck:contracts-ready",
