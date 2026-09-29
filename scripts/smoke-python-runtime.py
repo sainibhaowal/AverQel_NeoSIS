@@ -890,6 +890,10 @@ def smoke_sdk_office(base_url: str, executable: Path) -> None:
         result_path = root / f"{mode}.json"
         patch = root / f"{mode}.patch.yml"
         patch.write_text(json.dumps([{"insert": [{
+            "id": "office-to-pdf",
+            "name": "@averqel/neosis-office-to-pdf",
+            "config": {"executable": os.environ.get("NEOSIS_OFFICE_EXECUTABLE", "soffice"), "timeoutMs": 120_000},
+        }, {
             "id": "python-sdk-office-smoke",
             "name": plugin.as_uri(),
             "config": {"input": str(document), "output": str(output), "result": str(result_path)},
@@ -914,7 +918,7 @@ def smoke_sdk_office(base_url: str, executable: Path) -> None:
         result = json.loads(result_path.read_text())
         if result["backend"] != "system":
             raise AssertionError(f"Office conversion did not use system LibreOffice: {result}")
-        if "@averqel/neosis-office-to-pdf" not in result["moduleUrl"]:
+        if result.get("adapter") != "@averqel/neosis-office-to-pdf":
             raise AssertionError(f"Office adapter was not loaded from NeoSIS: {result}")
         pdf = output.read_bytes()
         if len(pdf) < 100 or not pdf.startswith(b"%PDF-"):
