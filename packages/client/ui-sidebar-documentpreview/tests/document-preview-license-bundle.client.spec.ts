@@ -34,7 +34,7 @@ function run(command: string, args: string[], cwd: string, timeout: number): str
 
 function runPnpm(args: string[], cwd: string, timeout: number): string {
   const entrypoint = process.env.npm_execpath
-  if (entrypoint === undefined || entrypoint === '') {
+  if (entrypoint === undefined || entrypoint === '' || !/(?:^|[/\\])pnpm(?:\.c?js)?$/iu.test(entrypoint)) {
     if (process.platform === 'win32') throw new Error('npm_execpath is required to run pnpm on Windows')
     return run('pnpm', args, cwd, timeout)
   }

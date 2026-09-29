@@ -21,6 +21,9 @@ function binaryResponse(rpcId: string, mutate: (parts: FormData) => void = () =>
 }
 
 describe('Connection binary RPC', () => {
+  // The two cases start a real loopback server and compress a 1 MiB multipart
+  // response; under the full forked client lane this needs more than Vitest's
+  // five-second default while retaining the same bounded test.
   it.each(['gzip', 'none'] as const)('preserves %s configuration through the HTTP bridge', async (compression) => {
     const ctx = new Context()
     try {
@@ -69,7 +72,7 @@ describe('Connection binary RPC', () => {
     } finally {
       await ctx.fiber.dispose()
     }
-  })
+  }, 15_000)
 
   it('roundtrips raw bytes and metadata on the existing channel while JSON results and errors stay JSON', async () => {
     const ctx = new Context()

@@ -42,6 +42,9 @@ describe('highlightToHtml', () => {
     'xml', 'lua',
   ]
 
+  // Each alias starts a separate dynamic grammar import. The imports are
+  // intentionally concurrent, and the full forked client lane can delay
+  // their module evaluation beyond Vitest's five-second default.
   it('lazily loads every read-card grammar: plain first, highlighted after load', async () => {
     const registered = Promise.withResolvers<undefined>()
     // Registration notifications, not a private polling deadline, establish readiness.
@@ -55,7 +58,7 @@ describe('highlightToHtml', () => {
     } finally {
       stop()
     }
-  })
+  }, 15_000)
 })
 
 describe('CodeBlock', () => {

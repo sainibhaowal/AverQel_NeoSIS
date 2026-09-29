@@ -160,6 +160,10 @@ const processBoundTests = [
 
 export default defineConfig({
   plugins: [pathsPlugin(), standardDecoratorPlugin()],
+  esbuild: {
+    jsx: 'automatic',
+    jsxImportSource: 'react',
+  },
   test: {
     setupFiles: ['./scripts/test-proxy-environment.ts', './scripts/test-invariants.ts', './scripts/test-dom-environment.ts'],
     // .tsx: client component specs (jsdom via per-file @vitest-environment pragma).
@@ -170,6 +174,10 @@ export default defineConfig({
     projects: [
       {
         plugins: [pathsPlugin(), standardDecoratorPlugin()],
+        esbuild: {
+          jsx: 'automatic',
+          jsxImportSource: 'react',
+        },
         test: {
           name: 'thread-safe',
           execArgv: vitestExecArgv,
@@ -188,6 +196,10 @@ export default defineConfig({
       },
       {
         plugins: [pathsPlugin(), standardDecoratorPlugin()],
+        esbuild: {
+          jsx: 'automatic',
+          jsxImportSource: 'react',
+        },
         test: {
           name: 'process-bound',
           execArgv: vitestExecArgv,
