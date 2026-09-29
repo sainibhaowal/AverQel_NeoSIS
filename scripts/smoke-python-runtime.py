@@ -746,13 +746,6 @@ def main() -> None:
     if args.exe is not None and not args.exe.is_file():
         parser.error(f"runtime executable does not exist: {args.exe}")
 
-    if args.scenario in {"all", "sdk-office"}:
-        assert args.exe is not None
-        smoke_sdk_office(args.exe.resolve())
-    if args.scenario == "sdk-office":
-        print("smoke-python-runtime: sdk-office passed")
-        return
-
     if args.scenario in {"all", "runner"}:
         assert args.exe is not None
         smoke_packaged_runner(args.exe.resolve())
@@ -766,6 +759,12 @@ def main() -> None:
         return
 
     with MockModel() as model:
+        if args.scenario in {"all", "sdk-office"}:
+            assert args.exe is not None
+            smoke_sdk_office(model.url, args.exe.resolve())
+        if args.scenario == "sdk-office":
+            print("smoke-python-runtime: sdk-office passed")
+            return
         if args.scenario in {"all", "sdk-authoring"}:
             assert args.exe is not None
             smoke_sdk_authoring(model.url, args.exe.resolve(), args.update_snapshots)
@@ -863,8 +862,8 @@ def smoke_sdk_authoring(base_url: str, executable: Path, update_snapshots: bool)
     print("smoke-python-runtime: bundled Python, default skills, replacement and disabled skills passed")
 
 
-def smoke_sdk_office(executable: Path) -> None:
-    """Relocate the wheel payload and convert a real DOCX with the target platform engine."""
+def smoke_sdk_office(base_url: str, executable: Path) -> None:
+    """Run one SDK turn while converting a real DOCX with the target platform engine."""
     from averqel_neosis import AverQelHarness
 
     with tempfile.TemporaryDirectory(prefix="neosis-sdk-office-") as temporary:
@@ -903,13 +902,15 @@ def smoke_sdk_office(executable: Path) -> None:
             neosis_home=str(root / f"home-{mode}"),
             patches=(str(patch),),
             api_key="sk-keyless-smoke",
-            base_url="http://127.0.0.1:9",
+            base_url=base_url,
             env={"NEOSIS_PERMISSION_MODE": "danger-full-access", "NEOSIS_TELEMETRY_DISABLED": "1"},
             # The startup plugin awaits a converter with a 120-second deadline before JSON-RPC is ready.
             initialize_timeout_seconds=180,
             request_timeout_seconds=180,
         ):
-            pass
+            result = harness.run("Reply with exactly OFFICE_SMOKE_DONE.", session_id="python-sdk-office-smoke")
+            if result.final_response != EXPECTED_TEXT:
+                raise AssertionError(f"Office smoke runtime returned unexpected response: {result.final_response!r}")
         result = json.loads(result_path.read_text())
         if result["backend"] != "system":
             raise AssertionError(f"Office conversion did not use system LibreOffice: {result}")
