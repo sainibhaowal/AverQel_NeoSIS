@@ -13645,6 +13645,9 @@ importers:
       '@averqel/neosis-message-feedback':
         specifier: workspace:*
         version: link:../../packages/feedback/message-feedback
+      '@averqel/neosis-office-to-pdf':
+        specifier: workspace:*
+        version: link:../../packages/document/office-to-pdf
       '@averqel/neosis-output-retention':
         specifier: workspace:*
         version: link:../../packages/util/output-retention

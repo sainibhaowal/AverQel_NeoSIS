@@ -30,6 +30,7 @@
     "@averqel/neosis-cmdline": "workspace:*",
     "@averqel/neosis-command-feedback": "workspace:*",
     "@averqel/neosis-message-feedback": "workspace:*",
+    "@averqel/neosis-office-to-pdf": "workspace:*",
     "@averqel/neosis-ptc-runtime": "workspace:*",
     "@averqel/neosis-ptc-runtime-node": "workspace:*",
     "@averqel/neosis-command-compact": "workspace:*",
