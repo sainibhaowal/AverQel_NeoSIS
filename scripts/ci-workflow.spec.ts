@@ -546,7 +546,7 @@ describe('CI workflow', () => {
       })
       .map(([name]) => name)
       .sort()
-    expect(pushReachable).toEqual(['python-runtime', 'serial-linux-selfhosted', 'serial-windows', 'windows'])
+    expect(pushReachable).toEqual(['python-runtime', 'serial-linux-selfhosted', 'serial-macos', 'serial-windows', 'windows'])
 
     // Manual benchmarks retain their bounded fan-out.
     for (const name of ['larger-runner-benchmark', 'consolidated-runner-benchmark']) {

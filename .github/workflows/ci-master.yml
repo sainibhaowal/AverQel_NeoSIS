@@ -182,12 +182,11 @@ jobs:
           NEOSIS_SNAPSHOT_MAX_CONCURRENCY: '1'
         run: pnpm run check:ci:linux-primary
 
-  # TODO(hosted-serial-ci): Re-enable the one remaining disabled hosted serial
-  # reference job (serial-macos) before release. Re-enabling serial-macos does
-  # not restore a Linux hosted-cache producer: decide whether to add a master
-  # seeder or remove the restore-only steps if cold starts become a concern.
+  # Run the complete unsharded macOS gate on every main/master push. The
+  # native runtime matrix above verifies packaged carriers; this lane verifies
+  # the complete primary Node gate on a hosted macOS runner.
   serial-macos:
-    if: false
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
     name: serial / macos
     runs-on: macos-latest
     steps:
