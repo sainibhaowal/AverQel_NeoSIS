@@ -9,7 +9,8 @@ import re
 import subprocess
 
 from pygments import lex
-from pygments.lexers import get_lexer_for_filename
+from pygments.lexers import get_lexer_by_name, get_lexer_for_filename
+from pygments.util import ClassNotFound
 from pygments.token import Comment, Literal
 
 
@@ -50,7 +51,13 @@ def production_path(path):
 
 def code_lines(path, source):
     """Return physical lines containing non-comment, nonblank tokens, including mixed lines."""
-    lexer = get_lexer_for_filename(path, stripnl=False, ensurenl=False)
+    try:
+        lexer = get_lexer_for_filename(path, stripnl=False, ensurenl=False)
+    except ClassNotFound:
+        # Pygments 2.19.2 has a TypeScript lexer but no .tsx filename alias.
+        if PurePosixPath(path).suffix != '.tsx':
+            raise
+        lexer = get_lexer_by_name('typescript', stripnl=False, ensurenl=False)
     lines = set()
     line = 1
     leading = True
