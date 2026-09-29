@@ -1,4 +1,4 @@
-name: Build single-exe
+name: AverQel NeoSIS — Build single-exe
 
 # Native builds for the release targets; see
 # .agents/notes/implemented/architecture/2026-07-10-single-file-executable-sdk-runtime-distribution.md.
@@ -343,6 +343,37 @@ jobs:
           & $smokePython -m pip install "dist-python/$env:SDK_WHEEL" "dist-python/$env:RUNTIME_WHEEL"
           if ($LASTEXITCODE -ne 0) { throw "Wheel installation failed with exit code $LASTEXITCODE" }
           "python=$smokePython" >> $env:GITHUB_OUTPUT
+
+      - name: Install LibreOffice conversion engine (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          set -euo pipefail
+          if ! command -v soffice >/dev/null 2>&1; then
+            sudo apt-get update -q
+            sudo apt-get install -yq --no-install-recommends \
+              libreoffice-core libreoffice-writer libreoffice-calc libreoffice-impress
+          fi
+
+      - name: Install LibreOffice conversion engine (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          set -euo pipefail
+          soffice='/Applications/LibreOffice.app/Contents/MacOS/soffice'
+          if [ ! -x "$soffice" ]; then
+            brew install --cask libreoffice
+          fi
+          echo '/Applications/LibreOffice.app/Contents/MacOS' >> "$GITHUB_PATH"
+
+      - name: Install LibreOffice conversion engine (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          choco install libreoffice-still --yes --no-progress
+          $program = Join-Path $env:ProgramFiles 'LibreOffice\program'
+          if (-not (Test-Path (Join-Path $program 'soffice.exe'))) {
+            throw "LibreOffice executable is missing at $program"
+          }
+          $program >> $env:GITHUB_PATH
 
       - name: Run installed-wheel keyless black-box tests (POSIX)
         if: runner.os != 'Windows'
