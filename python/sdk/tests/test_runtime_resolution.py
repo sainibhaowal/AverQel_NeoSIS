@@ -25,9 +25,11 @@ from averqel_neosis_runtime import (
 def _resource_sidecars(executable: Path) -> None:
     tag = executable.name.removeprefix("averqel-neosis-sdk-runtime-").removesuffix(".exe")
     resources = executable.with_name(tag)
+    platform_name, architecture = tag.rsplit("-", 1)
+    platform_name = {"macos": "darwin", "win": "win32"}.get(platform_name, platform_name)
     manifest = resources / "primary-runtime/runtime.json"
     manifest.parent.mkdir(parents=True)
-    manifest.write_text(json.dumps({"platform": native.rsplit("-", 1)[0], "arch": tag.rsplit("-", 1)[1],
+    manifest.write_text(json.dumps({"platform": platform_name, "arch": architecture,
                                     "python": "3.12.14", "pythonPackages": {"numpy": "2.3.5"}}))
     python = resources / "primary-runtime/dependencies/python" / ("python.exe" if tag.startswith("win-") else "bin/python3")
     python.parent.mkdir(parents=True)
@@ -127,6 +129,7 @@ def test_windows_runtime_uses_exe_payload(
     executable = runtime_dir / "averqel-neosis-sdk-runtime-win-x64.exe"
     executable.touch()
     (runtime_dir / "averqel-neosis-sdk-runtime-win-x64-rg.exe").touch()
+    _resource_sidecars(executable)
     monkeypatch.setattr(runtime, "bundled_package_dir", lambda: tmp_path)
     monkeypatch.setattr(runtime, "_current_platform_tag", lambda: "win-x64")
 
