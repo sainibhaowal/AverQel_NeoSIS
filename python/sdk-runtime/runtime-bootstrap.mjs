@@ -2,12 +2,14 @@
 /** Private entry owned by the Python single-file runtime packaging. */
 import { dirname, join } from 'node:path'
 import { isSea } from 'node:sea'
-import { fileURLToPath } from 'node:url'
+import { createRequire } from 'node:module'
+
+const require = createRequire(import.meta.url)
 
 const selectorName = 'NEOSIS_SUBPROCESS_RUNNER'
 const selection = process.env[selectorName]
 const aclRunner = process.platform === 'win32'
-  ? fileURLToPath(import.meta.resolve('@averqel/neosis-sandbox-windows-acl/runner'))
+  ? require.resolve('@averqel/neosis-sandbox-windows-acl/runner')
   : undefined
 
 if (aclRunner !== undefined && process.argv[2] === aclRunner) {

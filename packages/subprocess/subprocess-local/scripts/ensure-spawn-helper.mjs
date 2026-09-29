@@ -2,9 +2,9 @@
 
 import { chmodSync, existsSync } from 'node:fs'
 import { dirname, join } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { createRequire } from 'node:module'
 
-const entry = fileURLToPath(import.meta.resolve('node-pty'))
+const entry = createRequire(import.meta.url).resolve('node-pty')
 const packageRoot = dirname(dirname(entry))
 const candidates = [
   join(packageRoot, 'prebuilds', `${process.platform}-${process.arch}`, 'spawn-helper'),

@@ -9,6 +9,7 @@ function bundledCandidates(root: string): string[] {
     join(root, 'LibreOffice', 'program', 'soffice.exe'),
   ]
   if (process.platform === 'darwin') return [
+    join(root, 'program', 'soffice'),
     join(root, 'LibreOffice.app', 'Contents', 'MacOS', 'soffice'),
     join(root, 'Contents', 'MacOS', 'soffice'),
   ]

@@ -4,8 +4,9 @@
  */
 
 import { existsSync, readFileSync } from 'node:fs'
+import { createRequire } from 'node:module'
 import { dirname, resolve } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 import type { HarnessClientOptions } from './types.ts'
 
 /** Default bound for a profile to answer the SDK initialize handshake. */
@@ -41,6 +42,8 @@ interface PackageManifest {
   bin?: unknown
 }
 
+const require = createRequire(import.meta.url)
+
 /** Read a package manifest from one resolved package.json URL. */
 function manifest(url: string): PackageManifest {
   return JSON.parse(readFileSync(fileURLToPath(url), 'utf8')) as PackageManifest
@@ -71,7 +74,7 @@ export function resolveNeosisBinFromManifests(neosisManifestUrl: string, clientM
  */
 export function installedNeosisBin(): string {
   return resolveNeosisBinFromManifests(
-    import.meta.resolve('@averqel/neosis/package.json'),
+    pathToFileURL(require.resolve('@averqel/neosis/package.json')).href,
     new URL('../package.json', import.meta.url).href,
   )
 }
@@ -100,7 +103,7 @@ export function resolveNeosisNodeLaunchFromManifests(
       `@averqel/neosis is missing its built executable ${bin} and complete source launch files ${sourceBin}, ${sourcePatch}, ${sourceTsconfig}`,
     )
   }
-  const loader = sourceLoaderUrl ?? import.meta.resolve('tsx/esm')
+  const loader = sourceLoaderUrl ?? pathToFileURL(require.resolve('tsx/esm')).href
   return {
     nodeArgs: ['--import', loader, sourceBin],
     patches: [sourcePatch],
@@ -114,7 +117,7 @@ export function resolveNeosisNodeLaunchFromManifests(
  */
 function installedNeosisNodeLaunch(): NeosisNodeLaunch {
   return resolveNeosisNodeLaunchFromManifests(
-    import.meta.resolve('@averqel/neosis/package.json'),
+    pathToFileURL(require.resolve('@averqel/neosis/package.json')).href,
     new URL('../package.json', import.meta.url).href,
   )
 }

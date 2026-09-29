@@ -13,6 +13,7 @@
 
 import { clearedProxyEnv } from '@averqel/neosis-http-proxy'
 import { mkdtemp, rm } from 'node:fs/promises'
+import { createRequire } from 'node:module'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { execa } from 'execa'
@@ -24,6 +25,8 @@ export {
 } from './agent-turn.ts'
 
 const DEFAULT_PROCESS_TIMEOUT_MS = 30_000
+
+const require = createRequire(import.meta.url)
 
 /** Vitest deadline that leaves room for the subprocess-owned 30-second diagnostic timeout. */
 export const LOADER_SMOKE_TEST_TIMEOUT_MS = DEFAULT_PROCESS_TIMEOUT_MS + 15_000
@@ -121,8 +124,8 @@ export function resolveExampleLaunch(options: ExampleLaunchOptions): ExampleLaun
       throw new Error("resolveExampleLaunch: 'src' mode needs tsconfigPath for the workspace paths map.")
     }
     const tsxLoader = options.sourceImport === 'tsx/esm'
-      ? import.meta.resolve('tsx/esm')
-      : import.meta.resolve('tsx')
+      ? require.resolve('tsx/esm')
+      : require.resolve('tsx')
     env.TSX_TSCONFIG_PATH = options.tsconfigPath
     return { command: process.execPath, args: ['--import', tsxLoader, options.srcBin, ...configArgs], env }
   }

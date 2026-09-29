@@ -1,7 +1,7 @@
 /** Chromium browser tools from the pinned Playwright MCP server. @module */
 
 import { dirname, join } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { createRequire } from 'node:module'
 import type { Context } from '@averqel/cordis'
 import { BrowserMcpConfig, mountSessionMcp, validateBrowserMcpConfig } from '@averqel/neosis-experimental-browser-use-runtime/mcp'
 
@@ -17,6 +17,8 @@ export type Config = BrowserMcpConfig
 /** Validate the launch or attachment configuration before activation. */
 export const Config: typeof BrowserMcpConfig = BrowserMcpConfig
 
+const require = createRequire(import.meta.url)
+
 /**
  * Expose Playwright's upstream tools in each live Session's scope.
  * The pinned npm server runs under the current Node executable; browser state is not persisted by NEOSIS.
@@ -25,7 +27,7 @@ export const Config: typeof BrowserMcpConfig = BrowserMcpConfig
  */
 export function apply(ctx: Context, config: Config): void {
   validateBrowserMcpConfig(config)
-  const cli = join(dirname(fileURLToPath(import.meta.resolve('@playwright/mcp/package.json'))), 'cli.js')
+  const cli = join(dirname(require.resolve('@playwright/mcp/package.json')), 'cli.js')
   // Upstream environment options can otherwise replace the configured browser
   // mode or import an unrelated profile. Empty values mean absent to its parser.
   const env = Object.fromEntries(Object.keys(process.env)

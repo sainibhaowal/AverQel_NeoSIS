@@ -1,6 +1,6 @@
 /** Chromium inspection and automation through the pinned Chrome DevTools MCP server. @module */
 
-import { fileURLToPath } from 'node:url'
+import { createRequire } from 'node:module'
 import type { Context } from '@averqel/cordis'
 import { BrowserMcpConfig, mountSessionMcp, validateBrowserMcpConfig } from '@averqel/neosis-experimental-browser-use-runtime/mcp'
 
@@ -16,6 +16,8 @@ export type Config = BrowserMcpConfig
 /** Validate the launch or attachment configuration before activation. */
 export const Config: typeof BrowserMcpConfig = BrowserMcpConfig
 
+const require = createRequire(import.meta.url)
+
 /**
  * Expose Chrome DevTools' upstream catalog through one MCP process per live Session.
  * Attached browsers remain externally owned; the server disables usage statistics.
@@ -24,7 +26,7 @@ export const Config: typeof BrowserMcpConfig = BrowserMcpConfig
  */
 export function apply(ctx: Context, config: Config): void {
   validateBrowserMcpConfig(config)
-  const cli = fileURLToPath(import.meta.resolve('chrome-devtools-mcp/build/src/bin/chrome-devtools-mcp.js'))
+  const cli = require.resolve('chrome-devtools-mcp/build/src/bin/chrome-devtools-mcp.js')
   const args = [cli, '--no-usage-statistics']
   if (config.mode === 'attach') {
     args.push(/^wss?:/u.test(config.endpoint) ? '--ws-endpoint' : '--browser-url', config.endpoint)

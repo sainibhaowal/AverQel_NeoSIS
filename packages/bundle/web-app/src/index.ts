@@ -81,7 +81,7 @@ const LOOPBACK_HOST = '127.0.0.1'
 /** The webserver schema's all-interfaces bind literal. */
 const ALL_INTERFACES_HOST = '0.0.0.0'
 
-const BROWSER_OPENER_MODULE = import.meta.resolve('open')
+const BROWSER_OPENER_MODULE = createRequire(import.meta.url).resolve('open')
 
 const BROWSER_OPENER_PROGRAM = `
 try {
