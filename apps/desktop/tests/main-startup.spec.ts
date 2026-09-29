@@ -1607,7 +1607,11 @@ describe('desktop main startup', () => {
       primaryRuntime: join('desktop-test-resources', 'runtime', 'primary-runtime'),
       profile: 'desktop-test-profile',
     })
-    expect(harness.hosts[0]!.environment).toBe(process.env)
+    expect(harness.hosts[0]!.environment).toMatchObject({
+      ...process.env,
+      NEOSIS_OFFICE_BUNDLE_REQUIRED: '1',
+      NEOSIS_OFFICE_BUNDLE_ROOT: join('desktop-test-resources', 'office'),
+    })
     expect(harness.hosts[0]!.start).toHaveBeenCalledTimes(1)
     expect(harness.windows).toHaveLength(1)
     expect(window.urls).toEqual(['neosis-app://app/'])

@@ -1,4 +1,4 @@
-name: CI
+name: AverQel NeoSIS CI (pull request)
 
 on:
   pull_request:

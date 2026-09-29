@@ -8,6 +8,7 @@ import { createReadStream } from 'node:fs'
 import { stat } from 'node:fs/promises'
 import { dirname, isAbsolute, join, relative, resolve } from 'node:path'
 import type { FileSystem, FsInfo, FsTarget, FsVersion } from '@averqel/neosis-fs'
+import { neosisHomeDisplay } from '@averqel/neosis-home-paths'
 
 import { assertNever } from '@averqel/neosis-util-values'
 import { resolveConfig, resolveDiscoveryConfig, type ResolvedConfig } from './config.ts'
@@ -493,7 +494,9 @@ export async function probeScopeInstruction(
   if (info?.type !== 'file') return { kind: 'absent' }
   const file: ProbedInstructionFile = {
     absolutePath,
-    displayPath: directory === USER_GLOBAL_DIRECTORY ? userGlobalDisplayPath(resolved.neosisHome) : relativeDisplay(projectRoot, absolutePath),
+    displayPath: directory === USER_GLOBAL_DIRECTORY
+      ? userGlobalDisplayPath(resolved.neosisHome)
+      : relativeDisplay(projectRoot, absolutePath),
     target,
     version: info.version,
     ...info.size === undefined ? {} : { size: info.size },
@@ -526,5 +529,5 @@ export async function readScopeInstruction(
 }
 
 function userGlobalDisplayPath(neosisHome: string): string {
-  return `${neosisHome}/AGENTS.md`
+  return `${neosisHomeDisplay(neosisHome)}/${USER_GLOBAL_FILE}`
 }

@@ -1,10 +1,11 @@
 import { Context } from '@averqel/cordis'
 import { LocalSubprocessRuntime } from '@averqel/neosis-subprocess-local'
 import { SUBPROCESS_CONTROL_ENV } from '@averqel/neosis-subprocess/control'
+import { createRequire } from 'node:module'
 import { mkdir, mkdtemp, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 import { afterEach, describe, expect, it } from 'vitest'
 
 let ctx: Context | undefined
@@ -50,7 +51,7 @@ describe.skipIf(process.platform !== 'win32')('managed Windows ACL control pipe'
     ctx = new Context()
     await ctx.plugin(LocalSubprocessRuntime)
     const runner = fileURLToPath(new URL('../src/runner.ts', import.meta.url))
-    const helper = import.meta.resolve('@averqel/neosis-subprocess/src/control.ts')
+    const helper = pathToFileURL(createRequire(import.meta.url).resolve('@averqel/neosis-subprocess/src/control.ts')).href
     const program = `
       const { openInheritedControlChannel } = await import(process.argv[1]);
       const { writeFileSync } = await import('node:fs');

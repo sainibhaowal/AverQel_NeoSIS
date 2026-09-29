@@ -1,16 +1,20 @@
 /** Invalid host envelopes terminate only the owned Worker with a diagnostic. */
 
 import { once } from 'node:events'
+import { createRequire } from 'node:module'
 import { Worker } from 'node:worker_threads'
 import { finished } from 'node:stream/promises'
+import { pathToFileURL } from 'node:url'
 import { expect, it } from 'vitest'
 import { request } from '../src/worker-rpc.ts'
+
+const tsxApi = pathToFileURL(createRequire(import.meta.url).resolve('tsx/esm/api')).href
 
 it('reports malformed requests before exiting its real Worker', async () => {
   const hooks = new URL('../../../../snapshots/session/browser-use-stagehand-native/native-fixture.mjs', import.meta.url)
   const entry = new URL('../src/worker.ts', import.meta.url)
   const bootstrap = [
-    `import { register } from ${JSON.stringify(import.meta.resolve('tsx/esm/api'))}; register();`,
+    `import { register } from ${JSON.stringify(tsxApi)}; register();`,
     `import { installExternalBrowserHooks } from ${JSON.stringify(hooks.href)}; installExternalBrowserHooks();`,
     `await import(${JSON.stringify(entry.href)});`,
   ].join('\n')

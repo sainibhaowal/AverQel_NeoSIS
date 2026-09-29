@@ -118,7 +118,7 @@ describe('configurable-provider directory', () => {
     ])
     listed[0]!.displayName = 'mutated'
     ;(listed[1]!.settingsPath as string[]).push('mutated')
-    expect(ctx.llm.listConfigurableProviders()[0]!.displayName).toBe('AverQel')
+    expect(ctx.llm.listConfigurableProviders()[0]!.displayName).toBe('DeepSeek')
     expect(ctx.llm.listConfigurableProviders()[1]!.settingsPath).toEqual(['providers', 'openai'])
   })
 

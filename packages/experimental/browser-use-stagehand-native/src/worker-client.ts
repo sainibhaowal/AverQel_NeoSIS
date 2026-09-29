@@ -2,6 +2,7 @@
 
 import { Worker } from 'node:worker_threads'
 import { createRequire } from 'node:module'
+import { pathToFileURL } from 'node:url'
 import { StagehandDrainError } from './native.ts'
 import type { NativeBrowserConfig, NativeBrowserRuntime } from './native.ts'
 import { request } from './worker-rpc.ts'
@@ -29,7 +30,7 @@ export async function openBrowserWorker(
     worker = new Worker(entry, { workerData: config, execArgv: [], env })
   } else {
     const source = new URL('./worker.ts', import.meta.url)
-    const bootstrap = `import { register } from ${JSON.stringify(require.resolve('tsx/esm/api'))}; register(); await import(${JSON.stringify(source.href)})`
+    const bootstrap = `import { register } from ${JSON.stringify(pathToFileURL(require.resolve('tsx/esm/api')).href)}; register(); await import(${JSON.stringify(source.href)})`
     worker = new Worker(new URL(`data:text/javascript,${encodeURIComponent(bootstrap)}`), { workerData: config, execArgv: [], env })
   }
   let termination: Promise<number> | undefined

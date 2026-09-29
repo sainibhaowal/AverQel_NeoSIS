@@ -34,8 +34,7 @@ describe('THIRD_PARTY_NOTICES.md', () => {
     const generated = await render()
     expect(generated).toContain('It depends on the third-party software listed below.')
     expect(generated).toContain(`| [\`numpy\`](https://github.com/numpy/numpy) | ${primaryRuntimeLock.pythonPackages.numpy} | BSD-3-Clause |`)
-    expect(generated).toContain('## LibreOffice conversion kit')
-    expect(generated).toContain('Recipients must have access to those corresponding sources and notices.')
+    expect(generated).not.toContain('LibreOffice conversion kit')
     expect(readFileSync(resolve(root, 'THIRD_PARTY_NOTICES.md'), 'utf8'), 'stale notices — run `pnpm run gen-third-party-notices`').toBe(generated)
   })
 })
@@ -51,27 +50,6 @@ function workspace(entries: Record<string, Manifest>): { manifests: Map<string, 
 }
 
 describe('tierExternalDeps', () => {
-  it('limits the LibreOffice exception to its reviewed package identity and MPL terms', () => {
-    for (const name of [
-      '@averqel/libreoffice-kit', '@averqel/libreoffice-kit-wasm',
-      '@averqel/libreoffice-kit-darwin-arm64', '@averqel/libreoffice-kit-darwin-x64',
-      '@averqel/libreoffice-kit-win32-arm64', '@averqel/libreoffice-kit-win32-x64',
-    ]) {
-      expect(() => { assertRuntimeLicenses([{ name, license: 'MPL-2.0' }]) }).not.toThrow()
-      expect(() => { assertRuntimeLicenses([{ name, license: 'GPL-3.0-only' }]) }).toThrow(name)
-    }
-    for (const dependency of [
-      { name: 'unrelated-library', license: 'MPL-2.0' },
-      { name: '@averqel/neosis-libreoffice-kit', license: 'MPL-2.0' },
-      { name: '@averqel/libreoffice-kit-unreviewed', license: 'MPL-2.0' },
-      { name: '@averqel/libreoffice-kit', license: 'GPL-3.0-only' },
-      { name: '@averqel/libreoffice-kit', license: 'UNKNOWN' },
-    ]) {
-      expect(() => { assertRuntimeLicenses([dependency]) }).toThrow(`${dependency.name} (${dependency.license})`)
-    }
-    expect(isPermissive('MPL-2.0')).toBe(false)
-  })
-
   it('keeps license rejection active when a browser library is declared for development', () => {
     const { manifests, names } = workspace({
       'packages/client/ui/package.json': { devDependencies: { 'browser-lib': '^1', 'test-tool': '^1' } },
@@ -315,7 +293,7 @@ describe('collectPythonDependencies', () => {
   it('excludes normalized local project names without exempting a third-party prefix', () => {
     const pyprojects = [
       '[project]\nname = "averqel-neosis-runtime-bin"\ndependencies = ["pydantic"]\n',
-      '[project]\nname = "averqel-neosis-sdk"\ndependencies = ["AverQel.Harness_Runtime-Bin", "deepseek-unrelated"]\n',
+      '[project]\nname = "averqel-neosis-sdk"\ndependencies = ["AverQel.Neosis_Runtime-Bin", "deepseek-unrelated"]\n',
     ]
     expect(() => collectPythonDependencies(pyprojects)).toThrow(
       'python dependency deepseek-unrelated is missing from PYTHON_METADATA',

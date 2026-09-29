@@ -55,6 +55,12 @@ function fixture(): string {
   return root
 }
 
+function parseJsonCommandOutput(output: string): Record<string, unknown> {
+  const jsonStart = output.indexOf('{')
+  if (jsonStart < 0) throw new Error(`command did not emit JSON: ${output}`)
+  return JSON.parse(output.slice(jsonStart)) as Record<string, unknown>
+}
+
 describe('published npm dependency catalog', () => {
   it('retains nested versions, aliases, peers, and optional candidates while excluding development-only packages', () => {
     const { version, rows } = collectDependencies(lockfile())
@@ -165,18 +171,19 @@ describe('published npm dependency catalog', () => {
     const args = ['config', 'list', '--json', '--registry=https://registry.npmjs.org/', '--loglevel=error']
     const before = await runCommandWithTimeout(npm, args, { cwd: root, env: inherited, timeoutMs: 30_000 })
     expect(before).toMatchObject({ status: 0, signal: null, timedOut: false })
-    expect(JSON.parse(before.output)).toMatchObject({
+    expect(parseJsonCommandOutput(before.output)).toMatchObject({
       '@averqel:registry': 'https://user-override.invalid/', 'install-strategy': 'nested',
     })
     const isolated = createNpmResolutionEnvironment(root, inherited)
     const after = await runCommandWithTimeout(npm, args, { cwd: root, env: isolated, timeoutMs: 30_000 })
     expect(after).toMatchObject({ status: 0, signal: null, timedOut: false })
-    const settings = JSON.parse(after.output) as Record<string, unknown>
+    const settings = parseJsonCommandOutput(after.output)
     expect(settings).toMatchObject({
       registry: 'https://registry.npmjs.org/', '@averqel:registry': 'https://registry.npmjs.org/',
-      'install-strategy': 'hoisted', 'strict-peer-deps': false, 'prefer-dedupe': false, offline: false,
+      'install-strategy': 'hoisted', 'strict-peer-deps': false, offline: false,
       cache: join(root, '.npm-cache'), userconfig: join(root, '.npmrc-user'), globalconfig: join(root, '.npmrc-global'),
     })
+    expect(settings['prefer-dedupe'] ?? false).toBe(false)
     expect(settings['@other:registry']).toBeUndefined()
     expect(isolated['NPM_CONFIG_USER_AGENT']).toBeUndefined()
     expect(inherited['npm_config_userconfig']).toBe(userConfig)

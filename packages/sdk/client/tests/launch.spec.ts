@@ -1,6 +1,7 @@
 /** Public neosis launch resolution for the TypeScript SDK. */
 
 import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { createRequire } from 'node:module'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
@@ -14,6 +15,7 @@ import {
 } from '../src/launch.ts'
 
 const cleanups: string[] = []
+const tsxLoader = pathToFileURL(createRequire(import.meta.url).resolve('tsx/esm')).href
 afterEach(() => {
   for (const path of cleanups.splice(0)) rmSync(path, { recursive: true, force: true })
 })
@@ -41,7 +43,7 @@ describe('SDK neosis launch resolution', () => {
     expect(launch.args).toEqual(existsSync(bin)
       ? [bin, '--profile', 'sdk']
       : [
-        '--import', import.meta.resolve('tsx/esm'), resolve(bin, '..', '..', 'src/bin.ts'),
+        '--import', tsxLoader, resolve(bin, '..', '..', 'src/bin.ts'),
         '--profile', 'sdk',
         '--patch', resolve(bin, '..', '..', 'src/sdk-source.cordis.patch.yml'),
       ])
@@ -101,7 +103,7 @@ describe('SDK neosis launch resolution', () => {
       })
     expect(resolveNeosisNodeLaunchFromManifests(pair.neosisUrl, pair.clientUrl))
       .toEqual({
-        nodeArgs: ['--import', import.meta.resolve('tsx/esm'), sourceBin],
+        nodeArgs: ['--import', tsxLoader, sourceBin],
         patches: [sourcePatch],
         environment: { TSX_TSCONFIG_PATH: sourceTsconfig },
       })

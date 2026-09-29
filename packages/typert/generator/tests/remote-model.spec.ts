@@ -1,11 +1,15 @@
 import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { createRequire } from 'node:module'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
+import { pathToFileURL } from 'node:url'
 import ts from 'typescript'
 import { afterEach, describe, expect, it } from 'vitest'
 import { WorkspaceAnalyzer } from '../src/analyzer.ts'
 import type { InvocationModel } from '../src/model.ts'
 import { WorkspaceTypertGenerator } from '../src/workspace.ts'
+
+const resolvePackage = createRequire(import.meta.url).resolve
 
 const fixtureRoot = resolve(import.meta.dirname, 'fixtures/remote-model')
 const temporaryRoots: string[] = []
@@ -66,7 +70,7 @@ describe('Remote model generation', { timeout: 60_000 }, () => {
     expect(artifact?.js).not.toContain('binaryResult')
     expect(artifact?.remote?.dts).toContain('Promise<RemoteResult<RemoteDecoded<BinaryFile>>>')
     const generated = await import(`data:text/javascript,${encodeURIComponent(
-      (artifact?.remote?.js ?? '').replace("from 'zod'", `from ${JSON.stringify(import.meta.resolve('zod'))}`),
+      (artifact?.remote?.js ?? '').replace("from 'zod'", `from ${JSON.stringify(pathToFileURL(resolvePackage('zod')).href)}`),
     )}`) as RuntimeRemoteModule
     const descriptor = generated.TYPERT_REMOTE.descriptors.find(invocation => invocation.id.endsWith('/bytes'))
     expect(descriptor?.result.decode).toBeTypeOf('function')
@@ -164,7 +168,7 @@ export interface BinaryTree {
     )}`)
     const [artifact] = new WorkspaceTypertGenerator(root).generate()
     const generated = await import(`data:text/javascript,${encodeURIComponent(
-      (artifact?.remote?.js ?? '').replace("from 'zod'", `from ${JSON.stringify(import.meta.resolve('zod'))}`),
+      (artifact?.remote?.js ?? '').replace("from 'zod'", `from ${JSON.stringify(pathToFileURL(resolvePackage('zod')).href)}`),
     )}`) as RuntimeRemoteModule
     const codec = (method: string) => {
       const descriptor = generated.TYPERT_REMOTE.descriptors.find(item => item.id.endsWith(`/${method}`))
@@ -382,7 +386,7 @@ void binaryTree
 
     const remoteJs = artifact?.remote?.js
     if (remoteJs === undefined) throw new Error('Remote fixture emitted no Host-for-Client JavaScript')
-    const executable = remoteJs.replace("from 'zod'", `from ${JSON.stringify(import.meta.resolve('zod'))}`)
+    const executable = remoteJs.replace("from 'zod'", `from ${JSON.stringify(pathToFileURL(resolvePackage('zod')).href)}`)
     const generated = await import(`data:text/javascript,${encodeURIComponent(executable)}`) as RuntimeRemoteModule
     expect(generated.TYPERT_REMOTE.package).toBe('@fixture/remote')
     const create = generated.TYPERT_REMOTE.descriptors[0]
@@ -438,7 +442,7 @@ export type {`,
 
     const remoteJs = artifact?.remote?.js
     if (remoteJs === undefined) throw new Error('undefined Remote fixture emitted no Host-for-Client JavaScript')
-    const executable = remoteJs.replace("from 'zod'", `from ${JSON.stringify(import.meta.resolve('zod'))}`)
+    const executable = remoteJs.replace("from 'zod'", `from ${JSON.stringify(pathToFileURL(resolvePackage('zod')).href)}`)
     const generated = await import(`data:text/javascript,${encodeURIComponent(executable)}`) as RuntimeRemoteModule
     const maybe = generated.TYPERT_REMOTE.descriptors.find(descriptor => descriptor.id.endsWith('/maybe'))
     const clear = generated.TYPERT_REMOTE.descriptors.find(descriptor => descriptor.id.endsWith('/clear'))
@@ -518,7 +522,7 @@ export type {`,
 
     const remoteJs = artifact?.remote?.js
     if (remoteJs === undefined) throw new Error('RemoteStream fixture emitted no Host-for-Client JavaScript')
-    const executable = remoteJs.replace("from 'zod'", `from ${JSON.stringify(import.meta.resolve('zod'))}`)
+    const executable = remoteJs.replace("from 'zod'", `from ${JSON.stringify(pathToFileURL(resolvePackage('zod')).href)}`)
     const generated = await import(`data:text/javascript,${encodeURIComponent(executable)}`) as RuntimeRemoteModule
     const descriptor = generated.TYPERT_REMOTE.descriptors.find(candidate => candidate.id.endsWith('/attach'))
     expect(descriptor?.mode).toBe('stream')
@@ -613,7 +617,7 @@ export type GenericResult = {
     )
     const remoteJs = artifact?.remote?.js
     if (remoteJs === undefined) throw new Error('generic Remote fixture emitted no Host-for-Client JavaScript')
-    const executable = remoteJs.replace("from 'zod'", `from ${JSON.stringify(import.meta.resolve('zod'))}`)
+    const executable = remoteJs.replace("from 'zod'", `from ${JSON.stringify(pathToFileURL(resolvePackage('zod')).href)}`)
     const generated = await import(`data:text/javascript,${encodeURIComponent(executable)}`) as RuntimeRemoteModule
     const dispatch = generated.TYPERT_REMOTE.descriptors.find(descriptor => descriptor.id.endsWith('/dispatch'))
     const schema = dispatch?.parameters[0]?.codec.create()

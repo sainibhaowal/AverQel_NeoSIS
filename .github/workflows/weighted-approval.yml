@@ -1,4 +1,4 @@
-name: weighted-approval
+name: AverQel NeoSIS — Weighted approval
 
 on:
   pull_request_target:
@@ -6,7 +6,7 @@ on:
   issue_comment:
     types: [created, edited, deleted]
   workflow_run:
-    workflows: [weighted-approval-review-event]
+    workflows: [AverQel NeoSIS — Weighted approval review event]
     types: [completed]
 
 permissions:

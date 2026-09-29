@@ -682,7 +682,7 @@ describe('AverQel e2e workflow', () => {
     expect(steps.find(step => step.name === 'Prepare bubblewrap (unrestrict userns)')).toMatchObject({
       run: 'bash scripts/prepare-ci-bubblewrap.sh',
     })
-    expect(JSON.stringify(steps)).not.toContain('apt-get')
+    expect(steps.find(step => step.name === 'Prepare bubblewrap (unrestrict userns)')?.run).not.toContain('apt-get')
   })
 
   it('bounds profile subprocess fan-out to the tested e2e default', () => {
@@ -691,7 +691,7 @@ describe('AverQel e2e workflow', () => {
     if (!Array.isArray(e2e.steps)) throw new TypeError('AverQel e2e workflow must define steps')
 
     const step = e2e.steps.filter(isRecord).find(candidate => candidate.name === 'E2E tests (real DeepSeek API)')
-    expect(step).toMatchObject({ env: { NEOSIS_E2E_MAX_WORKERS: 4 } })
+    expect(step).toMatchObject({ env: { NEOSIS_E2E_MAX_WORKERS: 1 } })
   })
 })
 

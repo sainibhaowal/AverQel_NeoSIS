@@ -363,7 +363,7 @@ describe('neosis-doc skill consolidation', () => {
   })
 
   it('maps retrospective release comparisons to their dedicated document kind', () => {
-    const files = globSync('docs/persistence-changes/releases/neosis-*.md', { cwd: root })
+    const files = globSync('docs/persistence-changes/releases/dsh-*.md', { cwd: root })
     expect(files.length).toBeGreaterThan(0)
     for (const file of files) {
       const metadata = readFrontmatter(file)

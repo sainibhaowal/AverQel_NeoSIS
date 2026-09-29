@@ -568,9 +568,16 @@ export class LocalSandboxProvider extends SandboxProvider {
   private windowsAclRunnerInvocation(): string[] {
     const override = this.internals.windowsAclRunnerArgs
     if (override !== undefined) return override
-    const builtEntry = this.internals.windowsAclRunnerEntry
-      ?? require.resolve('@averqel/neosis-sandbox-windows-acl/runner')
-    if (existsSync(builtEntry)) return [process.execPath, builtEntry]
+    let builtEntry = this.internals.windowsAclRunnerEntry
+    if (builtEntry === undefined) {
+      try {
+        builtEntry = require.resolve('@averqel/neosis-sandbox-windows-acl/runner')
+      } catch (error) {
+        // A missing export is expected before the optional Windows runner is built.
+        if (!(error instanceof Error)) throw error
+      }
+    }
+    if (builtEntry !== undefined && existsSync(builtEntry)) return [process.execPath, builtEntry]
     const sourceEntry = require.resolve('@averqel/neosis-sandbox-windows-acl/src/runner.ts')
     const sourceConfig = fileURLToPath(new URL('../../../../tsconfig.base.json', import.meta.url))
     const tsxApi = pathToFileURL(require.resolve('tsx/esm/api')).href

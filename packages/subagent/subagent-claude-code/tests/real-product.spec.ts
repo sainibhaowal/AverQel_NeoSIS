@@ -1,4 +1,5 @@
 import { execFile } from 'node:child_process'
+import { createRequire } from 'node:module'
 import {
   existsSync,
   mkdirSync,
@@ -10,7 +11,6 @@ import {
 import { rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
-import { fileURLToPath } from 'node:url'
 import { promisify } from 'node:util'
 import type {
   Query,
@@ -76,9 +76,8 @@ vi.mock('@anthropic-ai/claude-agent-sdk', async (importOriginal) => {
 })
 
 const execFileAsync = promisify(execFile)
-const sdkRoot = dirname(fileURLToPath(
-  import.meta.resolve('@anthropic-ai/claude-agent-sdk'),
-))
+const resolvePackage = createRequire(import.meta.url).resolve
+const sdkRoot = dirname(resolvePackage('@anthropic-ai/claude-agent-sdk'))
 const sdkPackage = JSON.parse(readFileSync(
   join(sdkRoot, 'package.json'),
   'utf8',

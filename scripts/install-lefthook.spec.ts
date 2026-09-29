@@ -1,4 +1,5 @@
 import { spawn, spawnSync } from 'node:child_process'
+import { createRequire } from 'node:module'
 import {
   chmodSync,
   existsSync,
@@ -21,7 +22,7 @@ import { removeFixtureSafely, unlinkFixtureLinks } from './test-fixture-cleanup.
 const installer = fileURLToPath(new URL('./install-lefthook.mjs', import.meta.url))
 const pairingMergeDriver = 'scripts/merge-translation-pairing-driver.sh %O %A %B %P'
 const scriptsDirectory = fileURLToPath(new URL('.', import.meta.url))
-const tsxPackageDirectory = dirname(fileURLToPath(import.meta.resolve('tsx/package.json')))
+const tsxPackageDirectory = dirname(createRequire(import.meta.url).resolve('tsx/package.json'))
 const fixtures: string[] = []
 
 interface Fixture {

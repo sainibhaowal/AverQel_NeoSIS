@@ -1,6 +1,7 @@
 /** One-time custom-profile initialization from shipped templates. */
 
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { createRequire } from 'node:module'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -17,7 +18,7 @@ import { execa } from 'execa'
 import { initializeProfileFromDefault } from '../src/profile-boot.ts'
 
 const childEntry = fileURLToPath(new URL('./fixtures/initialize-profile-from-default.ts', import.meta.url))
-const tsxLoader = import.meta.resolve('tsx/esm')
+const tsxLoader = createRequire(import.meta.url).resolve('tsx/esm')
 const CHILD_TIMEOUT_MS = 30_000
 
 /** Wait until a child has reached the shared creation barrier. */

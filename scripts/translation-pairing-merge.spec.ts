@@ -1,6 +1,7 @@
 /** Integration coverage for automatic and explicit pairing-record conflict resolution. */
 
 import { execFileSync, spawnSync } from 'node:child_process'
+import { createRequire } from 'node:module'
 import {
   chmodSync,
   mkdtempSync,
@@ -28,7 +29,7 @@ import { removeFixtureSafely } from './test-fixture-cleanup.ts'
 const driver = fileURLToPath(new URL('./merge-translation-pairing.ts', import.meta.url))
 const driverLauncher = fileURLToPath(new URL('./merge-translation-pairing-driver.sh', import.meta.url))
 const workspaceRoot = fileURLToPath(new URL('../', import.meta.url))
-const tsxLoader = import.meta.resolve('tsx/esm')
+const tsxLoader = createRequire(import.meta.url).resolve('tsx/esm')
 const fixtures: string[] = []
 
 interface Fixture {

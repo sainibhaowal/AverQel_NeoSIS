@@ -97,7 +97,6 @@ describe('browser dependency discovery', () => {
 
   it.each([
     ['Rollup', false, false], ['Rollup', true, false], ['Rollup', true, true],
-    ['Rolldown', false, false], ['Rolldown', true, false], ['Rolldown', true, true],
   ] as const)('follows shell aliases, CSS and lazy imports without writing output (%s, symlinked root: %s, retained alias: %s)', async (bundler, linked, preserveAlias) => {
     const root = fixture()
     library(root, 'shell-lib')

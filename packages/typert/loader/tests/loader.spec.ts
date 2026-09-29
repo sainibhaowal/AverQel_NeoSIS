@@ -119,7 +119,7 @@ async function boot(): Promise<Context> {
 async function linkZod(base: string): Promise<void> {
   const { symlink } = await import('node:fs/promises')
   const target = join(base, 'node_modules', 'zod')
-  const source = fileURLToPath(new URL('.', import.meta.resolve('zod/package.json')))
+  const source = fileURLToPath(new URL('.', pathToFileURL(createRequire(import.meta.url).resolve('zod/package.json'))))
   await mkdir(join(base, 'node_modules'), { recursive: true })
   await symlink(source, target, process.platform === 'win32' ? 'junction' : 'dir')
 }

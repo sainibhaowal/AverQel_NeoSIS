@@ -415,8 +415,8 @@ describe('face-aware source classification', () => {
 
     expect([...subject.hostRuntimeSourceUses]).toEqual([])
     expect([...expectedPackageDependencies(subject)].map(([name, rule]) => [name, rule.section]).sort()).toEqual([
-      ['@browser/kit', 'devDependencies'],
       [CORDIS, 'peer-dev'],
+      ['@browser/kit', 'devDependencies'],
       ['augmented', 'devDependencies'],
       ['hidden-value', 'devDependencies'],
       ['host-types', 'devDependencies'],

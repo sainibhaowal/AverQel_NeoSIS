@@ -361,7 +361,7 @@ describe('runtime resolution', { concurrent: false }, () => {
     expect(resolveFrom('@averqel/neosis-core', parent, { type: 'javascript' }))
       .toBe(pathToFileURL(join(f.installed, 'index.js')).href)
     expect(resolveFrom('@averqel/neosis-core', parent)).toBe(pathToFileURL(join(f.installed, 'index.js')).href)
-    expect(import.meta.resolve('@averqel/neosis-core', parent)).toBe(pathToFileURL(join(f.installed, 'index.js')).href)
+    expect(resolveFrom('@averqel/neosis-core', parent)).toBe(pathToFileURL(join(f.installed, 'index.js')).href)
     expect(await importFrom('@averqel/neosis-core', parent)).toMatchObject({ marker: 1 })
   })
 

@@ -1,4 +1,4 @@
-name: weighted-approval-review-event
+name: AverQel NeoSIS — Weighted approval review event
 run-name: weighted-approval-review-event:${{ github.event.pull_request.number }}
 
 on:

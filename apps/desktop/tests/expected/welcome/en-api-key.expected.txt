@@ -1,7 +1,7 @@
 AverQel NeoSIS
 AverQel NeoSIS
 Add an API key to get started
-Configure official DeepSeek models to start using Harness
+Configure official AverQel models to start using Harness
 Enter API key [password]
 Save and continue [disabled]
 Set up later
