@@ -92,7 +92,7 @@ download_node_archive() {
     return 0
   fi
   echo 'wine-windows-gates: nodejs.org archive transfer stalled; resuming from the checksum-untrusted transport mirror' >&2
-  for attempt in 1 2 3; do
+  for attempt in 1 2 3 4 5; do
     if curl --fail --silent --show-error --location --http1.1 \
       --continue-at - --connect-timeout 10 --max-time 300 \
       --speed-limit 1024 --speed-time 30 \
@@ -101,7 +101,7 @@ download_node_archive() {
     else
       status=$?
     fi
-    (( attempt < 3 )) || break
+    (( attempt < 5 )) || break
     echo "wine-windows-gates: mirror transfer failed (exit $status) on attempt $attempt; resuming partial download" >&2
   done
   return "$status"
