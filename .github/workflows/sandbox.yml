@@ -63,7 +63,7 @@ jobs:
       ${{ matrix.runner == 'bwrap' && vars.NEOSIS_CI_FAILOVER_LINUX == 'blacksmith'
           && 'blacksmith-4vcpu-ubuntu-2404'
           || matrix.os }}
-    timeout-minutes: 20
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v6
 
