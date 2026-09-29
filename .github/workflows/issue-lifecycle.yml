@@ -9,10 +9,6 @@ on:
       - unlabeled
       - closed
       - reopened
-      - typed
-      - untyped
-      - field_added
-      - field_removed
   # This workflow checks out and executes only the trusted default-branch
   # policy. The target trigger is therefore required for its project token to
   # be available when a PR comes from a fork.

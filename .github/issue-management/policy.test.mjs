@@ -959,7 +959,7 @@ test('allocates lifecycle runners only for relevant reviews and PR body edits', 
   const issues = source.split('  issues:')[1].split('  pull_request_target:')[0]
   const pulls = source.split('  pull_request_target:')[1].split('  pull_request_review:')[0]
   const actions = (block) => [...block.matchAll(/^      - (\w+)$/gm)].map((match) => match[1])
-  assert.deepEqual(actions(issues), ['opened', 'edited', 'labeled', 'unlabeled', 'closed', 'reopened', 'typed', 'untyped', 'field_added', 'field_removed'])
+  assert.deepEqual(actions(issues), ['opened', 'edited', 'labeled', 'unlabeled', 'closed', 'reopened'])
   assert.deepEqual(actions(pulls), ['opened', 'edited', 'reopened', 'review_requested'])
   const job = source.slice(source.indexOf('  lifecycle:'))
   const beforeSteps = job.slice(0, job.indexOf('    steps:'))

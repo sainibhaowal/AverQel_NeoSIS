@@ -33,6 +33,11 @@ const neosisBuildWorkflows = [
   'release-publish.yml',
   'sandbox.yml',
 ]
+const disabledWorkflowNames = new Set(['release-publish.yml', 'release.yml'])
+
+function workflowPath(name: string): string {
+  return `.github/${disabledWorkflowNames.has(name) ? 'workflows-disabled' : 'workflows'}/${name}`
+}
 
 afterEach(() => {
   if (originalProbe === undefined) Reflect.deleteProperty(process.env, PROBE_NAME)
@@ -283,7 +288,7 @@ describe('client build environment', () => {
 
   it('keeps public client values out of workflow-wide environments', () => {
     for (const name of neosisBuildWorkflows) {
-      const path = `.github/workflows/${name}`
+      const path = workflowPath(name)
       const document: unknown = yaml.load(readFileSync(resolve(root, path), 'utf8'))
       if (typeof document !== 'object' || document === null || Array.isArray(document)) {
         throw new TypeError(`${path} must contain a workflow object`)

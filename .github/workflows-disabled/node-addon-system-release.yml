@@ -1,7 +1,7 @@
 # Build and publish the @averqel/node-addon-system package family from the
 # harness source of record. Rehearsal and publication consume the same packed
 # tarballs; each native binary is built on its matching architecture.
-name: Node Addon System Release
+name: AverQel NeoSIS — Node Addon System Release
 
 on:
   workflow_dispatch:

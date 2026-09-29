@@ -9,6 +9,14 @@ const root = resolve(import.meta.dirname, '../..')
 const repository = 'sainibhaowal/AverQel_Neosis'
 const selfhosted = ['self-hosted', 'linux', 'x64', 'vm-backup']
 const hosted = 'ubuntu-24.04'
+const disabledWorkflowNames = new Set([
+  'node-addon-system-release.yml',
+  'python-release.yml',
+  'release-publish.yml',
+  'release-vendor-publish.yml',
+  'release-vendor.yml',
+  'release.yml',
+])
 
 interface Step {
   name?: string
@@ -25,7 +33,8 @@ interface Workflow {
 }
 
 function workflow(file: string): Workflow {
-  return load(readFileSync(resolve(root, '.github/workflows', file), 'utf8')) as Workflow
+  const directory = disabledWorkflowNames.has(file) ? '.github/workflows-disabled' : '.github/workflows'
+  return load(readFileSync(resolve(root, directory, file), 'utf8')) as Workflow
 }
 
 // This canonical-case corpus has matching Actions/JavaScript comparison results.
@@ -86,14 +95,14 @@ for (const [file, jobIds] of [['release.yml', ['dependencies', 'pack']], ['relea
     const release = workflow(file)
     it('preserves the logical jobs, rehearsal events and read-only permission', () => {
       expect(Object.keys(release.jobs)).toEqual(jobIds)
-      expect(release.on).toEqual({ pull_request: null, push: { branches: ['master'] }, workflow_dispatch: null })
+      expect(release.on).toEqual({ pull_request: null, push: { branches: ['main', 'master'] }, workflow_dispatch: null })
       expect(release.permissions).toEqual({ contents: 'read' })
       expect(release.concurrency).toEqual({ group: '${{ github.workflow }}-${{ github.ref }}', 'cancel-in-progress': true })
     })
     for (const jobId of jobIds) {
       describe(jobId, () => {
         const job = release.jobs[jobId]!
-        it('routes trusted PRs and master pushes onto the existing Linux pool', () => {
+        it('routes trusted PRs and main/master pushes onto the existing Linux pool', () => {
           expect(evaluate(job['runs-on'], trustedPr)).toEqual(selfhosted)
           expect(evaluate(job['runs-on'], trustedPush)).toEqual(selfhosted)
           expect(evaluate(job['runs-on'], { ...trustedPush, 'vars.NEOSIS_CI_FAILOVER_LINUX': '' })).toBe(hosted)

@@ -3,22 +3,20 @@
 # the harness Node matrix. Each platform job builds once and tests those bytes
 # under every supported Node release. Release assembly and publication use the
 # companion Node Addon System Release workflow.
-name: Node Addon System
+name: AverQel NeoSIS — Node Addon System
 
 on:
   pull_request:
     paths:
       - '.github/workflows/node-addon-system.yml'
-      - '.github/workflows/node-addon-system-release.yml'
       - 'native/system/**'
       - 'package.json'
       - 'pnpm-lock.yaml'
       - 'pnpm-workspace.yaml'
   push:
-    branches: [master]
+    branches: [main, master]
     paths:
       - '.github/workflows/node-addon-system.yml'
-      - '.github/workflows/node-addon-system-release.yml'
       - 'native/system/**'
       - 'package.json'
       - 'pnpm-lock.yaml'

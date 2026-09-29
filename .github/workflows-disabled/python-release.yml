@@ -1,4 +1,4 @@
-name: Release (Python)
+name: AverQel NeoSIS — Release (Python)
 
 # A manual run with publish=false builds and validates the complete release
 # without registry credentials. Publication is accepted only from a manual run

@@ -1,4 +1,4 @@
-name: E2E (pi-ai Azure OpenAI and Anthropic)
+name: AverQel NeoSIS — E2E (pi-ai Azure OpenAI and Anthropic)
 
 # This suite spends tokens against two external providers and is intentionally
 # opt-in. It has no push, pull_request, schedule, or workflow_call trigger.

@@ -9,6 +9,7 @@ import { gatesForMode } from '../run-gates.ts'
 const root = resolve(import.meta.dirname, '../..')
 const primaryBranchPush = "github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')"
 const runtimeBuilder = './.github/workflows/build-exe-for-python-sdk.yml'
+const disabledWorkflowNames = new Set(['python-release.yml'])
 
 interface Job {
   if?: string | boolean
@@ -28,7 +29,8 @@ interface Workflow {
 }
 
 function workflow(name: string): Workflow {
-  return load(readFileSync(resolve(root, '.github/workflows', name), 'utf8')) as Workflow
+  const directory = disabledWorkflowNames.has(name) ? '.github/workflows-disabled' : '.github/workflows'
+  return load(readFileSync(resolve(root, directory, name), 'utf8')) as Workflow
 }
 
 function commands(job: Job): string[] {

@@ -12,6 +12,19 @@ function evaluateRunsOn(selector: unknown, context: Record<string, unknown>): un
 const root = resolve(import.meta.dirname, '..')
 const runnerPrivatePnpmDestination = /^\$\{\{ runner\.temp \}\}\/setup-pnpm-\$\{\{ github\.run_id \}\}-\$\{\{ github\.run_attempt \}\}$/
 const nativeWindowsPnpmDestination = '${{ runner.temp }}/setup-pnpm-js-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}'
+const disabledWorkflowNames = new Set([
+  'docs-pages.yml',
+  'node-addon-system-release.yml',
+  'python-release.yml',
+  'release-publish.yml',
+  'release-vendor-publish.yml',
+  'release-vendor.yml',
+  'release.yml',
+])
+
+function workflowPath(name: string): string {
+  return `.github/${disabledWorkflowNames.has(name) ? 'workflows-disabled' : 'workflows'}/${name}`
+}
 
 describe('CI workflow', () => {
   it('prepares confinement before Node compatibility smokes', () => {
@@ -27,7 +40,7 @@ describe('CI workflow', () => {
 
   it.each(['ci.yml', 'ci-master.yml', 'e2e.yml', 'release.yml', 'release-vendor.yml'])(
     '%s cancels superseded validation runs without crossing workflow or ref boundaries', (name) => {
-      const workflow = loadWorkflow('.github/workflows/' + name)
+      const workflow = loadWorkflow(workflowPath(name))
       expect(workflow.concurrency).toEqual({
         group: '${{ github.workflow }}-${{ github.ref }}',
         'cancel-in-progress': true,
@@ -45,11 +58,11 @@ describe('CI workflow', () => {
 
   it('does not cancel protected publication or deployment transactions', () => {
     for (const name of ['release-publish.yml', 'release-vendor-publish.yml']) {
-      const publish = workflowJob(loadWorkflow('.github/workflows/' + name), 'publish')
+      const publish = workflowJob(loadWorkflow(workflowPath(name)), 'publish')
       expect(publish.concurrency).toMatchObject({ 'cancel-in-progress': false })
     }
     for (const name of ['python-release.yml', 'node-addon-system-release.yml', 'docs-pages.yml']) {
-      expect(loadWorkflow('.github/workflows/' + name).concurrency).toMatchObject({ 'cancel-in-progress': false })
+      expect(loadWorkflow(workflowPath(name)).concurrency).toMatchObject({ 'cancel-in-progress': false })
     }
   })
 
@@ -697,7 +710,7 @@ describe('AverQel e2e workflow', () => {
 
 describe('Python release workflows', () => {
   it('keeps complete wheel validation separate from protected public publication', () => {
-    const workflow = loadWorkflow('.github/workflows/python-release.yml')
+    const workflow = loadWorkflow(workflowPath('python-release.yml'))
     const dispatch = workflowEvent(workflow, 'workflow_dispatch')
     const build = workflowJob(workflow, 'build')
     const pythonCompat = workflowJob(workflow, 'python-compat')
@@ -1053,8 +1066,6 @@ describe('Issue lifecycle workflow', () => {
     const issueEvents = workflowEvent(lifecycle, 'issues')
     expect(issueEvents.types).not.toContain('assigned')
     expect(issueEvents.types).not.toContain('unassigned')
-    expect(issueEvents.types).toContain('typed')
-    expect(issueEvents.types).toContain('untyped')
     const steps = lifecycleJob.steps.filter(isRecord)
     const handleStep = steps.find(s => s.name === 'Handle repository event')
     expect(handleStep?.if).toBeUndefined()
@@ -1097,7 +1108,7 @@ describe('npm release workflows', () => {
   it('keeps publication dispatch-only and pack in the PR workflow', () => {
     // pack stays in the PR/master release workflows so a PR proves the set packs.
     for (const file of ['release.yml', 'release-vendor.yml']) {
-      const workflow = loadWorkflow(`.github/workflows/${file}`)
+      const workflow = loadWorkflow(workflowPath(file))
       if (!isRecord(workflow.jobs)) throw new TypeError(`${file} must define jobs`)
       expect(Object.keys(workflow.jobs).sort()).toEqual(file === 'release.yml' ? ['dependencies', 'pack'] : ['pack'])
     }
@@ -1105,7 +1116,7 @@ describe('npm release workflows', () => {
     // publication is workflow_dispatch-only (never a PR check) and keeps the
     // npm-publish environment plus the shared dist-tag group.
     for (const file of ['release-publish.yml', 'release-vendor-publish.yml']) {
-      const workflow = loadWorkflow(`.github/workflows/${file}`)
+      const workflow = loadWorkflow(workflowPath(file))
       if (!isRecord(workflow.on) || !isRecord(workflow.jobs)) throw new TypeError(`${file} must define on and jobs`)
       expect(Object.keys(workflow.on)).toEqual(['workflow_dispatch'])
       const publish = workflow.jobs.publish
@@ -1116,7 +1127,7 @@ describe('npm release workflows', () => {
   })
 
   it('runs dependency policy and npm layout checks in the NEOSIS release workflow', () => {
-    const workflow = loadWorkflow('.github/workflows/release.yml')
+    const workflow = loadWorkflow(workflowPath('release.yml'))
     const dependencies = workflowJob(workflow, 'dependencies')
     if (!isRecord(workflow.on) || !Array.isArray(dependencies.steps)) {
       throw new TypeError('NEOSIS release workflow must define triggers and dependency steps')
@@ -1132,7 +1143,7 @@ describe('npm release workflows', () => {
 
 describe('Documentation site publication', () => {
   it('keeps Pages deployment dispatch-only from a neosis-v* tag', () => {
-    const workflow = loadWorkflow('.github/workflows/docs-pages.yml')
+    const workflow = loadWorkflow(workflowPath('docs-pages.yml'))
     const build = workflowJob(workflow, 'build')
     const deploy = workflowJob(workflow, 'deploy')
     if (!isRecord(workflow.on) || !isRecord(workflow.env) || !Array.isArray(build.steps)) {
