@@ -266,7 +266,7 @@ it('reports bootstrap rebuilds without remounting the settings page or navigatin
     await failure.getByRole('button', { name: '重试本页面同步' }).click()
     await failure.getByText(/replacing bootstrap module .* requires a page reload/).waitFor()
     await compareOrRefreshGolden(join(EXPECTED, 'bootstrap-rebuild.expected.md'), await captureStableAria(page, '[data-client-sync-failure]', scaffold.workspaceCwd), webSnapshotMode())
-    expect(await originalInput!.evaluate(input => input.isConnected)).toBe(true)
+    expect(await originalInput.evaluate(input => input.isConnected)).toBe(true)
     expect(await draft.inputValue()).toBe('unfinished-filter')
     expect(scaffold.ctx.loader.ctx.fiber.uid).toBe(host)
     expect(navigations).toBe(0)

@@ -83,7 +83,9 @@ export function apply(ctx: ClientContext): void {
   }, CurrentVersionRow))
   ctx.effect(() => ctx.locale.register(NS, { zh, en }), 'ui-settings-general: dictionaries')
   const connection = ctx.get('connection') as ConnectionHandle
-  const carrier = (globalThis as typeof globalThis & { neosisDesktop?: { protocolVersion: number; updates?: DesktopUpdateBridge } }).neosisDesktop
+  const carrier = (globalThis as typeof globalThis & {
+    neosisDesktop?: { protocolVersion: number; updates?: DesktopUpdateBridge }
+  }).neosisDesktop
   const desktopUpdate = new DesktopUpdateSource(carrier?.protocolVersion === 1 ? carrier.updates : undefined)
   ctx.effect(() => () => { desktopUpdate.dispose() }, 'ui-settings-general: desktop update carrier')
   ctx.slots.inject('sidebar.toggle.badge', () => ctx.slots.register({

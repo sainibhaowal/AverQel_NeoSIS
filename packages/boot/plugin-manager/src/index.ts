@@ -308,7 +308,9 @@ export class PluginManager extends TypertRemoteService {
     const manifest = readProfileManifest('neosis', this.profile.dir)
     const installation = JSON.parse(readFileSync(this.profile.installAnchor, 'utf8')) as InstallationManifest
     const known = new Set([
-      ...manifest.neosis?.profile?.bundles ?? [], ...Object.keys(manifest.dependencies ?? {}), ...Object.keys(installation.dependencies ?? {}),
+      ...manifest.neosis?.profile?.bundles ?? [],
+      ...Object.keys(manifest.dependencies ?? {}),
+      ...Object.keys(installation.dependencies ?? {}),
     ])
     const plan = registryPlan(options?.registry, await this.registries())
     const registry = plan[0] as Registry

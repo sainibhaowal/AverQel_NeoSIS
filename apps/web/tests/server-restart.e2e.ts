@@ -224,7 +224,7 @@ it.each([false, true])('keeps the same revision, Session and page across a serve
   expect(errors).toEqual([])
   expect(streamErrors).toEqual([])
   for (const graph of graphs.slice(beforeGraphs)) expect(graph).toEqual(graphs[beforeGraphs - 1])
-  expect(await originalRoot!.evaluate(element => element.isConnected)).toBe(true)
+  expect(await originalRoot.evaluate(element => element.isConnected)).toBe(true)
   expect(await composer.textContent()).toBe(draft)
   expect(await response.isVisible()).toBe(true)
 
