@@ -1,4 +1,4 @@
-name: Build PR preview
+name: AverQel NeoSIS — Build PR preview
 
 # Every push to a pull request publishes that pull request's preview to
 # Cloudflare Pages under its own branch alias, behind Cloudflare Access. The
@@ -75,7 +75,7 @@ jobs:
 
       - name: Build the preview page and pack the VFS image
         env:
-          NEOSIS_CLIENT_TITLE: NEOSIS preview pr-${{ github.event.pull_request.number }}
+          NEOSIS_CLIENT_TITLE: NeoSIS preview pr-${{ github.event.pull_request.number }}
         run: pnpm --filter @averqel/neosis-web-frontend run build:preview
 
       # Sourcemaps carry complete sources and stay off the deployment platform.

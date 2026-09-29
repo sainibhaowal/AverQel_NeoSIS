@@ -28,7 +28,7 @@ on:
         default: false
     secrets:
       DEEPSEEK_API_KEY_EXTERNAL:
-        description: Real AverQel API key for trusted installed-wheel pull-request tests.
+        description: DeepSeek API key for trusted installed-wheel pull-request tests.
         required: false
   workflow_dispatch:
     inputs:
