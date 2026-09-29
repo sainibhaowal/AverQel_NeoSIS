@@ -907,7 +907,7 @@ def smoke_sdk_office(base_url: str, executable: Path) -> None:
             # The startup plugin awaits a converter with a 120-second deadline before JSON-RPC is ready.
             initialize_timeout_seconds=180,
             request_timeout_seconds=180,
-        ):
+        ) as harness:
             result = harness.run("Reply with exactly OFFICE_SMOKE_DONE.", session_id="python-sdk-office-smoke")
             if result.final_response != EXPECTED_TEXT:
                 raise AssertionError(f"Office smoke runtime returned unexpected response: {result.final_response!r}")
