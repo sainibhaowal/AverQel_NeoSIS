@@ -353,6 +353,7 @@ jobs:
             sudo apt-get install -yq --no-install-recommends \
               libreoffice-core libreoffice-writer libreoffice-calc libreoffice-impress
           fi
+          echo "NEOSIS_OFFICE_EXECUTABLE=$(command -v soffice)" >> "$GITHUB_ENV"
 
       - name: Install LibreOffice conversion engine (macOS)
         if: runner.os == 'macOS'
@@ -363,6 +364,7 @@ jobs:
             brew install --cask libreoffice
           fi
           echo '/Applications/LibreOffice.app/Contents/MacOS' >> "$GITHUB_PATH"
+          echo "NEOSIS_OFFICE_EXECUTABLE=$soffice" >> "$GITHUB_ENV"
 
       - name: Install LibreOffice conversion engine (Windows)
         if: runner.os == 'Windows'
@@ -374,6 +376,7 @@ jobs:
             throw "LibreOffice executable is missing at $program"
           }
           $program >> $env:GITHUB_PATH
+          "NEOSIS_OFFICE_EXECUTABLE=$(Join-Path $program 'soffice.exe')" >> $env:GITHUB_ENV
 
       - name: Run installed-wheel keyless black-box tests (POSIX)
         if: runner.os != 'Windows'
