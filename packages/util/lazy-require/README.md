@@ -5,7 +5,7 @@ kind: "package-library"
 
 # @averqel/neosis-lazy-require
 
-English | [中文](README.zh.md)
+English
 
 ## Summary
 

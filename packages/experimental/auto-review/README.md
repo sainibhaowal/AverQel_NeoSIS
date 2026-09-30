@@ -5,7 +5,7 @@ kind: "package-bundle"
 
 # @averqel/neosis-experimental-auto-review
 
-English | [中文](README.zh.md)
+English
 
 ## Summary
 

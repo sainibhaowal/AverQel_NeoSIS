@@ -1,6 +1,6 @@
 # averqel-neosis-runtime-bin
 
-English | [中文](README.zh.md)
+English
 
 Platform runtime wheel for the AverQel NeoSIS Python SDK. It packages the normal `neosis` CLI and its closed Node dependency tree into a native executable, so SDK use requires no system Node.js. This package publishes wheels only.
 

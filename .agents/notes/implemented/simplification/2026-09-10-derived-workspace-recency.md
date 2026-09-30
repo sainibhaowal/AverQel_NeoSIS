@@ -2,7 +2,7 @@
 
 Status: implemented
 
-English | [中文](2026-09-10-derived-workspace-recency.zh.md)
+English
 
 ## Problem
 

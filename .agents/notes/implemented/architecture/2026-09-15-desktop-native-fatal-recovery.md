@@ -2,7 +2,7 @@
 
 Status: implemented
 
-English | [中文](2026-09-15-desktop-native-fatal-recovery.zh.md)
+English
 
 ## Problem
 

@@ -5,7 +5,7 @@ kind: "package-reference"
 
 # @averqel/neosis-session-title-first-prompt-llm
 
-English | [中文](README.zh.md)
+English
 
 ## Summary
 

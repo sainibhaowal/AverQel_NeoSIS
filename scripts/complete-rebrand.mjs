@@ -62,6 +62,28 @@ export function isProtectedPath(relativePath) {
 }
 
 /**
+ * Allow immutable historical references and the compatibility code that reads
+ * their recorded identifiers without allowing those identifiers in product
+ * code or current documentation.
+ *
+ * @param {string} relativePath Repository-relative file path.
+ * @param {string} lineText One source line.
+ * @returns {boolean} Whether a legacy occurrence is historical-only.
+ */
+function isHistoricalOccurrence(relativePath, lineText) {
+  const normalized = relativePath.replaceAll('\\', '/')
+  if (normalized.startsWith('docs/persistence-changes/historical-formats/')) return true
+  if ((normalized.startsWith('.agents/notes/implemented/') || normalized.startsWith('.agents/notes/rejected/'))
+    && lineText.includes('../../archived/')) return true
+  return new Set([
+    'scripts/doc-standard.spec.ts',
+    'scripts/persistence-formats.ts',
+    'scripts/persistence-schema-model.ts',
+    'scripts/verify-concrete-terms.ts',
+  ]).has(normalized)
+}
+
+/**
  * List tracked and non-ignored files so the audit covers source, docs, tests,
  * configuration, and package metadata at every repository depth.
  *
@@ -115,6 +137,7 @@ export function findLegacyIdentifiers() {
 
     const lines = content.toString('utf8').split('\n')
     lines.forEach((lineText, index) => {
+      if (isHistoricalOccurrence(relativePath, lineText)) return
       for (const [identifier, pattern] of LEGACY_IDENTIFIERS) {
         pattern.lastIndex = 0
         if (pattern.test(lineText)) {

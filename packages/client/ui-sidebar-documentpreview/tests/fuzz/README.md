@@ -1,6 +1,6 @@
 # XLSX fuzz diagnostics
 
-English | [中文](README.zh.md)
+English
 
 Generate spreadsheet files with Openpyxl and XlsxWriter, then compare the source XLSX adapter against independently recorded cell values, formulas, and unsupported-content categories. This explicit diagnostic campaign retains failures and exits nonzero; it is not part of the default unit suite.
 

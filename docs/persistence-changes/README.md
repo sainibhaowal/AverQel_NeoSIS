@@ -4,7 +4,7 @@ description: "Review and maintain recorded Session persistence-type changes, the
 
 # Persistence-type change records
 
-English | [中文](README.zh.md)
+English | [中文](README.md)
 
 ## Summary
 

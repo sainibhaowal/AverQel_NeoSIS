@@ -1,6 +1,6 @@
 # Product telemetry
 
-English | [中文](product-telemetry.zh.md)
+English
 
 The [product telemetry plugin](../../packages/host/product-telemetry-otel/README.md) sends explicitly selected analytics events through OTLP/HTTP. Its `productTelemetry` service owns submission only; product consumers own when an event occurs and which fields are approved. No Session data or identifiers are collected automatically.
 

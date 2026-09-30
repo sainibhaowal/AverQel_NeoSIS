@@ -2,7 +2,7 @@
 
 Status: implemented
 
-English | [中文](2026-09-19-deepseek-messages-only.zh.md)
+English
 
 ## Problem
 

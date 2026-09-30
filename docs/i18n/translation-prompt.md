@@ -57,7 +57,7 @@ A lower-priority rule may refine but never override a higher-priority requiremen
 - Fenced code blocks must be byte-identical to the source, including info strings, whitespace, and ALL comments inside them. Do NOT translate or reformat any content inside code blocks. This is a hard rule with no exceptions.
 - Inline code spans must be kept verbatim. This includes commands, flags, paths, identifiers, API and event names, config keys, protocol values, version numbers, and other machine-readable tokens. Never translate or reformat them.
 - Every repository-relative document link must keep the source link's semantic target and exact query/fragment suffix. When the target belongs to the active bilingual corpus, English output uses its `.md` path and Chinese output uses its `.zh.md` path; a missing counterpart in that corpus is an error, while targets outside it keep the original path. External URLs, images, and pure in-page fragments stay unchanged. Translate link text.
-- Language switcher line: when an English source contains `English | [中文](source-filename.zh.md)`, write `[English](source-filename.md) | 中文`. When a Chinese source contains `[English](source-filename.md) | 中文`, write `English | [中文](source-filename.zh.md)`. Do NOT copy the source switcher unchanged. If the source has no switcher, do not invent a filename or switcher; the pipeline inserts the canonical target switcher after parsing `<final>`.
+- Language switcher line: when an English source contains `English`, write `English`. When a Chinese source contains `English`, write `English`. Do NOT copy the source switcher unchanged. If the source has no switcher, do not invent a filename or switcher; the pipeline inserts the canonical target switcher after parsing `<final>`.
 - Preserve emphasis marker types and the semantic spans they cover. Do not add, remove, move, or change bold and italic markers.
 
 ### Faithfulness
@@ -253,9 +253,9 @@ Below are representative examples of common problems and their corrections. Foll
 - Good: `# full-screen TUI coding agent (needs DEEPSEEK_API_KEY)` (keep exactly as-is, byte-for-byte)
 
 ### Language switcher — flip direction
-- Source file (English) has: `English | [中文](README.zh.md)`
-- Bad (copying source unchanged): `English | [中文](README.zh.md)`
-- Good (flipped for Chinese file): `[English](README.md) | 中文`
+- Source file (English) has: `English`
+- Bad (copying source unchanged): `English`
+- Good (flipped for Chinese file): `English`
 
 ---
 

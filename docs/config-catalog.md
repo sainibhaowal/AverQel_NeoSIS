@@ -2028,7 +2028,7 @@ Source: [`packages/feedback/message-feedback/src/index.ts:40`](../packages/feedb
 ## `@averqel/neosis-office-to-pdf`
 
 ```ts config-catalog
-/** Provider concurrency and kit rendering/font configuration. */
+/** Provider concurrency and system LibreOffice configuration. */
 export interface Config {
   /** Maximum simultaneous conversions; queued callers remain cancellable. */
   maxConcurrentConversions: number
@@ -2046,21 +2046,23 @@ export interface Config {
   maxCachedBytes: number
   /** Maximum retained source-version aliases to cached content. */
   maxSourceEntries: number
-  /** Conversion deadline in milliseconds; excludes the NEOSIS queue. */
+  /** System LibreOffice executable name or absolute path. */
+  executable: string
+  /** Conversion deadline in milliseconds; excludes the NeoSIS queue. */
   timeoutMs: number
   /** Maximum authorized source bytes. */
   maxInputBytes: number
   /** Maximum complete PDF bytes. */
   maxOutputBytes: number
-  /** Exported raster-image DPI. */
+  /** Retained for configuration compatibility; system LibreOffice controls rasterization. */
   maxImageResolution: number
   /** Maximum OOXML ZIP entries. */
   maxArchiveEntries: number
   /** Maximum total declared uncompressed OOXML bytes. */
   maxUncompressedBytes: number
-  /** Absolute font roots; omission uses the kit's platform defaults. */
+  /** Absolute font roots exposed to system LibreOffice through SAL_FONTPATH. */
   fontDirectories?: string[]
-  /** Ordered font-family preference groups; omission retains the kit defaults. */
+  /** Retained for configuration compatibility; system LibreOffice resolves fallback families. */
   fontFallbacks?: string[][]
   /** Maximum physical font files indexed by each converter. */
   maxFontFiles: number
@@ -2071,7 +2073,7 @@ export interface Config {
 }
 ```
 
-Source: [`packages/document/office-to-pdf/src/index.ts:31`](../packages/document/office-to-pdf/src/index.ts)
+Source: [`packages/document/office-to-pdf/src/index.ts:34`](../packages/document/office-to-pdf/src/index.ts)
 
 <a id="averqelneosis-permission-presets"></a>
 
@@ -2361,7 +2363,7 @@ export interface Config {
 }
 ```
 
-Source: [`packages/sandbox/sandbox-local/src/index.ts:45`](../packages/sandbox/sandbox-local/src/index.ts)
+Source: [`packages/sandbox/sandbox-local/src/index.ts:48`](../packages/sandbox/sandbox-local/src/index.ts)
 
 <a id="averqelneosis-sandbox-policy"></a>
 
@@ -3065,6 +3067,22 @@ export type CodexPermissionMode =
 
 Source: [`packages/subagent/subagent-codex/src/index.ts:36`](../packages/subagent/subagent-codex/src/index.ts)
 
+<a id="averqelneosis-subagent-fork-in-process"></a>
+
+## `@averqel/neosis-subagent-fork-in-process`
+
+Requires: `subagents`
+
+```ts config-catalog
+/** Config: the registry name to register the provider under. */
+export interface Config {
+  /** Provider name on `ctx.subagents` (default `fork`). */
+  providerName: string
+}
+```
+
+Source: [`packages/subagent/subagent-fork-in-process/src/index.ts:31`](../packages/subagent/subagent-fork-in-process/src/index.ts)
+
 <a id="averqelneosis-subagent-neosis-sdk"></a>
 
 ## `@averqel/neosis-subagent-neosis-sdk`
@@ -3120,22 +3138,6 @@ export interface Config {
 ```
 
 Source: [`packages/subagent/subagent-neosis-sdk/src/index.ts:34`](../packages/subagent/subagent-neosis-sdk/src/index.ts)
-
-<a id="averqelneosis-subagent-fork-in-process"></a>
-
-## `@averqel/neosis-subagent-fork-in-process`
-
-Requires: `subagents`
-
-```ts config-catalog
-/** Config: the registry name to register the provider under. */
-export interface Config {
-  /** Provider name on `ctx.subagents` (default `fork`). */
-  providerName: string
-}
-```
-
-Source: [`packages/subagent/subagent-fork-in-process/src/index.ts:31`](../packages/subagent/subagent-fork-in-process/src/index.ts)
 
 <a id="averqelneosis-subagent-spawn-in-process"></a>
 
@@ -4193,6 +4195,7 @@ These load from a `cordis.yml` entry with no `config:` block; they declare no co
 - `@averqel/neosis-tool-call-timeout-policy` — requires `tools` ([`packages/guard/timeout-policy/src/index.ts`](../packages/guard/timeout-policy/src/index.ts))
 - `@averqel/neosis-tool-cordis` — requires `tools` · `cordisInspect` ([`packages/extensions/tool-cordis/src/index.ts`](../packages/extensions/tool-cordis/src/index.ts))
 - `@averqel/neosis-tool-subagent-control` — requires `tools` · `subagents` ([`packages/subagent/tool-subagent-control/src/index.ts`](../packages/subagent/tool-subagent-control/src/index.ts))
+- `@averqel/neosis-ui-brand` ([`packages/client/ui-brand-averqel/src/index.ts`](../packages/client/ui-brand-averqel/src/index.ts))
 - `@averqel/neosis-user-questions` ([`packages/interaction/user-questions/src/index.ts`](../packages/interaction/user-questions/src/index.ts))
 - `@averqel/neosis-webhook` — requires `agents` · `agentDefaultModel` · `agentPresets` · `permissionPresets` · `sessionTitle` · `workspaceRegistry` ([`packages/webhook/webhook/src/index.ts`](../packages/webhook/webhook/src/index.ts))
 - `@averqel/neosis-workspace` — requires `storageDomain` · `sessionPersistence` ([`packages/workspace/workspace/src/index.ts`](../packages/workspace/workspace/src/index.ts))

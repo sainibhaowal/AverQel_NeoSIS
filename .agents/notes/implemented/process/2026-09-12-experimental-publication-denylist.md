@@ -2,7 +2,7 @@
 
 Status: implemented
 
-English | [中文](2026-09-12-experimental-publication-denylist.zh.md)
+English
 
 ## Problem
 

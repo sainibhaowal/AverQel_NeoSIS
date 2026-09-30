@@ -8,7 +8,7 @@ description: "浏览全部已捕获 NEOSIS alpha/RC tag 之间的 Session 持久
 
 ## 概述
 
-本归档提供 26 个 NEOSIS alpha/RC tag 及其 25 次相邻转换的近似历史视图。每个版本包含简要说明、源码 tag、before/after 摘要以及变化类型的完整快照，供阅读和格式校验使用。它不确认历史运行时兼容性，也不替代[当前源码的确认记录](../README.zh.md)。
+本归档提供 26 个 NEOSIS alpha/RC tag 及其 25 次相邻转换的近似历史视图。每个版本包含简要说明、源码 tag、before/after 摘要以及变化类型的完整快照，供阅读和格式校验使用。它不确认历史运行时兼容性，也不替代[当前源码的确认记录](../README.md)。
 
 ## 目录
 
@@ -29,32 +29,32 @@ description: "浏览全部已捕获 NEOSIS alpha/RC tag 之间的 Session 持久
 
 | Tag | 源码日期（UTC） | Session 版本 | 根 / 类型 | 变化根 |
 |---|---|---|---|---|
-| [neosis-v0.0.1-rc.1](neosis-v0.0.1-rc.1.zh.md) | 2026-08-10 | 0 | 42 / 341 | 42 |
-| [neosis-v0.0.1-rc.2](neosis-v0.0.1-rc.2.zh.md) | 2026-08-11 | 0 | 47 / 374 | 45 |
-| [neosis-v0.0.1-rc.3](neosis-v0.0.1-rc.3.zh.md) | 2026-08-12 | 0 | 47 / 374 | 12 |
-| [neosis-v0.0.1-rc.4](neosis-v0.0.1-rc.4.zh.md) | 2026-08-12 | 0 | 47 / 374 | 0 |
-| [neosis-v0.0.1-rc.5](neosis-v0.0.1-rc.5.zh.md) | 2026-08-12 | 0 | 47 / 374 | 0 |
-| [neosis-v0.1.0-rc.1](neosis-v0.1.0-rc.1.zh.md) | 2026-08-13 | 0 | 47 / 374 | 0 |
-| [neosis-v0.1.0-rc.2](neosis-v0.1.0-rc.2.zh.md) | 2026-08-13 | 0 | 47 / 374 | 0 |
-| [neosis-v0.1.0-rc.3](neosis-v0.1.0-rc.3.zh.md) | 2026-08-13 | 0 | 47 / 374 | 0 |
-| [neosis-v0.1.0-rc.5](neosis-v0.1.0-rc.5.zh.md) | 2026-08-13 | 0 | 47 / 374 | 0 |
-| [neosis-v0.1.0-rc.6](neosis-v0.1.0-rc.6.zh.md) | 2026-08-13 | 0 | 47 / 374 | 0 |
-| [neosis-v0.1.0-rc.7](neosis-v0.1.0-rc.7.zh.md) | 2026-08-17 | 0 | 47 / 376 | 1 |
-| [neosis-v0.1.0-rc.8](neosis-v0.1.0-rc.8.zh.md) | 2026-08-19 | 0 | 51 / 403 | 8 |
-| [neosis-v0.1.1-rc.1](neosis-v0.1.1-rc.1.zh.md) | 2026-08-21 | 0 | 51 / 407 | 1 |
-| [neosis-v0.1.1-rc.2](neosis-v0.1.1-rc.2.zh.md) | 2026-08-21 | 0 | 51 / 404 | 10 |
-| [neosis-v0.1.2-alpha.1](neosis-v0.1.2-alpha.1.zh.md) | 2026-08-27 | 0 | 54 / 417 | 52 |
-| [neosis-v0.1.2-alpha.2](neosis-v0.1.2-alpha.2.zh.md) | 2026-08-30 | 0 | 54 / 417 | 52 |
-| [neosis-v0.1.2-alpha.3](neosis-v0.1.2-alpha.3.zh.md) | 2026-08-31 | 0 | 54 / 417 | 0 |
-| [neosis-v0.1.2-alpha.4](neosis-v0.1.2-alpha.4.zh.md) | 2026-09-01 | 0 | 54 / 415 | 4 |
-| [neosis-v0.1.2-alpha.5](neosis-v0.1.2-alpha.5.zh.md) | 2026-09-02 | 0 | 54 / 415 | 0 |
-| [neosis-v0.1.2-rc.1](neosis-v0.1.2-rc.1.zh.md) | 2026-09-03 | 0 | 54 / 415 | 0 |
-| [neosis-v0.1.3-alpha.1](neosis-v0.1.3-alpha.1.zh.md) | 2026-09-04 | 2 | 54 / 425 | 17 |
-| [neosis-v0.1.3-alpha.2](neosis-v0.1.3-alpha.2.zh.md) | 2026-09-07 | 2 | 56 / 435 | 2 |
-| [neosis-v0.1.5-alpha.1](neosis-v0.1.5-alpha.1.zh.md) | 2026-09-08 | 3 | 57 / 443 | 12 |
-| [neosis-v0.1.5-alpha.2](neosis-v0.1.5-alpha.2.zh.md) | 2026-09-09 | 3 | 59 / 462 | 4 |
-| [neosis-v0.1.5-rc.1](neosis-v0.1.5-rc.1.zh.md) | 2026-09-10 | 3 | 59 / 462 | 0 |
-| [neosis-v0.1.5-rc.2](neosis-v0.1.5-rc.2.zh.md) | 2026-09-10 | 3 | 59 / 462 | 0 |
+| [dsh-v0.0.1-rc.1](dsh-v0.0.1-rc.1.md) | 2026-08-10 | 0 | 42 / 341 | 42 |
+| [dsh-v0.0.1-rc.2](dsh-v0.0.1-rc.2.md) | 2026-08-11 | 0 | 47 / 374 | 45 |
+| [dsh-v0.0.1-rc.3](dsh-v0.0.1-rc.3.md) | 2026-08-12 | 0 | 47 / 374 | 12 |
+| [dsh-v0.0.1-rc.4](dsh-v0.0.1-rc.4.md) | 2026-08-12 | 0 | 47 / 374 | 0 |
+| [dsh-v0.0.1-rc.5](dsh-v0.0.1-rc.5.md) | 2026-08-12 | 0 | 47 / 374 | 0 |
+| [dsh-v0.1.0-rc.1](dsh-v0.1.0-rc.1.md) | 2026-08-13 | 0 | 47 / 374 | 0 |
+| [dsh-v0.1.0-rc.2](dsh-v0.1.0-rc.2.md) | 2026-08-13 | 0 | 47 / 374 | 0 |
+| [dsh-v0.1.0-rc.3](dsh-v0.1.0-rc.3.md) | 2026-08-13 | 0 | 47 / 374 | 0 |
+| [dsh-v0.1.0-rc.5](dsh-v0.1.0-rc.5.md) | 2026-08-13 | 0 | 47 / 374 | 0 |
+| [dsh-v0.1.0-rc.6](dsh-v0.1.0-rc.6.md) | 2026-08-13 | 0 | 47 / 374 | 0 |
+| [dsh-v0.1.0-rc.7](dsh-v0.1.0-rc.7.md) | 2026-08-17 | 0 | 47 / 376 | 1 |
+| [dsh-v0.1.0-rc.8](dsh-v0.1.0-rc.8.md) | 2026-08-19 | 0 | 51 / 403 | 8 |
+| [dsh-v0.1.1-rc.1](dsh-v0.1.1-rc.1.md) | 2026-08-21 | 0 | 51 / 407 | 1 |
+| [dsh-v0.1.1-rc.2](dsh-v0.1.1-rc.2.md) | 2026-08-21 | 0 | 51 / 404 | 10 |
+| [dsh-v0.1.2-alpha.1](dsh-v0.1.2-alpha.1.md) | 2026-08-27 | 0 | 54 / 417 | 52 |
+| [dsh-v0.1.2-alpha.2](dsh-v0.1.2-alpha.2.md) | 2026-08-30 | 0 | 54 / 417 | 52 |
+| [dsh-v0.1.2-alpha.3](dsh-v0.1.2-alpha.3.md) | 2026-08-31 | 0 | 54 / 417 | 0 |
+| [dsh-v0.1.2-alpha.4](dsh-v0.1.2-alpha.4.md) | 2026-09-01 | 0 | 54 / 415 | 4 |
+| [dsh-v0.1.2-alpha.5](dsh-v0.1.2-alpha.5.md) | 2026-09-02 | 0 | 54 / 415 | 0 |
+| [dsh-v0.1.2-rc.1](dsh-v0.1.2-rc.1.md) | 2026-09-03 | 0 | 54 / 415 | 0 |
+| [dsh-v0.1.3-alpha.1](dsh-v0.1.3-alpha.1.md) | 2026-09-04 | 2 | 54 / 425 | 17 |
+| [dsh-v0.1.3-alpha.2](dsh-v0.1.3-alpha.2.md) | 2026-09-07 | 2 | 56 / 435 | 2 |
+| [dsh-v0.1.5-alpha.1](dsh-v0.1.5-alpha.1.md) | 2026-09-08 | 3 | 57 / 443 | 12 |
+| [dsh-v0.1.5-alpha.2](dsh-v0.1.5-alpha.2.md) | 2026-09-09 | 3 | 59 / 462 | 4 |
+| [dsh-v0.1.5-rc.1](dsh-v0.1.5-rc.1.md) | 2026-09-10 | 3 | 59 / 462 | 0 |
+| [dsh-v0.1.5-rc.2](dsh-v0.1.5-rc.2.md) | 2026-09-10 | 3 | 59 / 462 | 0 |
 
 <!-- persistence-release-index:end -->
 

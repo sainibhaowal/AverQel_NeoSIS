@@ -1,6 +1,6 @@
 # Skills
 
-English | [中文](skills.zh.md)
+English
 
 The [skill capability family](../../packages/skill) includes the Service Definition ([neosis-skill](../../packages/skill/skill), `ctx.skills`), the local Service Provider ([neosis-skill-filesystem](../../packages/skill/skill-filesystem)), optional packaged providers ([neosis-skill-badge](../../packages/skill/skill-badge) and [neosis-skill-office](../../packages/skill/skill-office)), and the Consumer ([neosis-tool-skill](../../packages/skill/tool-skill)). The registry merges provider catalogs across its host and per-scope layers; providers contribute local or packaged skills; the Consumer owns the initial and replacement catalogs plus the model-facing `skill` tool. Skills are optional instructions, not session events, so their vocabulary lives here rather than in [core.md](core.md).
 

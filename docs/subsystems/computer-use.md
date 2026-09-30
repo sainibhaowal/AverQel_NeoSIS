@@ -1,6 +1,6 @@
 # Computer use
 
-English | [中文](computer-use.zh.md)
+English
 
 Computer use lets a model observe and operate the local desktop through a configured provider. The shared NEOSIS capability is called **computer use**; **Cua Driver** names the upstream implementation.
 

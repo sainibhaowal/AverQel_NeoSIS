@@ -2,7 +2,7 @@
 
 Status: implemented
 
-English | [中文](2026-09-09-ptc-trajectory-code-inspection.zh.md)
+English
 
 ## Problem
 

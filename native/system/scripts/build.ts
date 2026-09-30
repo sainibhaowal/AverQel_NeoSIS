@@ -32,7 +32,11 @@ const host = `${process.platform}-${process.arch}`
 const libc = process.platform === 'linux'
   ? ((process.report.getReport() as { header: { glibcVersionRuntime?: string } }).header.glibcVersionRuntime ? 'glibc' : 'musl')
   : undefined
-const headers = resolve(dirname(process.execPath), '../include/node')
+const headerCandidates = [
+  resolve(dirname(process.execPath), '../include/node'),
+  resolve(dirname(process.execPath), '../node_modules/node-linux-x64/include/node'),
+]
+const headers = headerCandidates.find(candidate => existsSync(join(candidate, 'node_api.h'))) ?? headerCandidates[0] as string
 let built = 0
 
 for (const name of readdirSync(join(root, 'packages')).sort()) {
@@ -56,7 +60,7 @@ for (const name of readdirSync(join(root, 'packages')).sort()) {
       flags = ['-std=c11', '-Os', '-Wall', '-Wextra', '-Werror', '-static', '-s']
     } else if (binary.kind === 'node-api' && binary.tool === 'flock' && binary.napi === 8) {
       if (!existsSync(join(headers, 'node_api.h'))) {
-        throw new Error(`build: Node-API headers missing at ${headers}; use a Node installation with development headers`)
+        throw new Error(`build: Node-API headers missing from ${headerCandidates.join(' or ')}; use a Node installation with development headers`)
       }
       compiler = process.platform === 'linux' && binary.libc === 'musl' ? 'musl-gcc' : 'cc'
       flags = ['-std=c11', '-O2', '-Wall', '-Wextra', '-Werror', '-fPIC', '-fvisibility=hidden', '-DNAPI_VERSION=8', '-I', headers]

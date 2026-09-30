@@ -2,7 +2,7 @@
 
 Status: implemented
 
-English | [中文](2026-08-26-ban-ambiguous-origin-label.zh.md)
+English
 
 ## Problem
 

@@ -5,7 +5,7 @@ kind: "package-reference"
 
 # @averqel/neosis-typert-registry
 
-English | [中文](README.zh.md)
+English
 
 ## Summary
 

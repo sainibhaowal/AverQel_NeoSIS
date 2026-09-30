@@ -2,7 +2,7 @@
 
 Status: implemented
 
-English | [中文](2026-09-06-client-assembly-test-line.zh.md)
+English
 
 ## Problem
 

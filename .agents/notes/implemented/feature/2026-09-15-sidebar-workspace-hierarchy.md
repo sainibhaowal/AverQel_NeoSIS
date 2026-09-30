@@ -2,7 +2,7 @@
 
 Status: implemented
 
-English | [中文](2026-09-15-sidebar-workspace-hierarchy.zh.md)
+English
 
 ## Problem
 

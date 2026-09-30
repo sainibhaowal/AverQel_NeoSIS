@@ -5,7 +5,7 @@ kind: "package-library"
 
 # @averqel/neosis-home-paths
 
-English | [中文](README.zh.md)
+English
 
 ## Summary
 

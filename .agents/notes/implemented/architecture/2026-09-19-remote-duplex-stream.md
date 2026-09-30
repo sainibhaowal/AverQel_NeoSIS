@@ -2,7 +2,7 @@
 
 Status: implemented
 
-English | [中文](2026-09-19-remote-duplex-stream.zh.md)
+English
 
 ## Problem
 

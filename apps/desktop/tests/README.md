@@ -1,6 +1,6 @@
 # Desktop local update verification
 
-English | [中文](README.zh.md)
+English
 
 ## Summary
 

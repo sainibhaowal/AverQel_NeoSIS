@@ -2,7 +2,7 @@
 
 Status: proposed
 
-English | [中文](2026-09-19-config-only-hmr.zh.md)
+English
 
 ## Problem
 

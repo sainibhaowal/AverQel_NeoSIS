@@ -2,7 +2,7 @@
 
 Status: implemented
 
-English | [中文](2026-09-22-input-echo-admission-ownership.zh.md)
+English
 
 ## Problem
 

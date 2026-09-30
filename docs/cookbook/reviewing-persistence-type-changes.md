@@ -4,7 +4,7 @@ description: "Generate, acknowledge, and verify Session persistence-type changes
 
 # Cookbook: reviewing persistence-type changes
 
-English | [中文](reviewing-persistence-type-changes.zh.md)
+English
 
 ## Summary
 

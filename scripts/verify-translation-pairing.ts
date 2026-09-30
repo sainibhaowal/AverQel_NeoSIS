@@ -1,6 +1,7 @@
 /**
- * Enforce complete English/Chinese pairs, matching structure, and recorded git
- * blob hashes for every in-scope document. The manifest contains only explicit
+ * Enforce complete English/Chinese pairs for preserved historical records,
+ * matching structure, and recorded git blob hashes. Active documentation is
+ * English-only; the manifest contains only explicit
  * exclusions, which may have neither a counterpart nor a sidecar.
  * `--list` reports state; `--write <pairs...>` records the named confirmed
  * pairs (`--write --all` records every complete pair); `--cached <pairs...>`
@@ -100,6 +101,11 @@ function isExcluded(file: string): boolean {
   return isTranslationPairingManifestExcluded(file, manifest)
 }
 
+/** Archived records are checked by their dedicated immutable-history verifier. */
+function requiresHistoricalPair(file: string): boolean {
+  return file.startsWith('.agents/notes/archived/')
+}
+
 // Enumerate the scope once: the whole corpus, or exactly the named pairs'
 // three files (a named pair whose files are absent is caught by the same
 // completeness rules that cover discovered remnants).
@@ -184,7 +190,7 @@ const state = new Map<string, 'ok' | 'out-of-sync' | 'missing'>()
 
 // 1. Every discovered, non-excluded source merges bilingual.
 for (const source of sources) {
-  if (isExcluded(source)) continue
+  if (isExcluded(source) || !requiresHistoricalPair(source)) continue
   const { zh } = translationPairPaths(source)
   if (!repositoryFileExists(zh)) {
     errors.push(`${source}: in-scope documentation must merge bilingual (docs/i18n/README.md); add the counterpart and record the pair`)
@@ -213,6 +219,7 @@ for (const source of [...pairAnchors].sort()) {
     if (have.meta) errors.push(`${meta}: ${source} is excluded from pairing; this consistency record must not exist`)
     continue
   }
+  if (!requiresHistoricalPair(source)) continue
   const missing = Object.entries(have).filter(([, ok]) => !ok).map(([k]) => (k === 'source' ? source : k === 'zh' ? zh : meta))
   if (missing.length > 0) {
     errors.push(`${source}: incomplete pair — missing ${missing.join(', ')} (pairs merge whole: both languages plus the .i18n.yaml record)`)

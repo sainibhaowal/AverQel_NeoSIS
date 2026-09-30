@@ -4,7 +4,7 @@ kind: "package-library"
 ---
 # @averqel/node-addon-system-linux-x64
 
-English | [中文](README.zh.md)
+English
 
 This platform package contains the static musl executable `bin/landlock-run` and Node-API v8 addons `bin/glibc/system.node` and `bin/musl/system.node`. The entry chooses the addon matching the running Node process's libc; the Landlock executable serves both libc systems.
 

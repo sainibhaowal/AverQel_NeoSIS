@@ -1,6 +1,6 @@
 # Connect a third-party memory MCP server
 
-English | [中文](mcp-memory.zh.md)
+English
 
 These three **default-off reference configurations** connect one memory system to NEOSIS through [`@averqel/neosis-mcp-client`](../../../packages/mcp/mcp-client/README.md). Pick one, or copy the same generic MCP row for another server.
 

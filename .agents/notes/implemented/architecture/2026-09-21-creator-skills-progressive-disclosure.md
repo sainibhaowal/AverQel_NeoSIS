@@ -2,7 +2,7 @@
 
 Status: implemented
 
-English | [中文](2026-09-21-creator-skills-progressive-disclosure.zh.md)
+English
 
 ## Problem
 

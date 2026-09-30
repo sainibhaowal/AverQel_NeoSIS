@@ -4,7 +4,7 @@ description: "Operator checklist for a Windows installed update with a failed do
 
 # Windows installed-update walkthrough
 
-English | [中文](README.zh.md)
+English
 
 ## Summary
 

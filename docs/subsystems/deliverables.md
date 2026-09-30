@@ -1,6 +1,6 @@
 # Deliverables
 
-English | [中文](deliverables.zh.md)
+English
 
 What a turn hands to the user, owned by the [deliverables package group](../../packages/deliverables/README.md): the files the model declared through the `present` tool, recorded in a log-only Session event, and the files the turn changed, summarized from git working-tree snapshots taken at turn start and turn end plus whole-file captures around each file-tool edit for the paths git does not cover, announced by a log-only event and served by a Host service while the Session lives together with each listed file's turn-start and turn-end comparison. Only clients read them; the Web [deliverables plugin](../../packages/client/ui-deliverables/README.md) renders both at the end of the turn. Tool behavior, snapshot mechanics, and configuration are on the package READMEs for [`tool-present`](../../packages/deliverables/tool-present/README.md) and [`workspace-changes`](../../packages/deliverables/workspace-changes/README.md).
 

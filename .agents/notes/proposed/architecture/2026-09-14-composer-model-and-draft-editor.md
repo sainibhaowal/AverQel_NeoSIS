@@ -2,7 +2,7 @@
 
 Status: proposed
 
-English | [中文](2026-09-14-composer-model-and-draft-editor.zh.md)
+English
 
 ## Problem
 

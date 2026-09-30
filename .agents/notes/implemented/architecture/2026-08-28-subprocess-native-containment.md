@@ -2,7 +2,7 @@
 
 Status: implemented
 
-English | [中文](2026-08-28-subprocess-native-containment.zh.md)
+English
 
 ## Problem
 
@@ -52,7 +52,7 @@ During a JavaScript-observable host exit, `LocalSubprocessRuntime` synchronously
 
 ## Existing decisions and supersession
 
-This note owns the current native-containment mechanism. It partially updates the provider and no-PID facts in the [subprocess seam](../../archived/architecture/2026-07-26-subprocess-seam.md), the Linux teardown facts in [persistent PTY sessions](../feature/2026-07-16-persistent-pty-sessions.md), the native targets used by [synchronous host-exit cleanup](../../archived/bug-fix/2026-08-11-synchronous-subprocess-exit-cleanup.md), the ordinary consumer of [shared Win32 process primitives](../../archived/architecture/2026-08-19-shared-win32-process-primitives.md), and the private entry selected by the [Python SDK profile runtime](../../archived/architecture/2026-08-23-python-sdk-neosis-profile-runtime.md). Each note retains its other decision and remains active.
+This note owns the current native-containment mechanism. It partially updates the provider and no-PID facts in the [subprocess seam](../../archived/architecture/2026-07-26-subprocess-seam.md), the Linux teardown facts in [persistent PTY sessions](../feature/2026-07-16-persistent-pty-sessions.md), the native targets used by [synchronous host-exit cleanup](../../archived/bug-fix/2026-08-11-synchronous-subprocess-exit-cleanup.md), the ordinary consumer of [shared Win32 process primitives](../../archived/architecture/2026-08-19-shared-win32-process-primitives.md), and the private entry selected by the [Python SDK profile runtime](../../archived/architecture/2026-08-23-python-sdk-dsh-profile-runtime.md). Each note retains its other decision and remains active.
 
 ## Verification
 

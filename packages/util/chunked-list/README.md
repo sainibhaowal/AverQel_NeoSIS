@@ -5,7 +5,7 @@ kind: "package-library"
 
 # @averqel/neosis-chunked-list
 
-English | [中文](README.zh.md)
+English
 
 ## Summary
 

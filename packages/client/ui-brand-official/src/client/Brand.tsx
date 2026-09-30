@@ -1,5 +1,6 @@
 import { BrandWordmark, FishLogo } from '@averqel/neosis-client-ui-primitives'
 import type { SidebarBrandMarkOwnerProps } from '@averqel/neosis-client-ui-sidebar/client'
+import { en } from './locales.ts'
 
 /**
  * Render the official mark with the presentation requested by its host surface.
@@ -15,5 +16,5 @@ export function OfficialBrandMark({ size }: SidebarBrandMarkOwnerProps) {
  * @returns the official name wordmark.
  */
 export function OfficialBrandName() {
-  return <BrandWordmark includeMark={false} />
+  return <BrandWordmark includeMark={false} label={en.brandName} />
 }

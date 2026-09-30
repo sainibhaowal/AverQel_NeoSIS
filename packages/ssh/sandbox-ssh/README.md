@@ -5,7 +5,7 @@ kind: "package-reference"
 
 # @averqel/neosis-sandbox-ssh
 
-English | [中文](README.zh.md)
+English
 
 ## Summary
 

@@ -5,7 +5,7 @@ kind: "package-reference"
 
 # @averqel/neosis-session-projection-cache
 
-English | [中文](README.zh.md)
+English
 
 ## Summary
 

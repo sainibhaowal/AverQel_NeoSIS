@@ -170,8 +170,8 @@ describe('publishableImage', () => {
 })
 
 describe('resolveRepositoryRef', () => {
-  it('defaults to public master instead of a private workflow SHA', () => {
-    expect(resolveRepositoryRef({ GITHUB_SHA: 'private-sha' })).toBe('master')
+  it('defaults to public main instead of a private workflow SHA', () => {
+    expect(resolveRepositoryRef({ GITHUB_SHA: 'private-sha' })).toBe('main')
   })
 
   it('accepts an explicit public repository ref', () => {
@@ -218,7 +218,7 @@ describe('rewriteMarkdown', () => {
       pages,
       repoRoot: root,
       repositoryRef: 'abc123',
-    })).toBe('![logo](https://raw.githubusercontent.com/averqel/averqel-neosis/abc123/packages/logo.svg)\n')
+    })).toBe('![logo](https://raw.githubusercontent.com/sainibhaowal/AverQel_NeoSIS/abc123/packages/logo.svg)\n')
   })
 
   it('hands an image to the placer and uses the URL it returns', () => {

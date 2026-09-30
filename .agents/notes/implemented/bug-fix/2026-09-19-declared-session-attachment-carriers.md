@@ -2,7 +2,7 @@
 
 Status: implemented
 
-English | [中文](2026-09-19-declared-session-attachment-carriers.zh.md)
+English
 
 ## Problem
 

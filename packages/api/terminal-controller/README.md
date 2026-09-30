@@ -5,7 +5,7 @@ kind: "package-reference"
 
 # @averqel/neosis-api-terminal-controller
 
-English | [中文](README.zh.md)
+English
 
 ## Summary
 

@@ -1,6 +1,6 @@
 # AverQel NeoSIS Brand Asset Usage Guidelines
 
-English | [中文](BRAND_GUIDELINES.zh.md)
+English
 
 To maintain the long\-term healthy development of the AverQel NeoSIS ecosystem, avoid user confusion, and facilitate the retrieval and identification of related resources, we have established these specifications and hope that everyone will adhere to them:
 

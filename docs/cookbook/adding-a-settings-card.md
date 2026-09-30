@@ -1,6 +1,6 @@
 # Cookbook: live configuration forms
 
-English | [中文](adding-a-settings-card.zh.md)
+English
 
 Declare live fields in the plugin Config schema and expose them through a product-owned settings card. The exported `Config` interface describes the values received by the plugin, including each `Volatile<T>` reference.
 

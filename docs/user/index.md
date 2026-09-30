@@ -8,4 +8,4 @@ head:
 
 # AverQel NeoSIS
 
-English | [中文](index.zh.md)
+English

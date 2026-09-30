@@ -2,7 +2,7 @@
 
 Status: implemented
 
-English | [中文](2026-09-17-settings-pages-as-companion-packages.zh.md)
+English
 
 ## Problem
 

@@ -1,6 +1,6 @@
 # SSH
 
-English | [中文](ssh.zh.md)
+English
 
 The [SSH provider family](../../packages/ssh/README.md) supplies one remote filesystem/process world through a deployment-owned OpenSSH connection. The Harness, model transport and Session storage remain on the host. The family implements the existing filesystem, subprocess and sandbox APIs; it introduces no SSH-specific model tools.
 

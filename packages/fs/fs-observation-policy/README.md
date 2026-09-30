@@ -5,7 +5,7 @@ kind: "package-reference"
 
 # @averqel/neosis-fs-observation-policy
 
-English | [中文](README.zh.md)
+English
 
 ## Summary
 

@@ -2,7 +2,7 @@
 
 Status: implemented
 
-English | [中文](2026-09-21-conversation-build-groups.zh.md)
+English
 
 ## Problem
 

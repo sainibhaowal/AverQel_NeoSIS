@@ -5,11 +5,11 @@ kind: "package-group"
 
 # document/ — Office conversion
 
-English | [中文](README.zh.md)
+English
 
 ## Summary
 
-Convert authorized Office files to reusable PDFs on the Host. The shared service converts through LibreOffice kit. Targets with a declared native engine use it; other targets use Node WASM.
+Convert authorized Office files to reusable PDFs on the Host. The shared service uses the verified LibreOffice runtime bundled by Desktop or an explicitly configured system LibreOffice executable in development and standalone Host deployments. Browser workers do not run Office conversion.
 
 ## Table of Contents
 
@@ -36,7 +36,7 @@ Each package owns its configuration and lifetime rules; the subsystem reference 
 Consumers own source authorization and presentation.
 
 - [Document conversion](../../docs/subsystems/office-to-pdf.md) — shared operation and generated service reference.
-- [Independent kit ownership](../../.agents/notes/implemented/architecture/2026-09-14-independent-libreoffice-kit.md) — engine distribution and application integration.
+- [Office to PDF subsystem](../../docs/subsystems/office-to-pdf.md) — system LibreOffice configuration and application integration.
 - [Workspace Files](../api/workspace-files/README.md) — authorized bounded source reads.
 
 <a id="dev-note"></a>

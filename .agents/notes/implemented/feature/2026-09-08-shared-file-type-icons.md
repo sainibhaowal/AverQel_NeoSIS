@@ -2,7 +2,7 @@
 
 Status: implemented
 
-English | [中文](2026-09-08-shared-file-type-icons.zh.md)
+English
 
 ## Problem
 

@@ -2,7 +2,7 @@
 
 Status: implemented
 
-English | [中文](2026-09-15-messages-v1-base-url.zh.md)
+English
 
 ## Problem
 

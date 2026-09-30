@@ -5,7 +5,7 @@ kind: "package-group"
 
 # packages/deliverables
 
-English | [中文](README.zh.md)
+English
 
 ## Summary
 

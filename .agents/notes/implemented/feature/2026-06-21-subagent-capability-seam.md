@@ -2,7 +2,7 @@
 
 Status: implemented
 
-English | [中文](2026-06-21-subagent-capability-seam.zh.md)
+English
 
 > The full seam is shipped: the `neosis-subagent` interface and `neosis-tool-subagent` consumer; the two in-process backends (`neosis-subagent-spawn-in-process`, `neosis-subagent-fork-in-process`); the nested-agent snapshot infrastructure ([per-session snapshot replay](../../archived/testing/2026-06-22-subagent-snapshot-replay.md)); and the out-of-process ACP, Codex, and Claude Code backends ([ACP Agent Note](../../archived/feature/2026-06-22-acp-subagent-backend.md), [product-provider Agent Note](2026-08-04-claude-code-and-codex-subagent-backends.md)).
 

@@ -2,7 +2,7 @@
 
 Status: implemented
 
-English | [中文](2026-09-12-ptc-runtime-vocabulary.zh.md)
+English
 
 ## Problem
 

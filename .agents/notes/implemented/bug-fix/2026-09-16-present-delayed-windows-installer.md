@@ -2,7 +2,7 @@
 
 Status: implemented
 
-English | [中文](2026-09-16-present-delayed-windows-installer.zh.md)
+English
 
 ## Problem
 

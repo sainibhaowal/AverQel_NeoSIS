@@ -5,7 +5,7 @@ kind: "package-library"
 
 # @averqel/neosis-win32-process
 
-English | [中文](README.zh.md)
+English
 
 ## Summary
 

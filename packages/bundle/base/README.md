@@ -5,7 +5,7 @@ kind: "package-bundle"
 
 # @averqel/neosis-base
 
-English | [中文](README.zh.md)
+English
 
 ## Summary
 

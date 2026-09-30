@@ -4,7 +4,7 @@ kind: "package-reference"
 ---
 # @averqel/neosis-client-resources
 
-English | [中文](README.zh.md)
+English
 
 ## Summary
 

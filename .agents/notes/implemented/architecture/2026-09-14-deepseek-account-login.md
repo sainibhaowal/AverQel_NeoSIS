@@ -2,7 +2,7 @@
 
 Status: implemented
 
-English | [中文](2026-09-14-deepseek-account-login.zh.md)
+English
 
 Sign-in captures the initiating UI language per attempt so browser authorization follows the Desktop or Settings locale without depending on the Platform default.
 

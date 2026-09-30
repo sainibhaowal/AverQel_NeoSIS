@@ -5,7 +5,7 @@ kind: "package-reference"
 
 # @averqel/neosis-sandbox-policy
 
-English | [中文](README.zh.md)
+English
 
 ## Summary
 

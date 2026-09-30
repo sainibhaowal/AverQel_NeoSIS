@@ -2,7 +2,7 @@
 
 Status: implemented
 
-English | [中文](2026-09-15-first-class-tool-role-messages.zh.md)
+English
 
 ## Problem
 

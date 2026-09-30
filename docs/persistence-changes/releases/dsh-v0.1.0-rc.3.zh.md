@@ -1,11 +1,11 @@
 ---
-description: "回溯 neosis-v0.1.0-rc.3 的已声明 Session 持久化类型及相邻版本变化。"
+description: "回溯 dsh-v0.1.0-rc.3 的已声明 Session 持久化类型及相邻版本变化。"
 kind: persistence-release
 ---
 
-# 持久化版本回溯: neosis-v0.1.0-rc.3
+# 持久化版本回溯: dsh-v0.1.0-rc.3
 
-[English](neosis-v0.1.0-rc.3.md) | 中文
+[English](dsh-v0.1.0-rc.3.md) | 中文
 
 ## 概述
 
@@ -24,17 +24,17 @@ kind: persistence-release
 <a id="evidence"></a>
 ## 发行来源
 
-这是供阅读和格式校验的近似回填，不是当时的兼容性确认。提取方法和覆盖限制见[归档说明](README.zh.md)。
+这是供阅读和格式校验的近似回填，不是当时的兼容性确认。提取方法和覆盖限制见[归档说明](README.md)。
 
 | 项目 | 记录值 |
 |---|---|
-| 源码 tag | `neosis-v0.1.0-rc.3` |
+| 源码 tag | `dsh-v0.1.0-rc.3` |
 | 源码日期 | 2026-08-13T10:40:08.000Z |
 | 发行记录 | 只有 tag，没有 release 对象。 |
-| 前一版本 | [neosis-v0.1.0-rc.2](neosis-v0.1.0-rc.2.zh.md) |
+| 前一版本 | [dsh-v0.1.0-rc.2](dsh-v0.1.0-rc.2.md) |
 | Session 写入版本 | 0 |
 | 完整重建清单 | <!-- persistence-release-inventory:start -->47 个根类型 / 374 种类型<!-- persistence-release-inventory:end --> |
-| 本条快照 | [neosis-v0.1.0-rc.3.schema.json](neosis-v0.1.0-rc.3.schema.json) |
+| 本条快照 | [dsh-v0.1.0-rc.3.schema.json](dsh-v0.1.0-rc.3.schema.json) |
 
 写入版本常量在该 tag 中的源码证据：
 
@@ -45,8 +45,8 @@ kind: persistence-release
 
 ```yaml persistence-release
 schemaVersion: 1
-tag: neosis-v0.1.0-rc.3
-previous: neosis-v0.1.0-rc.2
+tag: dsh-v0.1.0-rc.3
+previous: dsh-v0.1.0-rc.2
 sessionFormatVersion: 0
 changes: []
 ```

@@ -2,7 +2,7 @@
 
 Status: implemented
 
-English | [中文](2026-09-09-cancel-superseded-ci.zh.md)
+English
 
 ## Problem
 
@@ -10,7 +10,7 @@ Validation of an obsolete PR revision or master commit consumes runner capacity 
 
 ## Decision
 
-Validation favors the newest run within each workflow/ref group. [CI](../../../../.github/workflows/ci.yml), [CI master](../../../../.github/workflows/ci-master.yml), [real-API e2e](../../../../.github/workflows/e2e.yml), and the credential-free [neosis](../../../../.github/workflows/release.yml) and [vendor](../../../../.github/workflows/release-vendor.yml) pack validations use `cancel-in-progress: true` with `${{ github.workflow }}-${{ github.ref }}`. Different PR refs and different workflows do not cancel each other. Event type is not part of the group: master pushes and manual benchmarks can supersede each other in CI master, and e2e pushes, scheduled runs, and manual runs can supersede each other on the same ref.
+Validation favors the newest run within each workflow/ref group. [CI](../../../../.github/workflows/ci.yml), [CI master](../../../../.github/workflows/ci-master.yml), [real-API e2e](../../../../.github/workflows/e2e.yml), and the credential-free [neosis](../../../../.github/workflows-disabled/release.yml) and [vendor](../../../../.github/workflows-disabled/release-vendor.yml) pack validations use `cancel-in-progress: true` with `${{ github.workflow }}-${{ github.ref }}`. Different PR refs and different workflows do not cancel each other. Event type is not part of the group: master pushes and manual benchmarks can supersede each other in CI master, and e2e pushes, scheduled runs, and manual runs can supersede each other on the same ref.
 
 The [reusable Python runtime builder](../../../../.github/workflows/build-exe-for-python-sdk.yml) uses `${{ !inputs.release }}`. Its `build-single-exe-${{ github.workflow }}-${{ github.ref }}` group remains distinct from its caller’s group, and the caller workflow name isolates ordinary CI from release-owned builds. Release-owned builds are exempt because they belong to an intentional publication transaction. Publication, deployment, and metadata workflows retain their own policies; this decision does not apply cancellation indiscriminately across workflows.
 

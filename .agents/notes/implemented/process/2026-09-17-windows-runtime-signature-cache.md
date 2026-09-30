@@ -2,7 +2,7 @@
 
 Status: implemented
 
-English | [中文](2026-09-17-windows-runtime-signature-cache.zh.md)
+English
 
 ## Problem
 

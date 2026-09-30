@@ -5,7 +5,7 @@ kind: "package-reference"
 
 # @averqel/neosis-session-persistence
 
-English | [中文](README.zh.md)
+English
 
 ## Summary
 

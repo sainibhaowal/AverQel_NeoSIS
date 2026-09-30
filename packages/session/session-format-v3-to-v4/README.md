@@ -5,7 +5,7 @@ kind: "package-library"
 
 # @averqel/neosis-session-format-v3-to-v4
 
-English | [中文](README.zh.md)
+English
 
 ## Summary
 

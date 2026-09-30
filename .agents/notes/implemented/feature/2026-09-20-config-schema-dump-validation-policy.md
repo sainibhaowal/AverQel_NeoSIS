@@ -2,7 +2,7 @@
 
 Status: implemented
 
-English | [中文](2026-09-20-config-schema-dump-validation-policy.zh.md)
+English
 
 ## Problem
 

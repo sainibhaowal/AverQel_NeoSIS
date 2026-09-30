@@ -6,6 +6,8 @@ import type { IconProps } from './icons/props.ts'
 export interface BrandWordmarkProps extends IconProps {
   /** Whether to include the leading mascot mark; defaults to true. */
   includeMark?: boolean | undefined
+  /** Localized product name rendered beside the mascot mark. */
+  label?: string | undefined
 }
 const MARK_PATH = 'M12 27C16 15 28 8 43 10L53 2L53 15C66 15 79 21 90 31C99 39 106 48 116 51C108 58 99 60 90 57C87 69 79 78 67 84C52 91 35 88 23 79C12 71 7 59 8 46C8 38 9 32 12 27C16 23 19 20 24 18L22 2L31 9L43 10Z M70 35A4 4 0 1 0 70 43A4 4 0 1 0 70 35ZM20 50C29 39 42 35 56 39C47 43 41 49 38 57C35 66 39 73 46 80C34 78 25 72 20 64C17 59 17 54 20 50Z'
 const MARK_TRAIL = 'M82 25C91 33 99 43 106 49C98 49 91 52 85 56'
@@ -17,7 +19,7 @@ const MARK_TRAIL = 'M82 25C91 33 99 43 106 49C98 49 91 52 85 56'
  * @param props.includeMark - whether to include the leading mascot mark.
  * @returns the wordmark svg (aria-hidden decorative brand art).
  */
-export function BrandWordmark({ size = 24, className, includeMark = true }: BrandWordmarkProps) {
+export function BrandWordmark({ size = 24, className, includeMark = true, label = '' }: BrandWordmarkProps) {
   const width = includeMark ? 182 : 156
   const gradientId = `neosis-brand-rainbow-${useId().replaceAll(':', '')}`
   return (
@@ -40,7 +42,7 @@ export function BrandWordmark({ size = 24, className, includeMark = true }: Bran
           <path d={MARK_TRAIL} fill="none" stroke={`url(#${gradientId})`} strokeWidth="3" strokeLinecap="round" opacity=".92" />
         </g>
       )}
-      <text x={includeMark ? 30 : 26} y="16.5" fill="currentColor" fontFamily="Inter,Segoe UI,sans-serif" fontSize="10.5" fontWeight="600" letterSpacing=".15">AverQel NeoSIS</text>
+      <text x={includeMark ? 30 : 26} y="16.5" fill="currentColor" fontFamily="Inter,Segoe UI,sans-serif" fontSize="10.5" fontWeight="600" letterSpacing=".15">{label}</text>
     </svg>
   )
 }

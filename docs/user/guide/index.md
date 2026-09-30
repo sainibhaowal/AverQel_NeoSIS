@@ -1,6 +1,6 @@
 # Use the Web UI
 
-English | [中文](index.zh.md)
+English
 
 ![AverQel NeoSIS logo](../../../apps/web/public/averqel-neosis-logo.svg)
 

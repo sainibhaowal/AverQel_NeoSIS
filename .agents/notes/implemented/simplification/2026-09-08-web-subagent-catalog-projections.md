@@ -2,7 +2,7 @@
 
 Status: implemented
 
-English | [中文](2026-09-08-web-subagent-catalog-projections.zh.md)
+English
 
 ## Problem
 

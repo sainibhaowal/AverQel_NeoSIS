@@ -2,7 +2,7 @@
 
 Status: implemented
 
-English | [中文](2026-09-11-remove-e2b-providers.zh.md)
+English
 
 ## Problem
 

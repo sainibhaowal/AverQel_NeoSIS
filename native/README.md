@@ -1,6 +1,6 @@
 # native/
 
-English | [中文](README.zh.md)
+English
 
 Native source and public packages maintained with AverQel NeoSIS. The [`system/` workspace](system/README.md) owns the Landlock launcher and POSIX flock binding, their platform packages, and the [release procedure](system/docs/release.md).
 

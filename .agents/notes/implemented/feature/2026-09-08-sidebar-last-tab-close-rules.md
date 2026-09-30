@@ -2,7 +2,7 @@
 
 Status: implemented
 
-English | [中文](2026-09-08-sidebar-last-tab-close-rules.zh.md)
+English
 
 ## Problem
 

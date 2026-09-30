@@ -4,7 +4,7 @@ Status: implemented
 
 Update: the `reported` option this note introduced is gone with the [jobs seam consolidation](../architecture/2026-09-03-jobs-seam-consolidation.md). The registry keeps no report bit; `neosis-tool-jobs` claims only its own `job_kill` and waits in a ledger, so a human `job.kill` leaves the notice due by construction. The reason merge, the `job.kill` Remote, and the two-press control are unchanged.
 
-English | [中文](2026-08-26-human-job-kill.zh.md)
+English
 
 ## Problem
 

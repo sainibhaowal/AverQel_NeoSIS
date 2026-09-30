@@ -67,7 +67,6 @@ export const MODULE_PROXIES: Record<string, string> = {
   'node:worker_threads': './node/builtin_modules/mock/worker_threads.ts',
   'node:sqlite': './node/builtin_modules/mock/sqlite.ts',
   // External npm replacements, named after the package each stands in for.
-  '@averqel/libreoffice-kit': './node/external_packages/libreoffice-kit.ts',
   '@averqel/node-addon-system/flock': './node/external_packages/node-addon-system-flock.ts',
   'koffi': './node/external_packages/koffi.ts',
   'sharp': './node/external_packages/sharp.ts',

@@ -2,7 +2,7 @@
 
 Status: implemented
 
-English | [中文](2026-09-14-sidebar-layout-provider-recovery.zh.md)
+English
 
 ## Problem
 

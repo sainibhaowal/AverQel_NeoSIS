@@ -2,7 +2,7 @@
 
 Status: proposed
 
-English | [中文](2026-09-06-logical-session-storage-rebuild.zh.md)
+English
 
 ## Problem
 

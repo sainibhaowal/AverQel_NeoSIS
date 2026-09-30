@@ -111,6 +111,7 @@ Every package below exports a Cordis plugin that a bundle patch can name in a Lo
 | `@averqel/neosis-client-ui-user-questions` | no | Web ask_user_question composer takeover and plan-review presentation UI |
 | `@averqel/neosis-client-ui-workflow-run` | no | Durable workflow-run Conversation Node and nested member disclosure for neosis web |
 | `@averqel/neosis-client-ui-workspace` | no | Workspace picker plugin: one WorkspacePicker registered into the sidebar and empty-state workspace slots |
+| `@averqel/neosis-ui-brand` | no | AverQel NeoSIS brand occupants for the sidebar and UI |
 
 ## compaction
 
@@ -430,8 +431,8 @@ Every package below exports a Cordis plugin that a bundle patch can name in a Lo
 | `@averqel/neosis-subagent-acp` | yes | Out-of-process ACP subagent backend: drives a child agent in a spawned subprocess over the Agent Client Protocol |
 | `@averqel/neosis-subagent-claude-code` | yes | One-shot Claude Code subagent provider over the official Agent SDK |
 | `@averqel/neosis-subagent-codex` | yes | One-shot Codex subagent provider over the official app-server protocol |
-| `@averqel/neosis-subagent-neosis-sdk` | yes | Out-of-process SDK subagent backend: drives a child AverQel NeoSIS runtime subprocess over stdio JSON-RPC through the TypeScript SDK client |
 | `@averqel/neosis-subagent-fork-in-process` | yes | In-process fork subagent backend: runs a child agent seeded with a prefix of the parent's log |
+| `@averqel/neosis-subagent-neosis-sdk` | yes | Out-of-process SDK subagent backend: drives a child AverQel NeoSIS runtime subprocess over stdio JSON-RPC through the TypeScript SDK client |
 | `@averqel/neosis-subagent-spawn-in-process` | yes | In-process spawn subagent backend: runs a fresh child agent on ctx.agents |
 | `@averqel/neosis-tool-subagent` | yes | Model-facing subagent delegation tool over the ctx.subagents seam |
 | `@averqel/neosis-tool-subagent-control` | no | Globally named send_message, interrupt_agent, and list_agents tools over ctx.subagents continuations |

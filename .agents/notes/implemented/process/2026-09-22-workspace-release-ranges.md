@@ -2,7 +2,7 @@
 
 Status: implemented
 
-English | [中文](2026-09-22-workspace-release-ranges.zh.md)
+English
 
 ## Problem
 

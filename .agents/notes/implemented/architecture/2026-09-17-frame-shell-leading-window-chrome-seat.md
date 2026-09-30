@@ -2,7 +2,7 @@
 
 Status: implemented
 
-English | [中文](2026-09-17-frame-shell-leading-window-chrome-seat.zh.md)
+English
 
 ## Problem
 

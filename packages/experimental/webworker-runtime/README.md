@@ -5,7 +5,7 @@ kind: "package-library"
 
 # `@averqel/neosis-experimental-webworker-runtime`
 
-English | [中文](README.zh.md)
+English
 
 ## Summary
 
@@ -55,7 +55,7 @@ None; this package neither assembles nor sends a provider request.
 - **`node:dns/promises`, `node:vm`, `node:net`, `node:sqlite`, `node:worker_threads` are structural stubs**: every call reports its refusal on the console and throws. Rows needing native DNS, a real process, or realm isolation cannot run here.
 - **Host package commands are unavailable**: `execa` reports an explicit worker-host refusal; the preview cannot run pnpm or install native dependencies.
 - **PTC Node programs are unavailable**: the process shim exposes `/neosis/bin/node` as its executable identity so the provider can activate, but the Worker has neither a Node executable nor `stripTypeScriptTypes`. Program execution fails before launching a child.
-- **Office conversion requires a Node Host**: the LibreOffice kit replacement rejects converter creation with `unavailable`. The browser image excludes the kit and its engine dependencies; the Office preview reports that conversion is unavailable.
+- **Office conversion requires a Node Host**: the browser image has no native LibreOffice process, so converter creation reports `unavailable`. Desktop owns the bundled engine; standalone Host deployments must provide a configured system LibreOffice executable.
 - **Filesystem watchers observe only the mounted VFS**: image seeding is silent and the VFS has no symlinks or external writers. `persistent`, `ref()`, and `unref()` preserve the Node API but cannot control a dedicated Worker's lifetime because browsers expose no ref-counted event loop.
 - **Worker confinement is a VFS boundary, not kernel Landlock**: `read-only` and `workspace-write` run the unchanged `@averqel/node-addon-system/landlock-run` JavaScript and launcher argv, but the process layer implements the logical `landlock-run` executable and enforces its grants on every shell filesystem request. `full` therefore covers the Worker command table and mounted VFS only; it does not claim arbitrary native-process execution or Linux kernel isolation.
 - **The worker bundle pins a path inside `@yarnpkg/parsers`** — the build resolves the package's own `lib/shell.js` instead of its root, whose barrel also re-exports the Syml parser and so drags js-yaml into a bundle that never parses that format (around 175 kB, plus its module body at worker start). The path is derived from the package manifest, so a layout change fails the build rather than reinstating the barrel; upgrading the dependency means re-checking that the shell parser still lives there.

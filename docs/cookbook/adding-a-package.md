@@ -1,6 +1,6 @@
 # Cookbook: adding a workspace package
 
-English | [中文](adding-a-package.zh.md)
+English
 
 The file-by-file checklist for a new `@averqel/neosis-<name>` package. This checklist is validated against the bash and adapter packages as templates; if it drifts from them, fix it here.
 

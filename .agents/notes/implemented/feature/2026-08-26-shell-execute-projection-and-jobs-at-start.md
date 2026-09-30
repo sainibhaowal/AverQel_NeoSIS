@@ -4,7 +4,7 @@ Status: implemented
 
 Update: the [jobs seam consolidation](../architecture/2026-09-03-jobs-seam-consolidation.md) owns the output ring, the cursors, and the pull sources every registered command feeds.
 
-English | [中文](2026-08-26-shell-execute-projection-and-jobs-at-start.zh.md)
+English
 
 ## Problem
 

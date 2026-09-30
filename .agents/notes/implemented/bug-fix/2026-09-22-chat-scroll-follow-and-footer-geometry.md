@@ -2,7 +2,7 @@
 
 Status: implemented
 
-English | [中文](2026-09-22-chat-scroll-follow-and-footer-geometry.zh.md)
+English
 
 ## Problem
 

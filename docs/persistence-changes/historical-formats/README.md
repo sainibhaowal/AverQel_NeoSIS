@@ -4,7 +4,7 @@ description: "Find the complete declared persistence types for every Session for
 
 # Session persistence formats
 
-English | [中文](README.zh.md)
+English | [中文](README.md)
 
 ## Summary
 
@@ -28,9 +28,9 @@ The index is generated from validated snapshots and the current writer constant.
 
 | Format | Source | Reference | Machine schema | Roots / types |
 |---|---|---|---|---|
-| 0 | `neosis-v0.1.2-rc.1` | [V0](v0.md) | [JSON](v0.schema.json) | 54 / 415 |
+| 0 | `dsh-v0.1.2-rc.1` | [V0](v0.md) | [JSON](v0.schema.json) | 54 / 415 |
 | 1 | PR #3349 | [V1](v1.md) | [JSON](v1.schema.json) | 54 / 415 |
-| 2 | `neosis-v0.1.3-alpha.2` | [V2](v2.md) | [JSON](v2.schema.json) | 56 / 435 |
+| 2 | `dsh-v0.1.3-alpha.2` | [V2](v2.md) | [JSON](v2.schema.json) | 56 / 435 |
 | 3 | PR #4320 | [V3](v3.md) | [JSON](v3.schema.json) | 60 / 467 |
 | 4 | Current checkout | [Current catalog](../../persistence-catalog.md) | [JSON](../../persistence-schema.json) | 62 / 587 |
 

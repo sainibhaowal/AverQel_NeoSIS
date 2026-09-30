@@ -2,7 +2,7 @@
 
 Status: proposed
 
-English | [中文](2026-09-08-desktop-update-extensions.zh.md)
+English
 
 ## Problem
 

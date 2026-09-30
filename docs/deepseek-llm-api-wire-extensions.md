@@ -1,6 +1,6 @@
 # Official AverQel LLM API wire extensions
 
-English | [中文](deepseek-llm-api-wire-extensions.zh.md)
+English
 
 This reference defines every AverQel NeoSIS-specific HTTP header and additive JSON field sent by [`@averqel/neosis-llm-deepseek`](../packages/llm/llm-deepseek/README.md) on `deepseek-official` Messages requests. It does not redefine fields owned by the upstream AverQel API. The provider-neutral LLM interface and `llm-pi-ai` do not implement these additions.
 

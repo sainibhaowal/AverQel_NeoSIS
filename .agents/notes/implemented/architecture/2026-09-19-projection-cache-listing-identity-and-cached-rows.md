@@ -2,7 +2,7 @@
 
 Status: implemented
 
-English | [中文](2026-09-19-projection-cache-listing-identity-and-cached-rows.zh.md)
+English
 
 ## Problem
 

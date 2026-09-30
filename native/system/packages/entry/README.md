@@ -4,7 +4,7 @@ kind: "package-library"
 ---
 # @averqel/node-addon-system
 
-English | [中文](README.zh.md)
+English
 
 The `./landlock-run` entry exports the Landlock launcher path, enforcement probe, grant arguments, and protocol constants. The independent `./flock` entry exports `tryLockExclusive(fd): Promise<void>`; importing either entry does not load `system.node`. The package has no root export.
 

@@ -2,7 +2,7 @@
 
 Status: implemented
 
-English | [中文](2026-09-16-subagent-catalog-membership-only.zh.md)
+English
 
 ## Problem
 

@@ -2,7 +2,7 @@
 
 Status: rejected — every swap below fails the net-simplification bar on evidence; recorded so the survey is not re-run from scratch
 
-English | [中文](2026-07-26-dependency-swaps-rejected-by-nih-audit.zh.md)
+English
 
 ## Problem
 
@@ -69,7 +69,7 @@ Adopt the following dependency swaps. Rejected — per-item evidence below; a fu
 - **`prebuildify`/`node-gyp-build` for the landlock launcher packaging**: inapplicable — those load `.node` addons via dlopen; the launcher ships a standalone exec'd static binary, and per-platform `optionalDependencies` *is* the ecosystem convention for binaries.
 - **Replacing the Landlock launcher itself with `@landstrip/landstrip`**: fails the security-invariant test — the launcher is a ~300-line reviewable C file whose binaries are byte-pinned to native CI builds and that already migrated away from a Rust dependency; a single-maintainer LGPL Rust binary set is a larger audit surface whose releases are harder to match to reviewed source. The [Windows ACL decision](../../implemented/feature/2026-08-08-windows-acl-restricted-token-sandbox.md) records the same rejection for the shipped Windows rung.
 - **`hatch-nodejs-version` for Python release versioning**: roughly LOC-neutral (a custom metadata hook replaces the regex), inverts the recorded decision that the dev sentinel never determines a release version, and puts a single-maintainer build plugin in the release supply chain.
-- **YAML consolidation (`js-yaml` vs `yaml`)**: the repo carries both parsers, with the `!!js` tag defined four times on js-yaml (vendored include, app-boot, apps/cli, `scripts/verify-cordis-config.ts`) and twice on `yaml` (sdk-telemetry's `ScalarTag`, sdk-helper's comment-preserving Document editing). The direction is forced — js-yaml cannot replace `yaml` (sdk-helper needs the Document API) — but migrating the js-yaml sites cannot retire the library either (the vendored include pins it) and would put two parsers in charge of one dialect that must agree exactly, against the [personal-config note](../../archived/feature/2026-07-20-neosis-cli-personal-config.md)'s deliberate load-only-copy parity. Deletable: ~20–25 lines of duplicate tag definitions and two `@types/js-yaml` entries. The consolidation moment is a future include sync, not now.
+- **YAML consolidation (`js-yaml` vs `yaml`)**: the repo carries both parsers, with the `!!js` tag defined four times on js-yaml (vendored include, app-boot, apps/cli, `scripts/verify-cordis-config.ts`) and twice on `yaml` (sdk-telemetry's `ScalarTag`, sdk-helper's comment-preserving Document editing). The direction is forced — js-yaml cannot replace `yaml` (sdk-helper needs the Document API) — but migrating the js-yaml sites cannot retire the library either (the vendored include pins it) and would put two parsers in charge of one dialect that must agree exactly, against the [personal-config note](../../archived/feature/2026-07-20-dsh-cli-personal-config.md)'s deliberate load-only-copy parity. Deletable: ~20–25 lines of duplicate tag definitions and two `@types/js-yaml` entries. The consolidation moment is a future include sync, not now.
 
 ## Alternatives considered
 

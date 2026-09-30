@@ -2,7 +2,7 @@
 
 Status: implemented
 
-English | [中文](2026-09-15-host-only-remote-input-validation.zh.md)
+English
 
 ## Problem
 

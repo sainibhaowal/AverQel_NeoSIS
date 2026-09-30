@@ -5,7 +5,7 @@ kind: persistence-change
 
 # 2026-09-12-auto-review-error-metadata
 
-English | [中文](2026-09-12-auto-review-error-metadata.zh.md)
+English | [中文](2026-09-12-auto-review-error-metadata.md)
 
 ## Summary
 

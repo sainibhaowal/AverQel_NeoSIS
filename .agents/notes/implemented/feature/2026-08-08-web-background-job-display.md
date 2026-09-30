@@ -6,7 +6,7 @@ Superseded: the roster this note put on the session control stream (`jobsBySessi
 
 Update: the output phase this note deferred now ships as the per-job observation record on `ctx.jobs` — see [jobs absorb the record](../architecture/2026-09-01-jobs-absorb-activity-record.md).
 
-English | [中文](2026-08-08-web-background-job-display.zh.md)
+English
 
 ## Problem
 

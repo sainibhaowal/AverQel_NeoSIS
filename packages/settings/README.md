@@ -5,7 +5,7 @@ kind: "package-group"
 
 # settings/ — plugin configuration forms
 
-English | [中文](README.zh.md)
+English
 
 ## Summary
 

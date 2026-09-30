@@ -1,6 +1,6 @@
 # Plugin Configuration Forms
 
-English | [中文](settings.zh.md)
+English
 
 The [settings service](../../packages/settings/settings/README.md) projects volatile Config fields from active profile entries. The [configuration editor](../../packages/boot/config-editor/README.md) persists edits through Cordis patches. Business consumers read `.get()` on their own Config references.
 

@@ -2,7 +2,7 @@
 
 Status: implemented
 
-English | [中文](2026-09-17-persistent-plan-cards.zh.md)
+English
 
 ## Problem
 

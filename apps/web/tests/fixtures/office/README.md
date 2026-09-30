@@ -1,6 +1,6 @@
 # Binary Office fixtures
 
-English | [中文](README.zh.md)
+English
 
 `preview.doc`, `preview.xls`, and `preview.ppt` contain `Office preview 中文文档`. They are the `one-page.doc`, `one-sheet.xls`, and `one-slide.ppt` fixtures from [LibreOffice Kit](https://github.com/sainibhaowal-neosis/libreoffice-kit/tree/main/test/fixtures), exported from the upstream OOXML source with LibreOffice 26.8.0.3 using the Word, Excel, and PowerPoint 97 filters. The source documents retain their original MIT license.
 

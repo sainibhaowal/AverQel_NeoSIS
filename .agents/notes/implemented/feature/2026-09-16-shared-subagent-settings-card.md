@@ -2,7 +2,7 @@
 
 Status: implemented
 
-English | [中文](2026-09-16-shared-subagent-settings-card.zh.md)
+English
 
 ## Problem
 

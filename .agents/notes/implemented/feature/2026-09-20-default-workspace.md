@@ -2,7 +2,7 @@
 
 Status: implemented
 
-English | [中文](2026-09-20-default-workspace.zh.md)
+English
 
 ## Problem
 

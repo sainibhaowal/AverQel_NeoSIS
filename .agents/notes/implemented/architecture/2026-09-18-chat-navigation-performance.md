@@ -2,7 +2,7 @@
 
 Status: implemented
 
-English | [中文](2026-09-18-chat-navigation-performance.zh.md)
+English
 
 ## Problem
 

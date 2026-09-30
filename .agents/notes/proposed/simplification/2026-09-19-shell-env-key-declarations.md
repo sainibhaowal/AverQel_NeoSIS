@@ -2,7 +2,7 @@
 
 Status: proposed
 
-English | [中文](2026-09-19-shell-env-key-declarations.zh.md)
+English
 
 ## Problem
 

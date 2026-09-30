@@ -1,6 +1,6 @@
 # MCP
 
-English | [中文](mcp.zh.md)
+English
 
 ## Summary
 

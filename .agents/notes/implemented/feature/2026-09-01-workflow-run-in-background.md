@@ -4,7 +4,7 @@ Status: implemented
 
 Update: with the [jobs seam consolidation](../architecture/2026-09-03-jobs-seam-consolidation.md) the run registers a `JobSpec` (no `record` flag), narrates through `JobHandle.append` and `updateProgress`, and returns its rendered value as `JobOutcome.result`, which the model's first read after settlement carries once.
 
-English | [中文](2026-09-01-workflow-run-in-background.zh.md)
+English
 
 ## Problem
 

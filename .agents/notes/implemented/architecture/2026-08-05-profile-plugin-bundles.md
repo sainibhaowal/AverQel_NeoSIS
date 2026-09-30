@@ -2,7 +2,7 @@
 
 Status: implemented
 
-English | [中文](2026-08-05-profile-plugin-bundles.zh.md)
+English
 
 ## Problem
 
@@ -16,7 +16,7 @@ The default Profile templates use `@averqel/neosis-base` as the shared core for 
 
 Resolution is two-anchored by construction: `neosis.profile.bundles` names resolve from the neosis installation first, then the profile directory, so in-box bundles always come from the same installation as the running `neosis` and pnpm never manages them. Bare plugin names in patch rows use the [immutable runtime resolution](2026-09-09-profile-resolution-generations.md), which applies installation-first and ordered-bundle rules in memory and expands dependencies from real package directories.
 
-Two supporting refactors: the webserver's built-in static dist serving became the single-owner **fallback seat** (`registerFallback`/`applyIndexTaps`), with the SPA server extracted to `@averqel/neosis-host-frontend-static` so the web bundle owns its dist as composition, not launcher code; and the personal-overlay machinery of the [neosis CLI personal-config decision](../../archived/feature/2026-07-20-neosis-cli-personal-config.md) (`loadPersonalPatches`, `$NEOSIS_HOME/config.yaml`) was retargeted to the per-profile and home-level `cordis.patch.yml` layers (`loadOptionalPatches`, `watchUserPatches` taking a filename), superseding that note's entry modes and file location while keeping its Harness-home root, patch semantics, and fail-loud parsing.
+Two supporting refactors: the webserver's built-in static dist serving became the single-owner **fallback seat** (`registerFallback`/`applyIndexTaps`), with the SPA server extracted to `@averqel/neosis-host-frontend-static` so the web bundle owns its dist as composition, not launcher code; and the personal-overlay machinery of the [neosis CLI personal-config decision](../../archived/feature/2026-07-20-dsh-cli-personal-config.md) (`loadPersonalPatches`, `$NEOSIS_HOME/config.yaml`) was retargeted to the per-profile and home-level `cordis.patch.yml` layers (`loadOptionalPatches`, `watchUserPatches` taking a filename), superseding that note's entry modes and file location while keeping its Harness-home root, patch semantics, and fail-loud parsing.
 
 ## Alternatives considered
 

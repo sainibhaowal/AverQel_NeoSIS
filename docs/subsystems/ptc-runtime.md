@@ -1,6 +1,6 @@
 # PTC runtime
 
-English | [中文](ptc-runtime.zh.md)
+English
 
 The PTC execution [capability seam](../../.agents/notes/implemented/architecture/2026-06-13-capability-seams.md) supplies `ctx.ptcRuntime` through [neosis-ptc-runtime](../../packages/ptc-runtime/ptc-runtime). It runs one program against host bindings and reports output, failure and applicable sandbox facts. PTC execution is optional rather than part of [the agent-loop spine](core.md). The [PTC foundation](../../.agents/notes/implemented/feature/2026-06-15-ptc.md) owns registry presentation, the [typed-return contract](../../.agents/notes/implemented/feature/2026-07-20-ptc-typed-tool-returns.md) owns binding values, and the [sandboxed Node decision](../../.agents/notes/implemented/architecture/2026-09-11-sandboxed-node-ptc-runtime.md) owns the shipped execution provider.
 

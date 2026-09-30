@@ -2,7 +2,7 @@
 
 Status: implemented
 
-English | [中文](2026-09-19-lossless-projection-checkpoint-json.zh.md)
+English
 
 ## Problem
 

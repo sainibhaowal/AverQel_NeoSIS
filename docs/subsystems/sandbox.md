@@ -1,6 +1,6 @@
 # Process Sandbox
 
-English | [中文](sandbox.zh.md)
+English
 
 The process-sandbox seam of [neosis-sandbox](../../packages/sandbox/sandbox) wraps a same-world subprocess argv in a file-effect policy without coupling consumers to a platform runner. [neosis-sandbox-local](../../packages/sandbox/sandbox-local) supplies Linux bwrap/Landlock, macOS Seatbelt, and the Windows ACL restricted-token backend; [neosis-bash-sandbox](../../packages/shell/bash-sandbox) and [neosis-pwsh-sandbox](../../packages/shell/pwsh-sandbox) consume it. [neosis-sandbox-ssh](../../packages/ssh/sandbox-ssh/README.md) applies the same policy through a remote backend paired with the SSH filesystem and subprocess providers.
 

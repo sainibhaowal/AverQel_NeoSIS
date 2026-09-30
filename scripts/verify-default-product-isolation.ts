@@ -21,8 +21,6 @@ import {
 } from './verify-client-packages.ts'
 
 const EXPERIMENTAL_PREFIX = '@averqel/neosis-experimental-'
-// The independently published entry package owns platform-engine dependencies.
-const EXTERNAL_KIT_PACKAGES = new Set(['@averqel/libreoffice-kit'])
 const PROFILE_SOURCE = 'packages/boot/app-boot/src/profile.ts'
 const PRESET_PATTERN = 'packages/bundle/web-app/presets/*.patch.yml'
 const RUNTIME_SECTIONS = ['dependencies', 'optionalDependencies', 'peerDependencies'] as const
@@ -132,7 +130,6 @@ export function verifyDefaultProductIsolation(root: string): ProductIsolationRes
     }
     const pkg = packages.get(packageName)
     if (pkg !== undefined) add(pkg, origin)
-    else if (EXTERNAL_KIT_PACKAGES.has(packageName)) return
     else if (packageName.startsWith('@averqel/')) failures.push(`${origin}: unknown workspace package ${name}`)
   }
   const dependency = (name: string, range: string, owner: Package, origin: string): void => {
@@ -287,7 +284,10 @@ export function verifyDefaultProductIsolation(root: string): ProductIsolationRes
         dependency(name, range, pkg, `${manifest.name} ${section}`)
       }
     }
-    for (const file of manifest.neosis?.bundle === undefined ? [] : bundlePatchPaths(pkg.directory, manifest.neosis.bundle)) scanConfig(file)
+    const bundleFiles = manifest.neosis?.bundle === undefined
+      ? []
+      : bundlePatchPaths(pkg.directory, manifest.neosis.bundle)
+    for (const file of bundleFiles) scanConfig(file)
     for (const tree of manifest.neosis?.configTrees ?? []) {
       const treePath = resolve(pkg.directory, tree.path)
       const files = existsSync(treePath) && statSync(treePath).isDirectory()

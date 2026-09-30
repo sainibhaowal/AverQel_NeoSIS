@@ -2,7 +2,7 @@
 
 Status: implemented
 
-English | [中文](2026-09-10-approval-review-workflow-identity.zh.md)
+English
 
 ## Problem
 

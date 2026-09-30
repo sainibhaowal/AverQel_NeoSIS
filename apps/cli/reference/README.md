@@ -1,6 +1,6 @@
 # `neosis` CLI behavior reference
 
-English | [中文](README.zh.md)
+English
 
 This reference defines the profile, plugin-management, and config-dump command modes. Argv is parsed once through [`src/args.ts`](../src/args.ts), and [`src/bin.ts`](../src/bin.ts) dynamically imports only the selected runner.
 

@@ -1,6 +1,6 @@
 # Bilingual-pair consistency record (docs/i18n/README.md): the git blob hash of each
 # side as of the last confirmed-consistent state. Both languages carry equal authority;
 # after editing either side, bring the other along and re-record with:
-#   pnpm run verify-translation-pairing --write docs/persistence-changes/releases/neosis-v0.1.0-rc.3.md
-neosis-v0.1.0-rc.3.md: 5e6d42c63e16204835c4dc21e9dc404323382f6c
-neosis-v0.1.0-rc.3.zh.md: 26e9763c44e010dbf20b91eecb2567b1cca9f8f5
+#   pnpm run verify-translation-pairing --write docs/persistence-changes/releases/dsh-v0.1.0-rc.3.md
+dsh-v0.1.0-rc.3.md: 3a7e55b58ba3f84914c76b79fad79545a45ba052
+dsh-v0.1.0-rc.3.zh.md: e16b69ea02eed6622db01a9608c5bb1c89954e40

@@ -13,7 +13,6 @@ const root = resolve(scriptsDir, '..');
 
 /** Third-party packages that should not be rebranded */
 const THIRD_PARTY_FIXES = [
-  { from: '@averqel/libreoffice-kit', to: '@libreoffice-kit' },
   { from: '@averqel/oxlint', to: 'oxlint' },
   { from: '@averqel/oxlint-types', to: 'oxlint-types' },
   { from: '@averqel/js-yaml', to: 'js-yaml' },

@@ -2,7 +2,7 @@
 
 Status: implemented
 
-English | [中文](2026-09-07-pi-ai-settings-catalog-recovery.zh.md)
+English
 
 ## Problem
 

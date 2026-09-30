@@ -2,7 +2,7 @@
 
 Status: implemented
 
-English | [中文](2026-09-15-docs-page-markdown-actions.zh.md)
+English
 
 ## Problem
 

@@ -4,7 +4,7 @@ kind: "package-library"
 ---
 # @averqel/neosis-client-store
 
-English | [中文](README.zh.md)
+English
 
 ## Summary
 

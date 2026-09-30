@@ -5,7 +5,7 @@ kind: "package-bundle"
 
 # @averqel/neosis-experimental-voice-input-bundle
 
-English | [中文](README.zh.md)
+English
 
 ## Summary
 

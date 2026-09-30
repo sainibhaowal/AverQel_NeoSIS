@@ -2,7 +2,7 @@
 
 Status: implemented
 
-English | [中文](2026-09-16-creator-persistent-plugin-management.zh.md)
+English
 
 ## Problem
 

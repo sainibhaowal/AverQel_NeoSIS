@@ -2,7 +2,7 @@
 
 Status: implemented
 
-English | [中文](2026-09-11-sidebar-document-preview-polish.zh.md)
+English
 
 ## Problem
 

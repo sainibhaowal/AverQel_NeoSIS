@@ -2,7 +2,7 @@
 
 Status: implemented
 
-English | [中文](2026-09-12-publish-all-experimental-packages.zh.md)
+English
 
 ## Problem
 

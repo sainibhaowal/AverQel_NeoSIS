@@ -1,6 +1,6 @@
 # Office to PDF
 
-English | [中文](office-to-pdf.zh.md)
+English
 
 The [document package family](../../packages/document/README.md) converts Office files to PDFs on the Node Host. Consumers authorize source reads and own presentation; the shared provider owns conversion, bounded admission, and transient PDF reuse. This subsystem creates no model-facing tool or Session event.
 
@@ -14,7 +14,7 @@ The [document package family](../../packages/document/README.md) converts Office
 
 ## Requests and results
 
-[`OfficeToPdfRequest`](../../packages/document/office-to-pdf/src/types.ts) contains an already-authorized source key/version, optional stat size, a deferred `read(signal, maxBytes)` callback, foreground/background priority, and a `OfficeExtension`: `doc`, `docx`, `xls`, `xlsx`, `ppt`, or `pptx`. `OfficeToPdf.convert(request, signal?)` returns one complete PDF result. Cancellation follows the caller and provider lifetimes; validation, output, and engine failures reject with a classified `OfficeToPdfError`.
+[`OfficeToPdfRequest`](../../packages/document/office-to-pdf/src/types.ts) contains an already-authorized source key/version, optional stat size, a deferred `read(signal, maxBytes)` callback, foreground/background priority, and an `OfficeExtension` covering binary Office, OOXML, OpenDocument, Flat XML, and RTF word-processing, spreadsheet, and presentation files. `OfficeToPdf.convert(request, signal?)` returns one complete PDF result. Cancellation follows the caller and provider lifetimes; validation, output, and engine failures reject with a classified `OfficeToPdfError`.
 
 `OfficeToPdfPriority` is `foreground` for requested preview/QA and `background` for speculation. `OfficeSourceKey` brands the caller-owned authorized source locator. `OfficeToPdfGeneration` brands a provider lifetime, and `OfficeToPdfKey` brands its content identity; neither opaque value is parsed by consumers.
 
@@ -35,11 +35,11 @@ The `officeToPdf.render` Remote method checks source authorization and versions 
 
 The `api/remotes` assembly mounts the conversion service's generated Remote descriptor. The shared Document Preview package registers Office formats with complete-byte loading and its existing PDF.js Worker. Each preview read rechecks renderer generation, source authorization, and version before sharing an in-flight conversion or cached PDF. Connection resets and plugin disposal cancel requests and clear cached bytes. Missing services show localized configuration guidance.
 
-## Engine selection and limits
+## LibreOffice runtime and limits
 
-The external [`@averqel/libreoffice-kit`](https://github.com/sainibhaowal-neosis/libreoffice-kit) Node API selects its precompiled engines. The kit has an independent version and release workflow, defined by the [release ownership decision](../../.agents/notes/implemented/architecture/2026-09-14-independent-libreoffice-kit.md). Application builds install the published npm packages. Application packaging requires the target’s declared native engine, or Node WASM when the kit declares no native engine for that target. The [platform engine decision](../../.agents/notes/implemented/architecture/2026-09-15-platform-office-engines.md) defines installation and packaging. Invalid metadata, missing required assets, and conversion errors reject without switching engines. Conversion uses disk input and output paths on the Host, with no browser conversion engine or font RPC.
+Desktop packages start the verified LibreOffice payload shipped outside ASAR at `resources/office`; the Host fails closed if its bundled executable is missing. Development and standalone Web/Host deployments start the configured executable, defaulting to `soffice` when no bundle root or explicit `executable` is present. NeoSIS does not download an Office engine at runtime and does not require an npm Office package.
 
-The [Host provider configuration](../../packages/document/office-to-pdf/README.md#use-this-package) owns concurrency, deadlines, input/output limits, archive limits, image resolution, and font access. Native/WASM implementation and asset distribution belong to the kit workspace. System LibreOffice discovery, runtime engine downloads, persistent PDF caching, and model-facing rendering are outside this provider.
+Each conversion receives a private LibreOffice profile and temporary input/output directory. `fontDirectories`, when configured, are passed through `SAL_FONTPATH`; otherwise LibreOffice uses the bundled or host font configuration. Desktop payloads are pinned per target and verified by SHA-256 during preparation. Conversion fidelity, filters, font metrics, and image rasterization follow that pinned payload or the configured standalone Host version. The [Host provider configuration](../../packages/document/office-to-pdf/README.md#use-this-package) owns concurrency, deadlines, input/output limits, archive limits, and PDF caching.
 
 <!-- BEGIN GENERATED cordis-surface (gen-cordis-catalog.ts) — do not edit between markers -->
 

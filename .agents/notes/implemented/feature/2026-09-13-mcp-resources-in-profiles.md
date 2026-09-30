@@ -2,7 +2,7 @@
 
 Status: implemented
 
-English | [中文](2026-09-13-mcp-resources-in-profiles.zh.md)
+English
 
 ## Problem
 

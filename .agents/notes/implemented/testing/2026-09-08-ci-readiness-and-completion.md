@@ -2,7 +2,7 @@
 
 Status: implemented
 
-English | [中文](2026-09-08-ci-readiness-and-completion.zh.md)
+English
 
 ## Problem
 

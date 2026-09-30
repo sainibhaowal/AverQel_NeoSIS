@@ -2,7 +2,7 @@
 
 Status: implemented
 
-English | [中文](2026-09-22-fatal-diagnostics-and-crash-reports.zh.md)
+English
 
 ## Problem
 

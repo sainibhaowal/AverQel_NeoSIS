@@ -1,11 +1,11 @@
 ---
-description: "Retrospective Session persistence types and adjacent-release changes for neosis-v0.1.2-alpha.4."
+description: "Retrospective Session persistence types and adjacent-release changes for dsh-v0.1.2-alpha.4."
 kind: persistence-release
 ---
 
-# Persistence release: neosis-v0.1.2-alpha.4
+# Persistence release: dsh-v0.1.2-alpha.4
 
-English | [中文](neosis-v0.1.2-alpha.4.zh.md)
+English | [中文](dsh-v0.1.2-alpha.4.md)
 
 ## Summary
 
@@ -28,13 +28,13 @@ This approximate backfill supports reading and format validation; it is not a co
 
 | Item | Recorded value |
 |---|---|
-| Source tag | `neosis-v0.1.2-alpha.4` |
+| Source tag | `dsh-v0.1.2-alpha.4` |
 | Source date | 2026-09-01T15:37:26.000Z |
 | Release record | Release object present. |
-| Previous release | [neosis-v0.1.2-alpha.3](neosis-v0.1.2-alpha.3.md) |
+| Previous release | [dsh-v0.1.2-alpha.3](dsh-v0.1.2-alpha.3.md) |
 | Session writer version | 0 |
 | Reconstructed inventory | <!-- persistence-release-inventory:start -->54 roots / 415 types<!-- persistence-release-inventory:end --> |
-| This snapshot | [neosis-v0.1.2-alpha.4.schema.json](neosis-v0.1.2-alpha.4.schema.json) |
+| This snapshot | [dsh-v0.1.2-alpha.4.schema.json](dsh-v0.1.2-alpha.4.schema.json) |
 
 Source evidence for the writer version constant at this tag:
 
@@ -45,8 +45,8 @@ Source evidence for the writer version constant at this tag:
 
 ```yaml persistence-release
 schemaVersion: 1
-tag: neosis-v0.1.2-alpha.4
-previous: neosis-v0.1.2-alpha.3
+tag: dsh-v0.1.2-alpha.4
+previous: dsh-v0.1.2-alpha.3
 sessionFormatVersion: 0
 changes:
   - root: SessionHeader

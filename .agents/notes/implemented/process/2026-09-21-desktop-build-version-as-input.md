@@ -2,7 +2,7 @@
 
 Status: implemented
 
-English | [中文](2026-09-21-desktop-build-version-as-input.zh.md)
+English
 
 ## Problem
 

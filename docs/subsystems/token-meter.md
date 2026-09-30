@@ -1,6 +1,6 @@
 # Token Meter
 
-English | [中文](token-meter.zh.md)
+English
 
 `@averqel/neosis-token-meter` exposes one detached replay snapshot for request pressure and positional surface pricing. `logRevision` is the number of durable events consumed for every field in the measurement.
 

@@ -2,7 +2,7 @@
 
 Status: implemented
 
-English | [中文](2026-09-17-workspace-file-binary-transfer.zh.md)
+English
 
 ## Problem
 

@@ -5,7 +5,7 @@ kind: "package-library"
 
 # neosis-util-crypto
 
-English | [中文](README.zh.md)
+English
 
 ## Summary
 

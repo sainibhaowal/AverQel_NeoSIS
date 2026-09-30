@@ -2,7 +2,7 @@
 
 Status: implemented
 
-English | [中文](2026-09-20-sidebar-retained-tab-layout.zh.md)
+English
 
 ## Problem
 

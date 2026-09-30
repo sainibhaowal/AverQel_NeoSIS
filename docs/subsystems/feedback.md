@@ -1,6 +1,6 @@
 # Message Feedback
 
-English | [中文](feedback.zh.md)
+English
 
 [`@averqel/neosis-message-feedback`](../../packages/feedback/message-feedback) owns editable feedback for individual assistant messages. The canonical Session log stores `feedback/message-put` and `feedback/message-delete`; the immutable Session-level remark remains `feedback/record`, owned by [`@averqel/neosis-command-feedback`](../../packages/feedback/command-feedback) together with the `FeedbackCategory` taxonomy both kinds of feedback file under. All three are log-only events that never enter model context.
 

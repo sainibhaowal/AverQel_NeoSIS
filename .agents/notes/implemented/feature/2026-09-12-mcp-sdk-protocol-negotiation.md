@@ -2,7 +2,7 @@
 
 Status: implemented
 
-English | [中文](2026-09-12-mcp-sdk-protocol-negotiation.zh.md)
+English
 
 ## Problem
 

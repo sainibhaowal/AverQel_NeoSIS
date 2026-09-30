@@ -2,7 +2,7 @@
 
 Status: implemented
 
-English | [中文](2026-09-04-busy-send-button-follows-enter-setting.zh.md)
+English
 
 ## Problem
 

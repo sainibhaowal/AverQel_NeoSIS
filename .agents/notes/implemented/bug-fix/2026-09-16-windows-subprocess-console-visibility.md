@@ -2,7 +2,7 @@
 
 Status: implemented
 
-English | [中文](2026-09-16-windows-subprocess-console-visibility.zh.md)
+English
 
 ## Problem
 

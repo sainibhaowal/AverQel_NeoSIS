@@ -5,7 +5,7 @@ kind: "package-library"
 
 # @averqel/neosis-hook-protocol
 
-English | [中文](README.zh.md)
+English
 
 ## Summary
 

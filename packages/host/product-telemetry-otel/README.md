@@ -5,7 +5,7 @@ kind: "package-reference"
 
 # @averqel/neosis-host-product-telemetry-otel
 
-English | [中文](README.zh.md)
+English
 
 ## Summary
 

@@ -1,6 +1,6 @@
 # AverQel NeoSIS Python SDK
 
-English | [中文](README.zh.md)
+English
 
 Python subprocess SDK for driving AverQel NeoSIS over newline-delimited JSON-RPC on stdio. Install `averqel-neosis-sdk`; it installs the exact same-version `averqel-neosis-runtime-bin` wheel for the current platform.
 

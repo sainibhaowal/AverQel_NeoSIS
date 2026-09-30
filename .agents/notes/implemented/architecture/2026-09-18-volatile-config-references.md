@@ -2,7 +2,7 @@
 
 Status: implemented
 
-English | [中文](2026-09-18-volatile-config-references.zh.md)
+English
 
 ## Problem
 

@@ -2,7 +2,7 @@
 
 Status: implemented
 
-English | [中文](2026-09-08-desktop-uninstall-preserve-neosis-home.zh.md)
+English
 
 ## Problem
 

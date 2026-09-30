@@ -4,7 +4,7 @@ Status: implemented
 
 Superseded: the standalone seam described here was folded into `ctx.jobs` as the per-job observation record — see [jobs absorb the record](../architecture/2026-09-01-jobs-absorb-activity-record.md); the durable-vs-live analysis below still holds.
 
-English | [中文](2026-08-24-activity-observation-seam.zh.md)
+English
 
 ## Problem
 

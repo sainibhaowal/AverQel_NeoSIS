@@ -5,7 +5,7 @@ kind: "package-reference"
 
 # @averqel/neosis-deepseek-account-platform
 
-English | [中文](README.zh.md)
+English
 
 New attempts map the caller’s UI language to Platform en_US or zh_CN; active attempts retain their initial language.
 

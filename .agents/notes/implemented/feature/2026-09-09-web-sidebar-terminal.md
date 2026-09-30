@@ -2,7 +2,7 @@
 
 Status: implemented
 
-English | [中文](2026-09-09-web-sidebar-terminal.zh.md)
+English
 
 ## Problem
 

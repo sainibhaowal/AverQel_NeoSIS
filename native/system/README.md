@@ -4,7 +4,7 @@ kind: "package-library"
 ---
 # @averqel/node-addon-system
 
-English | [中文](README.zh.md)
+English
 
 ## Summary
 

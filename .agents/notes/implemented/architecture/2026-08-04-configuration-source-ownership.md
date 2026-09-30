@@ -2,7 +2,7 @@
 
 Status: implemented
 
-English | [中文](2026-08-04-configuration-source-ownership.zh.md)
+English
 
 The non-secret settings tier below is superseded by [profile-owned live configuration](2026-09-19-profile-owned-live-configuration.md). Credential ordering and environment restrictions remain current.
 
