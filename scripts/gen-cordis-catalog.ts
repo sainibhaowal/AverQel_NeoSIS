@@ -1114,8 +1114,8 @@ export function walkPartitionProblems(input: WalkPartitionInput, maps: WalkParti
 
 /**
  * Compute every generated artifact: the inherited-tier page, the model-facing
- * runtime API module, plus, per mapped subsystems page, the pair's two updated
- * documents with the injected region. Fail-loud partition checks live here: an
+ * runtime API module, plus, per mapped subsystems page, the updated English
+ * document with the injected region. Fail-loud partition checks live here: an
  * unmapped service/event scope, a mapping whose page file does not exist, a
  * curated entry whose key/scope the projection no longer discovers, a declared
  * Context key or Events member the projection cannot see without a named walk
@@ -1163,15 +1163,14 @@ export function computeOutputs(): [string, string][] {
       events.filter(e => EVENT_SCOPE_PAGE[e.scope] === page),
       CORDIS_CATALOG_POLICY,
     )
-    for (const side of [page, page.replace(/\.md$/, '.zh.md')]) {
+    for (const side of [page]) {
       const rel = `${SUBSYSTEMS_DIR}/${side}`
       const localizedRegion = localizePageRegion(region, rel)
       let current: string
       try {
         current = readFileSync(resolve(root, rel), 'utf8')
       } catch {
-        // Both pair sides must exist before a region can be injected; the
-        // pairing gate owns pair completeness, this generator names the miss.
+        // The English source must exist before a region can be injected.
         problems.push(`${rel}: mapped subsystems page does not exist.`)
         continue
       }
