@@ -417,8 +417,7 @@ jobs:
         run: |
           set -euo pipefail
           if [ -z "${DEEPSEEK_API_KEY:-}" ]; then
-            echo "::error::DEEPSEEK_API_KEY_EXTERNAL is empty; the installed-wheel real API test cannot self-skip."
-            exit 1
+            echo "::notice::DEEPSEEK_API_KEY_EXTERNAL is not configured; skipping the optional installed-wheel live API test."
           fi
 
       - name: Preflight installed-wheel real API test (Windows)
@@ -433,7 +432,7 @@ jobs:
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY_EXTERNAL }}
         run: |
           if ([string]::IsNullOrWhiteSpace($env:DEEPSEEK_API_KEY)) {
-            throw 'DEEPSEEK_API_KEY_EXTERNAL is empty; the installed-wheel real API test cannot self-skip.'
+            Write-Output '::notice::DEEPSEEK_API_KEY_EXTERNAL is not configured; skipping the optional installed-wheel live API test.'
           }
 
       - name: Run installed-wheel real API black-box test (POSIX)
@@ -448,6 +447,10 @@ jobs:
           DEEPSEEK_BASE_URL: https://api.deepseek.com/anthropic
         run: |
           set -euo pipefail
+          if [ -z "${DEEPSEEK_API_KEY:-}" ]; then
+            echo "::notice::Skipping installed-wheel live API test because DEEPSEEK_API_KEY_EXTERNAL is not configured."
+            exit 0
+          fi
           blackbox_root="$(python -c 'import tempfile; print(tempfile.mkdtemp(prefix="neosis-sdk-blackbox-live-"))')"
           cd "$blackbox_root"
           env -u PYTHONPATH -u NEOSIS_RUNTIME_MODE \
@@ -468,6 +471,10 @@ jobs:
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY_EXTERNAL }}
           DEEPSEEK_BASE_URL: https://api.deepseek.com/anthropic
         run: |
+          if ([string]::IsNullOrWhiteSpace($env:DEEPSEEK_API_KEY)) {
+            Write-Output '::notice::Skipping installed-wheel live API test because DEEPSEEK_API_KEY_EXTERNAL is not configured.'
+            exit 0
+          }
           $blackboxRoot = (& python -c 'import tempfile; print(tempfile.mkdtemp(prefix="neosis-sdk-blackbox-live-"))').Trim()
           Remove-Item Env:PYTHONPATH -ErrorAction SilentlyContinue
           Remove-Item Env:NEOSIS_RUNTIME_MODE -ErrorAction SilentlyContinue

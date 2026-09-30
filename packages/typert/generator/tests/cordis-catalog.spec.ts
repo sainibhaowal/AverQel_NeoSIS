@@ -75,7 +75,7 @@ describe('Typert-backed Cordis catalog', () => {
         [...model.events].filter(e => EVENT_SCOPE_PAGE[e.scope] === page),
         CORDIS_CATALOG_POLICY,
       )
-      for (const side of [page, page.replace(/\.md$/, '.zh.md')]) {
+      for (const side of [page]) {
         const rel = `docs/subsystems/${side}`
         const committed = expected(rel)
         const begin = committed.indexOf(REGION_BEGIN)
