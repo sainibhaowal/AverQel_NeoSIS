@@ -46,7 +46,7 @@ jobs:
           || vars.NEOSIS_CI_FAILOVER_LINUX == 'selfhosted'
           && github.event.pull_request.user.login != 'dependabot[bot]'
           && fromJSON('["self-hosted", "linux", "x64", "vm-backup"]')
-          || 'neosis-ubuntu-24-04-16core' }}
+          || 'ubuntu-24.04' }}
     name: node 24 / static
     env:
       # Shared hosts expose host CPUs, not an isolated allocation.
@@ -114,7 +114,7 @@ jobs:
           || vars.NEOSIS_CI_FAILOVER_LINUX == 'selfhosted'
           && github.event.pull_request.user.login != 'dependabot[bot]'
           && fromJSON('["self-hosted", "linux", "x64", "vm-backup"]')
-          || 'neosis-ubuntu-24-04-16core' }}
+          || 'ubuntu-24.04' }}
     name: node 24 / coverage
     env:
       # Shared hosts expose host CPUs, not an isolated allocation.
@@ -243,7 +243,7 @@ jobs:
           || vars.NEOSIS_CI_FAILOVER_LINUX == 'selfhosted'
           && github.event.pull_request.user.login != 'dependabot[bot]'
           && fromJSON('["self-hosted", "linux", "x64", "vm-backup"]')
-          || 'neosis-ubuntu-24-04-16core' }}
+          || 'ubuntu-24.04' }}
     name: node 24 / snapshots and artifacts
     env:
       # Shared hosts expose host CPUs, not an isolated allocation.
@@ -507,7 +507,7 @@ jobs:
           || vars.NEOSIS_CI_FAILOVER_WINDOWS == 'selfhosted'
           && github.event.pull_request.user.login != 'dependabot[bot]'
           && fromJSON('["self-hosted", "neosis-win-ci", "windows"]')
-          || 'neosis-windows-2025-16core' }}
+          || 'windows-latest' }}
     name: windows node 24 / build & observational
     timeout-minutes: 60
     env:
@@ -569,7 +569,7 @@ jobs:
           || vars.NEOSIS_CI_FAILOVER_WINDOWS == 'selfhosted'
           && github.event.pull_request.user.login != 'dependabot[bot]'
           && fromJSON('["self-hosted", "neosis-win-ci", "windows"]')
-          || 'neosis-windows-2025-16core' }}
+          || 'windows-latest' }}
     name: windows node 24 / coverage
     timeout-minutes: 120
     env:
@@ -647,7 +647,7 @@ jobs:
           || vars.NEOSIS_CI_FAILOVER_WINDOWS == 'selfhosted'
           && github.event.pull_request.user.login != 'dependabot[bot]'
           && fromJSON('["self-hosted", "neosis-win-ci", "windows"]')
-          || 'neosis-windows-2025-16core' }}
+          || 'windows-latest' }}
     name: windows node 24 / native tests
     timeout-minutes: 60
     steps:

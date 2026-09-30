@@ -132,8 +132,8 @@ jobs:
   # would poison the hosted cache namespace with self-hosted paths).
   serial-linux-selfhosted:
     if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
-    name: serial / linux (self-hosted standby)
-    runs-on: [self-hosted, linux, x64, vm-backup]
+    name: serial / linux (hosted)
+    runs-on: ubuntu-24.04
     steps:
       # NEOSIS_ARCHIVE_BASE_REF below compares the frozen-archive gate against
       # github.event.before, so full history is required: depth 2 would miss it
@@ -225,8 +225,8 @@ jobs:
   # paths).
   serial-windows:
     if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
-    name: serial / windows (self-hosted standby)
-    runs-on: [self-hosted, neosis-win-ci, windows]
+    name: serial / windows (hosted)
+    runs-on: windows-latest
     timeout-minutes: 120
     steps:
       - uses: actions/checkout@v6
