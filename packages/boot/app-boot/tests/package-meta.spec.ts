@@ -108,6 +108,31 @@ describe('plugin locale display metadata', () => {
     expect(readPluginMeta('localized', parentURL)).toEqual({ title: 'localized', description: 'Package introduction' })
   })
 
+  it('falls back when the resolver wraps a missing locale export without preserving its error code', () => {
+    manifest({ '.': './index.js', './package.json': './package.json' }, { description: 'Package introduction' })
+    const loader = ModuleLoader.fromInternal()!
+    const resolveSync = vi.fn((specifier: string) => {
+      if (specifier === 'localized/locale/en.json') {
+        const error = new Error('Cannot assign to read only property \'stack\' of object \'Error\'')
+        Object.defineProperty(error, 'stack', {
+          configurable: true,
+          value: `${error.name}: ${error.message}\n\n/localized/locale/en.json is not defined by "exports"`,
+        })
+        throw error
+      }
+      return { url: pathToFileURL(join(dir, 'package.json')).href }
+    })
+    const adapted = new Proxy(loader, {
+      get(target, property) {
+        if (property === 'version') return 'v1'
+        if (property === 'resolveSync') return resolveSync
+        return Reflect.get(target, property)
+      },
+    })
+    vi.spyOn(ModuleLoader, 'fromInternal').mockReturnValue(adapted)
+    expect(readPluginMeta('localized', parentURL)).toEqual({ title: 'localized', description: 'Package introduction' })
+  })
+
   it('falls back per field without replacing available locale translations', () => {
     manifest({ './locale/*.json': './locale/*.json', './package.json': './package.json' }, { description: 'Package introduction' })
     dictionary('en', { meta: { title: 'English title' } })

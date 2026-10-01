@@ -58,8 +58,14 @@ export function resolvePluginResource(specifier: string, parentURL: string): str
 
 function missingResource(error: unknown): boolean {
   const code = (error as NodeJS.ErrnoException | null)?.code
-  return code === 'ERR_PACKAGE_PATH_NOT_EXPORTED' || code === 'ERR_MODULE_NOT_FOUND'
+  if (code === 'ERR_PACKAGE_PATH_NOT_EXPORTED' || code === 'ERR_MODULE_NOT_FOUND'
     || code === 'MODULE_NOT_FOUND' || code === 'ENOENT' || code === 'ENOTDIR'
+  ) return true
+  // Cordis may rethrow a Node resolution error while composing its stack. On
+  // some Node versions the original error's stack is read-only, so the wrapper
+  // loses the original error code but retains the export diagnostic in text.
+  if (!(error instanceof Error)) return false
+  return `${error.message}\n${error.stack ?? ''}`.includes('is not defined by "exports"')
 }
 
 function optionalResourcePath(specifier: string, parentURL: string): string | undefined {
