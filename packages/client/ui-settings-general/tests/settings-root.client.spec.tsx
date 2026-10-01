@@ -42,7 +42,7 @@ function mount({
   dictionary = en,
   connectionState = 'connected',
   desktopUpdate = { failed: false, opening: false },
-  onboardingActive = true,
+  onboardingActive = false,
   mainView = true,
   rows = [
     { id: 'general', order: 0, label: 'General' },
@@ -70,6 +70,7 @@ function mount({
   const listeners = new Set<() => void>()
   const connectionListeners = new Set<() => void>()
   const reconnect = vi.fn()
+  const shell = createSettingsShellStore().create()
   const renderSlot = vi.fn(
     ((key: string, _owner: unknown, opts?: { only?: string; fallback?: import('react').ReactNode }) => {
       if (key === 'settings.section') return <div data-testid={`section-${opts?.only ?? 'all'}`} />
@@ -93,8 +94,8 @@ function mount({
   }
   const unusedHook = (() => { throw new Error('unused by SettingsRoot') }) as never
   const props: SettingsRootComponentProps = {
-    useStore: bindSnapshotSelector(createSettingsShellStore().create()),
-    actions: createSettingsShellStore().create().actions,
+    useStore: bindSnapshotSelector(shell),
+    actions: shell.actions,
     useSessions: select => select(sessions),
     useSessionStatus,
     usePanelInfo, useSessionRetainInfo: () => undefined, useResource,
@@ -318,10 +319,10 @@ describe('SettingsPanel close paths', () => {
     expect(screen.getByRole('dialog')).toBeTruthy()
   })
 
-  it('lands focus on the close button when the dialog opens', () => {
+  it('lands focus on the active navigation control when the dialog opens', () => {
     mount()
     openPanel()
-    expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Close' }))
+    expect(document.activeElement).toBe(screen.getByRole('button', { name: 'General' }))
   })
 })
 
@@ -367,7 +368,7 @@ describe('SettingsPanel navigation', () => {
   })
 
   it('mounts onboarding steps in order and transfers ownership only on completion', () => {
-    const { renderSlot } = mount()
+    const { renderSlot } = mount({ onboardingActive: true })
     const first = renderSlot.mock.calls.find(call => call[0] === 'settings.onboarding')
     expect(first?.[1]).toMatchObject({ stepId: 'welcome' })
     expect(first?.[2]).toEqual({ only: 'welcome' })
@@ -393,7 +394,7 @@ describe('SettingsPanel navigation', () => {
   })
 
   it('keeps onboarding active before a main Session is retained', () => {
-    const { renderSlot } = mount({ mainView: false })
+    const { renderSlot } = mount({ mainView: false, onboardingActive: true })
 
     expect(renderSlot.mock.calls.some(call => call[0] === 'settings.onboarding')).toBe(true)
   })

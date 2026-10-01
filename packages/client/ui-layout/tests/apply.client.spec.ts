@@ -62,6 +62,7 @@ async function bench() {
   // ui-theme's Appearance row binds a durable scope through these two.
   ctx.provide('remote', { $on: () => () => {} } as never)
   ctx.provide('configForms', { developerTools: { enabled: createSnapshotStore(true) }, get: () => stubConfigForm().scope } as never)
+  ctx.provide('shortcuts', { register: () => () => {}, runtime: {}, catalog: [] } as never)
   await ctx.plugin({ inject: themeInject, apply: themeApply }).await()
   await slotsFiber.await()
   const slots = ctx.get('slots') as SlotRegistry
@@ -77,7 +78,7 @@ async function bench() {
 
 describe('ui-layout client apply', () => {
   it('declares its service dependencies', () => {
-    expect(inject).toEqual(['slots', 'theme', 'locale'])
+    expect(inject).toEqual(['slots', 'theme', 'locale', 'shortcuts'])
   })
 
   it('provides ctx.layout and declares the five root-scoped frame slots', async () => {

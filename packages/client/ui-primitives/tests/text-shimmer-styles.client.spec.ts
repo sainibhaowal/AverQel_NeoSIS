@@ -6,11 +6,10 @@ const css = readFileSync(new URL('../src/TextShimmer.module.css', import.meta.ur
 
 describe('TextShimmer styles', () => {
   it('animates active text and disables motion and transparent fill for reduced motion', () => {
-    expect(css).toMatch(/\.root\[data-text-shimmer\]\s*\{[^}]*animation: neosis-text-shimmer/s)
-    expect(css).toMatch(/@keyframes neosis-text-shimmer\s*\{[^}]*background-position: 0% center/s)
-    const reduced = /@media \(prefers-reduced-motion: reduce\)\s*\{\s*\.root\[data-text-shimmer\]\s*\{([^}]+)\}/.exec(css)?.[1]
-    expect(reduced).toContain('background-image: none;')
-    expect(reduced).toContain('-webkit-text-fill-color: currentColor;')
-    expect(reduced).toContain('animation: none;')
+    expect(css).toMatch(/\.sweep\s*\{[^}]*animation-name: neosis-row-shimmer-sweep/s)
+    expect(css).toMatch(/@keyframes neosis-row-shimmer-sweep\s*\{/s)
+    expect(css).toMatch(/@keyframes neosis-row-shimmer-highlight\s*\{/s)
+    expect(css).toMatch(/@media \(prefers-reduced-motion: reduce\)[\s\S]*\.decoration\s*\{[^}]*display: none;/s)
+    expect(css).toMatch(/@media \(prefers-reduced-motion: reduce\)[\s\S]*\.sweep, \.highlight\s*\{[^}]*animation: none;/s)
   })
 })

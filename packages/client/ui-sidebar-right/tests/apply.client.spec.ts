@@ -60,14 +60,27 @@ async function boot() {
       return () => { dictionaries.delete(ns) }
     }),
   }
-  const layout = { openRightbar: vi.fn(), closeRightbar: vi.fn() }
+  const layout = {
+    openRightbar: vi.fn(),
+    closeRightbar: vi.fn(),
+    panelInfo: createSnapshotStore({ activePanelId: null }),
+  }
   const resources = { pin: vi.fn<(address: string, signal: AbortSignal) => void>() }
   ctx.provide('slots', slots as never)
   ctx.provide('locale', locale as never)
   ctx.provide('layout', layout as never)
   ctx.provide('resources', resources as never)
-  ctx.provide('sessions', { retain: vi.fn() } as never)
-  ctx.provide('uiSession', { adapter: { current: createSnapshotStore({ key: undefined }) } } as never)
+  const sessions = {
+    retain: vi.fn((sessionId: SessionId) => ({
+      sessionId,
+      binding: undefined,
+      ready: Promise.resolve(undefined),
+      release: vi.fn(),
+    })),
+  }
+  ctx.provide('sessions', sessions as never)
+  ctx.provide('uiSession', { adapter: { current: createSnapshotStore({ key: SESSION }) } } as never)
+  ctx.provide('shortcuts', { register: () => () => {}, runtime: {}, catalog: [] } as never)
   const fiber = ctx.plugin({ inject: [...inject], apply })
   await fiber.await()
   const seat = (name: string): Recorded => {

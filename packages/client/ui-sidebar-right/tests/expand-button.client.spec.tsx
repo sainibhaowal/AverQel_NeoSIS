@@ -32,6 +32,7 @@ function mountButton() {
     sessionId: SESSION,
     useStore: hookOf(instance),
     actions: instance.actions,
+    useShortcuts: (select: (entries: readonly never[]) => unknown) => select([]),
     // Copy is the dictionary's contract; the key stands in for the translation.
     t: (key: string) => key,
   } as unknown as ExpandButtonProps

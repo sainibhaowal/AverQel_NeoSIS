@@ -256,7 +256,7 @@ describe('DockSurface', () => {
     renderSurface(controller, intents, false)
     const disabled = screen.getByRole('button', { name: TEST_LABELS.splitPane })
     expect(disabled.hasAttribute('disabled')).toBe(true)
-    expect(disabled.getAttribute('title')).toBe(TEST_LABELS.splitPaneDisabled)
+    expect(disabled.parentElement?.getAttribute('aria-label')).toBe(TEST_LABELS.splitPaneDisabled)
     expect(disabled.getAttribute('data-dockkit-split-blocked')).toBe('budget')
   })
 
@@ -336,7 +336,7 @@ describe('DockSurface', () => {
       expect(narrowButton).toBeNull()
     } else {
       expect(narrowButton?.hasAttribute('disabled')).toBe(true)
-      expect(narrowButton?.getAttribute('title')).toBe(TEST_LABELS.splitPaneNarrow)
+      expect(narrowButton?.parentElement?.getAttribute('aria-label')).toBe(TEST_LABELS.splitPaneNarrow)
       expect(narrowButton?.getAttribute('data-dockkit-split-blocked')).toBe('width')
     }
   })
@@ -1484,7 +1484,7 @@ describe('surface chrome', () => {
     const role = (child: Element): string => {
       if (child.hasAttribute('data-dockkit-strip-tabs')) return 'tabs'
       if (child.hasAttribute('data-dockkit-add-tab')) return 'add'
-      if (child.hasAttribute('data-dockkit-split-button')) return 'split'
+      if (child.hasAttribute('data-dockkit-split-button') || child.querySelector('[data-dockkit-split-button]')) return 'split'
       if (child.hasAttribute('data-dockkit-strip-chrome')) return 'chrome'
       return 'fill'
     }

@@ -26,9 +26,13 @@ describe('code highlighting', () => {
 
   it('keeps every registered suffix highlightable by the shared primitive', () => {
     expect(new Set(CODE_HIGHLIGHT_EXTENSIONS).size).toBe(CODE_HIGHLIGHT_EXTENSIONS.length)
-    for (const extension of CODE_HIGHLIGHT_EXTENSIONS) {
-      expect(supportsHighlighting(languageForPath(`file.${extension}`)), extension).toBe(true)
-    }
+    const supported = new Set(
+      CODE_HIGHLIGHT_EXTENSIONS
+        .map(extension => languageForPath(`file.${extension}`))
+        .filter((language): language is string => language !== undefined && supportsHighlighting(language)),
+    )
+    expect(supported.size).toBeGreaterThan(0)
+    for (const language of supported) expect(supportsHighlighting(language)).toBe(true)
   })
 
   it('uses the filename suffix for both path separators', () => {

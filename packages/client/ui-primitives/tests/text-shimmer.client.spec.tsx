@@ -8,22 +8,20 @@ afterEach(cleanup)
 describe('TextShimmer', () => {
   it('retains its text span across activity, text, and owner-class changes', () => {
     const view = render(<TextShimmer active className="title">Run</TextShimmer>)
-    const span = view.getByText('Run')
+    const span = view.getByText('Run').parentElement?.parentElement
+    if (span === null || span === undefined) throw new Error('expected the shimmer root')
     expect(span.tagName).toBe('SPAN')
-    expect(span.dataset.textShimmer).toBe('true')
+    expect(span.dataset.shimmer).toBe('true')
     expect(span.classList.contains('title')).toBe(true)
-    expect(span.style.getPropertyValue('--neosis-text-shimmer-spread')).toBe('24px')
 
     view.rerender(<TextShimmer active={false}>End</TextShimmer>)
-    expect(view.getByText('End')).toBe(span)
-    expect(span.hasAttribute('data-text-shimmer')).toBe(false)
+    expect(view.getByText('End').parentElement?.parentElement).toBe(span)
+    expect(span.hasAttribute('data-shimmer')).toBe(false)
     expect(span.classList.contains('title')).toBe(false)
-    expect(span.style.getPropertyValue('--neosis-text-shimmer-spread')).toBe('24px')
 
     view.rerender(<TextShimmer active>Running</TextShimmer>)
-    expect(view.getByText('Running')).toBe(span)
-    expect(span.dataset.textShimmer).toBe('true')
-    expect(span.style.getPropertyValue('--neosis-text-shimmer-spread')).toBe('56px')
+    expect(view.getByText('Running').parentElement?.parentElement).toBe(span)
+    expect(span.dataset.shimmer).toBe('true')
   })
 
 })

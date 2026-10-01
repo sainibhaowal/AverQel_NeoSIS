@@ -62,6 +62,7 @@ describe('release families', () => {
       '@averqel/neosis-experimental-computer-use-cua-driver-native',
       '@averqel/neosis-experimental-inspector',
       '@averqel/neosis-experimental-ptc-runtime-python',
+      '@averqel/neosis-experimental-schedule-bundle',
       '@averqel/neosis-experimental-speech-to-text-sensevoice',
       '@averqel/neosis-experimental-speech-to-text',
       '@averqel/neosis-experimental-tool-agent-team',
