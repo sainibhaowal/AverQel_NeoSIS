@@ -248,9 +248,10 @@ describe('FileMutationRow diff card', () => {
       meta: { diffs: [] },
     }), 'write')} />)
     // The collapsed row already carries the card's +/- totals beside the path.
-    expect(view.getByText('+1 -0')).toBeTruthy()
+    expect(view.container.querySelector('[class*="_diffStat_"]')?.textContent).toBe('+1 -0')
     toggleRow(view)
-    expect(view.getAllByText('+1 -0')).toHaveLength(1)
+    expect(view.container.querySelectorAll('[class*="_diffStat_"]')).toHaveLength(1)
+    expect(view.container.querySelector('[class*="_diffStat_"]')?.textContent).toBe('+1 -0')
     expect(view.getByText('hello fixture')).toBeTruthy()
   })
 

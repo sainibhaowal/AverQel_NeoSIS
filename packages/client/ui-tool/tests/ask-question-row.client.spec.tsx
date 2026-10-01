@@ -98,7 +98,7 @@ describe('AskQuestionRow', () => {
       ],
     }))} />)
 
-    expect(screen.getByText(`ask_user_question · ${READABLE_ARGS}`)).toBeTruthy()
+    expect(screen.getByText(READABLE_ARGS)).toBeTruthy()
     fireEvent.click(screen.getByRole('button', { expanded: false }))
     expect(view.container.querySelector('[class*="ioCard"]')).not.toBeNull()
     expect(view.container.textContent).toContain('"type": "reasoning"')
@@ -124,7 +124,7 @@ describe('AskQuestionRow', () => {
     { label: 'empty result content', text: null },
   ])('settled result falls back to the generic summary on $label', ({ text }) => {
     render(<AskQuestionRow {...rowProps(resultNode(ARGS, text))} />)
-    expect(screen.getByText(`ask_user_question · ${ARGS}`)).toBeTruthy()
+    expect(screen.getByText(ARGS)).toBeTruthy()
   })
 
   it.each([
@@ -214,19 +214,19 @@ describe('AskQuestionRow', () => {
     expect(view.container.querySelector('[data-state="stopped"]')).not.toBeNull()
     expect(view.container.querySelector('[data-state="stopped"] svg')).not.toBeNull()
     expect(screen.queryByText('已取消')).toBeNull()
-    expect(screen.getByText(`ask_user_question · ${ARGS}`)).toBeTruthy()
+    expect(screen.getByText(ARGS)).toBeTruthy()
   })
 
   it('other tool errors keep the generic summary with the error state', () => {
     const view = render(<AskQuestionRow {...rowProps(resultNode(ARGS, null, { isError: true }))} />)
     expect(view.container.querySelector('[data-state="error"]')).not.toBeNull()
     expect(view.container.querySelector('[data-state="error"] svg')).not.toBeNull()
-    expect(screen.getByText(`ask_user_question · ${ARGS}`)).toBeTruthy()
+    expect(screen.getByText(ARGS)).toBeTruthy()
   })
 
   it('window-truncated result (call head lost) falls back to the callId summary', () => {
     render(<AskQuestionRow {...rowProps(resultNode('', null, { call: null }))} />)
-    expect(screen.getByText('ask_user_question · c1')).toBeTruthy()
+    expect(screen.getByText('c1')).toBeTruthy()
   })
 
   it('leading toggle expands the raw args body', () => {
@@ -243,7 +243,7 @@ describe('AskQuestionRow', () => {
     askQuestionToolview.apply({ slots: { inject, register } } as never)
     expect(inject).toHaveBeenCalledWith('tool.call.toolview', expect.any(Function))
     expect(register).toHaveBeenCalledWith(
-      { name: 'tool.call.toolview', key: 'ask_user_question', locale: 'conversation' },
+      expect.objectContaining({ name: 'tool.call.toolview', key: 'ask_user_question', locale: 'conversation' }),
       AskQuestionRow,
     )
   })

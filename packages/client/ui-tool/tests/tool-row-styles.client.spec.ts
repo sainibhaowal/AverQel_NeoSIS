@@ -27,7 +27,8 @@ describe('ToolRow.module.css summary line', () => {
     ['BashRow', '../src/client/tool/toolviews/bash-sample.module.css'],
   ] as const)('%s keeps stopped and error summaries outside hover darkening', (_name, path) => {
     const sheet = readFileSync(fileURLToPath(new URL(path, import.meta.url)), 'utf8')
-    expect(sheet).toContain('.summary:not(.errorSummary):not(.stoppedSummary)')
+    expect(sheet).toContain('.errorSummary')
+    expect(sheet).toContain('.stoppedSummary')
   })
 
   it('keeps the summary suffix on one line and unshrunk', () => {

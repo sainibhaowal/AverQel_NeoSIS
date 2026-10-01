@@ -15,7 +15,6 @@ import type { ConfigLedger } from '../src/client/config-ledger.ts'
 import { rowKey, type InstallState, type PackageRow, type PackageView, type PluginManagerState } from '../src/client/manager-store.ts'
 import { en, zh, type PluginManagerLocaleKey } from '../src/client/locales.ts'
 import type { PluginActivationOwnerProps, PluginDetailProps, PluginsSubject } from '../src/client/slot-contract.ts'
-import { INSTALL_GIT_EXAMPLE } from '../src/client/locales.ts'
 import { createNavigationStore } from '../src/client/navigation-store.ts'
 
 afterEach(cleanup)
@@ -51,8 +50,9 @@ const OFFICIAL = 'https://registry.npmjs.org/'
 const REGISTRIES = { registry: null, fallbackRegistries: [MIRROR], resolved: OFFICIAL }
 
 /** pnpm's own registry as the options label it while it names npm's own; the control and the messages use the name alone. */
-const registryWithHost = (name: string, host: string): string => `${name} (${host})`
-const OFFICIAL_OPTION = registryWithHost(en.registryDefault, 'registry.npmjs.org')
+const registryWithHost = (name: string, host: string): string => name === host ? name : `${name} ${host}`
+const OFFICIAL_OPTION = registryWithHost(en.registryOfficial, 'registry.npmjs.org')
+const DEFAULT_OPTION = registryWithHost(en.registryDefault, 'registry.npmjs.org')
 const MIRROR_OPTION = registryWithHost(en.registryNpmmirror, 'registry.npmmirror.com')
 
 const IDLE_INSTALL: InstallState = {
@@ -178,7 +178,7 @@ describe('PluginManagerPage', () => {
   it('asks the store once mounted and renders the loading, unavailable, error, and empty states', () => {
     const { actions, set } = renderTab({ status: 'loading' })
     expect(actions.ensure).toHaveBeenCalledTimes(1)
-    expect(screen.getByText(en.loading).querySelector('[data-state="ongoing"]')).not.toBeNull()
+    expect(screen.getByRole('status', { name: en.loading }).getAttribute('data-plugin-loading')).toBe('true')
     expect(screen.getByRole('button', { name: en.addPlugin })).toHaveProperty('disabled', true)
     set({ status: 'unavailable' })
     expect(screen.getByRole('status').querySelector('[data-state="idle"]')).not.toBeNull()
@@ -718,7 +718,7 @@ describe('PluginManagerPage', () => {
     fireEvent.click(toggle)
     expect(screen.getByRole('button', { name: en.installGuideHide }).getAttribute('aria-expanded')).toBe('true')
     expect(screen.getByText(en.installGuideIdHint)).toBeTruthy()
-    expect(screen.getByText(INSTALL_GIT_EXAMPLE)).toBeTruthy()
+    expect(screen.getByText(en.installGuideIdExample, { selector: 'code' })).toBeTruthy()
     fireEvent.click(screen.getByRole('button', { name: en.installGuideFillAria.replace('{example}', en.installGuideIdExample) }))
     expect(actions.editInstallSpec).toHaveBeenCalledExactlyOnceWith(en.installGuideIdExample)
     fireEvent.click(screen.getByRole('button', { name: en.installGuideHide }))
@@ -1068,13 +1068,13 @@ describe('PluginManagerPage', () => {
     const open = { ...IDLE_INSTALL, open: true, registries: REGISTRIES }
     const { actions, set } = renderTab({ install: open })
     // Folded, the toggle names the registry the install asks first, by name alone.
-    const toggle = screen.getByRole('button', { name: `${en.registryToggle} ${en.registryDefault}` })
+    const toggle = screen.getByRole('button', { name: `${en.registryToggle} ${en.registryOfficial}` })
     expect(toggle.getAttribute('aria-expanded')).toBe('false')
     expect(screen.queryByRole('radio')).toBeNull()
     fireEvent.click(toggle)
     expect(actions.toggleRegistryOptions).toHaveBeenCalledTimes(1)
     set({ install: { ...open, registryOpen: true } })
-    expect(screen.getByRole('button', { name: `${en.registryToggle} ${en.registryDefault}` }).getAttribute('aria-expanded')).toBe('true')
+    expect(screen.getByRole('button', { name: `${en.registryToggle} ${en.registryOfficial}` }).getAttribute('aria-expanded')).toBe('true')
     const radios = screen.getAllByRole('radio')
     expect(radios).toHaveLength(3)
     expect(radios[0]).toHaveProperty('checked', true)
@@ -1124,7 +1124,7 @@ describe('PluginManagerPage', () => {
     // Before the Host answers, only pnpm's own is offered, read as npm's own.
     set({ install: { ...open, registryOpen: true, registries: null } })
     expect(screen.getAllByRole('radio')).toHaveLength(2)
-    expect(screen.getByRole('radio', { name: OFFICIAL_OPTION })).toBeTruthy()
+    expect(screen.getByRole('radio', { name: DEFAULT_OPTION })).toBeTruthy()
   })
 
   it('names the registry each attempt asks while installing, badges each run, and says when every registry failed', () => {

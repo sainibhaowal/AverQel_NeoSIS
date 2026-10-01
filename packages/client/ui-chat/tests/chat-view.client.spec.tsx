@@ -53,6 +53,9 @@ import { chatSnapshotFixture } from './chat-snapshot-fixture.client.ts'
 import { installTurnNavigatorObserver } from './turn-navigator-fixture.ts'
 import { ConversationGroupStore } from '../../ui-conversation/src/client/conversation/group-store.ts'
 
+const formatDurationText = (ms: number, t: Parameters<typeof formatRunDuration>[1]): string =>
+  formatRunDuration(ms, t).map(part => part.text).join('')
+
 function installGroupedSnapshot(
   builder: ChatSnapshotBuilder, state: ProcessState, groups: ConversationGroupStore<ProcessGroupData>, source: ChatSnapshot,
 ): ChatSnapshot {
@@ -505,6 +508,10 @@ function turnProcessControl(container: HTMLElement): HTMLButtonElement | null {
   return container.querySelector<HTMLButtonElement>('[data-turn-process]')
 }
 
+function runningLabel(container: HTMLElement): string | undefined {
+  return container.querySelector('[data-chat-running] [class*="_runningText_"]')?.textContent ?? undefined
+}
+
 function withClock(time: number, run: () => void): () => void {
   return () => {
     vi.useFakeTimers()
@@ -616,20 +623,20 @@ describe('Chat node rendering', () => {
 
   it('formatRunDuration localizes units and floors partial seconds', () => {
     const t = makeTranslate(zh, commonZh)
-    expect(formatRunDuration(0, t)).toBe('0秒')
-    expect(formatRunDuration(-500, t)).toBe('0秒')
-    expect(formatRunDuration(15_999, t)).toBe('15秒')
-    expect(formatRunDuration(125_000, t)).toBe('2分05秒')
+    expect(formatDurationText(0, t)).toBe('0秒')
+    expect(formatDurationText(-500, t)).toBe('0秒')
+    expect(formatDurationText(15_999, t)).toBe('15秒')
+    expect(formatDurationText(125_000, t)).toBe('2分5秒')
     // The hour rolls at exactly 3600s, never at 60 displayed minutes.
-    expect(formatRunDuration(3_599_999, t)).toBe('59分59秒')
-    expect(formatRunDuration(3_600_000, t)).toBe('1小时00分00秒')
-    expect(formatRunDuration(3_903_000, t)).toBe('1小时05分03秒')
-    expect(formatRunDuration(7_261_000, t)).toBe('2小时01分01秒')
+    expect(formatDurationText(3_599_999, t)).toBe('59分59秒')
+    expect(formatDurationText(3_600_000, t)).toBe('1小时0分0秒')
+    expect(formatDurationText(3_903_000, t)).toBe('1小时5分3秒')
+    expect(formatDurationText(7_261_000, t)).toBe('2小时1分1秒')
   })
 
   it('formatRunDuration uses the English hour template', () => {
     const t = makeTranslate(en, commonEn)
-    expect(formatRunDuration(3_903_000, t)).toBe('1h 05m 03s')
+    expect(formatDurationText(3_903_000, t)).toBe('1h 5m 3s')
   })
 
 })
@@ -1609,9 +1616,9 @@ describe('ChatView', () => {
     fireEvent.click(within(pendingBubble as HTMLElement).getByRole('button', { name: '复制' }))
     expect(writeText).toHaveBeenCalledWith('interrupt now')
     expect(within(pendingBubble as HTMLElement).queryByRole('button', { name: '在新对话中分支' })).toBeNull()
-    expect(turnProcessControl(view.container)?.textContent).toBe('AverQel 处理中，用时2秒')
+    expect(runningLabel(view.container)).toBe('AverQel 处理中，用时 2秒')
     expect(view.getByRole('status').compareDocumentPosition(view.getByText('interrupt now'))
-      & Node.DOCUMENT_POSITION_FOLLOWING).not.toBe(0)
+      & Node.DOCUMENT_POSITION_PRECEDING).not.toBe(0)
 
     act(() => {
       h.setSession({ testInbox: { 'next-turn': [queued], 'next-step': [] } })
@@ -2252,7 +2259,7 @@ describe('ChatView', () => {
     const h = makeHarness({ chat: initial }, { running: true })
     const view = render(<h.ChatView {...h.props} />)
     expect(renderedFlowKinds(view.container)).toEqual(['user', 'turn-process'])
-    expect(turnProcessControl(view.container)?.textContent).toBe('AverQel 处理中，用时4秒')
+    expect(runningLabel(view.container)).toBe('AverQel 处理中，用时 4秒')
     expect(view.container.querySelector('[data-chat-flow-kind="system-prompt"]')).toBeNull()
 
     act(() => {
@@ -2434,11 +2441,9 @@ describe('ChatView', () => {
       turnTimings: new Map([[1, { startTime: 0 }]]),
     })
     const view = render(<h.ChatView {...h.props} />)
-    const liveToggle = view.getByRole('button', { name: 'AverQel 处理中，用时3秒' }) as HTMLButtonElement
-    expect(liveToggle.disabled).toBe(true)
-    expect(liveToggle.getAttribute('aria-expanded')).toBe('true')
+    const liveStatus = view.container.querySelector('[data-chat-running]') as HTMLElement
+    expect(runningLabel(view.container)).toBe('AverQel 处理中，用时 3秒')
     const processRow = view.getByText('inspect').closest('[data-chat-flow-kind="assistant-step"]') as HTMLElement
-    fireEvent.click(liveToggle)
     expect(processRow.getAttribute('hidden')).toBeNull()
 
     act(() => {
@@ -2450,7 +2455,7 @@ describe('ChatView', () => {
       })
     })
     const toggle = turnProcessControl(view.container)!
-    expect(toggle).toBe(liveToggle)
+    expect(toggle).not.toBe(liveStatus)
     expect(toggle.textContent).toBe('用时 5秒')
     expect(toggle.disabled).toBe(false)
     expect(toggle.getAttribute('aria-expanded')).toBe('false')
@@ -2636,7 +2641,7 @@ describe('ChatView', () => {
     }) })
     expect(turnProcessControl(view.container)).toBe(toggle)
     expect(toggle.getAttribute('aria-expanded')).toBe('false')
-    expect(toggle.textContent).toBe(h.props.t('message.turnProcess.took', { duration: formatRunDuration(5_000, h.props.t) }))
+    expect(toggle.textContent).toBe(`${h.props.t('message.turnProcess.took')}${formatDurationText(5_000, h.props.t)}`)
     expect(row.getAttribute('hidden')).toBe('until-found')
   })
 
@@ -2747,7 +2752,7 @@ describe('ChatView', () => {
       expect(view.container.querySelector('[data-chat-group-key]')).toBe(group)
       expect(group?.hasAttribute('hidden')).toBe(!manualOpen)
     }
-    expect(toggle.textContent).toBe(h.props.t('message.turnProcess.took', { duration: formatRunDuration(4_000, h.props.t) }))
+    expect(toggle.textContent).toBe(`${h.props.t('message.turnProcess.took')}${formatDurationText(4_000, h.props.t)}`)
     act(() => { h.set({ hasMore: false }) })
     expect(toggle.getAttribute('aria-expanded')).toBe(String(manualOpen))
   })
@@ -3185,9 +3190,7 @@ describe('ChatView', () => {
     expect(view.getByTestId('tool-seat-r1')).toBeTruthy()
     expect(h.toolOwners[0]?.block).toMatchObject({ callId: 'r1', argsRaw: '{"command":"cmd-r1"}' })
     expect(view.getByRole('status').textContent).toBe('AverQel 处理中')
-    const toggle = view.getByRole('button', { name: 'AverQel 处理中，用时2秒' }) as HTMLButtonElement
-    expect(toggle.disabled).toBe(true)
-    expect(toggle.getAttribute('aria-expanded')).toBe('true')
+    expect(runningLabel(view.container)).toBe('AverQel 处理中，用时 2秒')
   }))
 
   it('keeps the Tool renderer mounted when a running call settles into log order', () => {
@@ -3246,13 +3249,12 @@ describe('ChatView', () => {
     )
     const view = render(<h.ChatView {...h.props} />)
     const status = view.getByRole('status')
-    const toggle = view.getByRole('button', { name: 'AverQel 处理中，用时2分5秒' }) as HTMLButtonElement
-    expect(toggle).toBe(turnProcessControl(view.container))
-    expect(toggle.disabled).toBe(true)
+    const running = view.container.querySelector('[data-chat-running]') as HTMLElement
+    expect(runningLabel(view.container)).toBe('AverQel 处理中，用时 2分5秒')
     expect(status.textContent).toBe('AverQel 处理中')
     expect(status.getAttribute('aria-live')).toBe('polite')
     expect(status.getAttribute('aria-atomic')).toBe('true')
-    expect(toggle.closest('[aria-live]')).toBeNull()
+    expect(running.closest('[aria-live]')).toBeNull()
     expect(view.container.querySelector('[data-chat-flow-kind="assistant-step"]')).toBeNull()
     act(() => {
       h.setSession({ testInbox: { 'next-turn': [], 'next-step': [{
@@ -3262,20 +3264,20 @@ describe('ChatView', () => {
         role: 'user', source: { kind: 'user' },
       }] } })
     })
-    expect(toggle.textContent).toBe('AverQel 处理中，用时2分5秒')
+    expect(runningLabel(view.container)).toBe('AverQel 处理中，用时 2分5秒')
     act(() => { vi.advanceTimersByTime(2_000) })
-    expect(toggle.textContent).toBe('AverQel 处理中，用时2分7秒')
+    expect(runningLabel(view.container)).toBe('AverQel 处理中，用时 2分7秒')
     expect(view.getByRole('status')).toBe(status)
     expect(status.textContent).toBe('AverQel 处理中')
     act(() => {
       h.setSession({ testInbox: { 'next-turn': [], 'next-step': [] } })
       h.setChat({ nodes: [trigger, { ...steering(2, 'also', 1), time: 128_000 }] })
     })
-    expect(turnProcessControl(view.container)).toBe(toggle)
-    expect(toggle.textContent).toBe('AverQel 处理中，用时2分7秒')
+    expect(view.container.querySelector('[data-chat-running]')).toBe(running)
+    expect(runningLabel(view.container)).toBe('AverQel 处理中，用时 2分7秒')
     expect(view.getByText('also').closest('[data-pending-steering]')).toBeNull()
     act(() => { vi.advanceTimersByTime(1_000) })
-    expect(toggle.textContent).toBe('AverQel 处理中，用时2分8秒')
+    expect(runningLabel(view.container)).toBe('AverQel 处理中，用时 2分8秒')
     expect(status.textContent).toBe('AverQel 处理中')
     view.unmount()
     expect(vi.getTimerCount()).toBe(0)
@@ -3289,11 +3291,11 @@ describe('ChatView', () => {
       { running: true },
     )
     const view = render(<h.ChatView {...h.props} />)
-    const toggle = view.getByRole('button', { name: 'AverQel 处理中，用时59分59秒' })
+    expect(runningLabel(view.container)).toBe('AverQel 处理中，用时 59分59秒')
     act(() => { vi.advanceTimersByTime(1_000) })
-    expect(toggle.textContent).toBe('AverQel 处理中，用时1小时00分0秒')
+    expect(runningLabel(view.container)).toBe('AverQel 处理中，用时 1小时0分0秒')
     act(() => { vi.advanceTimersByTime(303_000) })
-    expect(toggle.textContent).toBe('AverQel 处理中，用时1小时05分3秒')
+    expect(runningLabel(view.container)).toBe('AverQel 处理中，用时 1小时5分3秒')
     expect(view.getByRole('status').textContent).toBe('AverQel 处理中')
     view.unmount()
     expect(vi.getTimerCount()).toBe(0)

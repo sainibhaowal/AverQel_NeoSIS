@@ -72,6 +72,7 @@ const NO_CONFIG: HostObservable<ConfigLedger> = {
 
 function bench(overrides: Partial<Record<string, ReturnType<typeof vi.fn>>> = {}) {
   const inventory = { list: overrides.inventory ?? vi.fn(() => Promise.resolve(ok({ entries: [], managementAvailable: true }))) }
+  const productAnalytics = { track: vi.fn() }
   const plugins = {
     listBundles: vi.fn(() => Promise.resolve(ok([BUNDLE]))),
     listPlugins: vi.fn(() => Promise.resolve(ok(PLUGINS))),
@@ -87,6 +88,7 @@ function bench(overrides: Partial<Record<string, ReturnType<typeof vi.fn>>> = {}
   }
   const probe = { fastest: overrides.fastest ?? vi.fn(() => Promise.resolve(ok(null))) }
   const ctx = {
+    get: vi.fn((name: string) => name === 'productAnalytics' ? productAnalytics : undefined),
     configForms: { describe: () => ({ getSnapshot: () => ({ view: { namespaces: [] } }), subscribe: () => () => {} }), get: vi.fn((id: string) => `form:${id}`) },
     remote: { pluginManager: plugins, pluginInventory: inventory, pluginRegistryProbe: probe },
   } as never
@@ -1115,7 +1117,7 @@ describe('PluginManagerController', () => {
       later.face.openInstall()
       expect(later.state().install.registry).toEqual({ kind: 'custom', url: 'https://npm.corp.example' })
       // A remembered registry the Host no longer offers is kept as a typed one.
-      storage.set('neosis.plugin-manager.install-registry', JSON.stringify({ kind: 'offered', registry: 'https://old.example/' }))
+      storage.set('dsh.plugin-manager.install-registry', JSON.stringify({ kind: 'offered', registry: 'https://old.example/' }))
       const stale = bench()
       stale.face.openInstall()
       expect(stale.state().install.registry).toEqual({ kind: 'offered', registry: 'https://old.example/' })
@@ -1159,7 +1161,7 @@ describe('PluginManagerController', () => {
 
 describe('Host registry response recommendation', () => {
   it('inspects the remembered registry when the offered choice becomes custom during the initial read', async () => {
-    const key = 'neosis.plugin-manager.install-registry'
+    const key = 'dsh.plugin-manager.install-registry'
     const registry = 'https://old.example/'
     const storage = new Map([[key, JSON.stringify({ kind: 'offered', registry })]])
     const registries = deferred<ReturnType<typeof ok<typeof REGISTRIES>>>()

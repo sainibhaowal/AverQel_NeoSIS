@@ -122,12 +122,12 @@ describe('TodoRow', () => {
     const view = render(<TodoRow {...rowProps(resultNode('not json', { isError: true }))} />)
     expect(view.container.querySelector('[data-state="error"]')).not.toBeNull()
     expect(view.container.querySelector('[data-state="error"] svg')).not.toBeNull()
-    expect(screen.getByText('todo_write · not json')).toBeTruthy()
+    expect(screen.getByText('not json')).toBeTruthy()
   })
 
   it('falls back when parsed args carry no todos array', () => {
     render(<TodoRow {...rowProps(resultNode('{"other":1}'))} />)
-    expect(screen.getByText('todo_write · {"other":1}')).toBeTruthy()
+    expect(screen.getByText('{"other":1}')).toBeTruthy()
   })
 
   it('leading toggle expands a read-only checklist', () => {
@@ -146,12 +146,12 @@ describe('TodoRow', () => {
     { label: 'null items', argsRaw: '{"todos":[null]}' },
   ])('falls back to the generic summary on valid JSON with an invalid shape ($label)', ({ argsRaw }) => {
     render(<TodoRow {...rowProps(resultNode(argsRaw))} />)
-    expect(screen.getByText(`todo_write · ${argsRaw}`)).toBeTruthy()
+    expect(screen.getByText(argsRaw)).toBeTruthy()
   })
 
   it('window-truncated result falls back to the callId summary', () => {
     render(<TodoRow {...rowProps(resultNode('', { call: null }))} />)
-    expect(screen.getByText('todo_write · c1')).toBeTruthy()
+    expect(screen.getByText('c1')).toBeTruthy()
   })
 
   it('injects the keyed toolview declaration directly', () => {

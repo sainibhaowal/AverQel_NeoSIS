@@ -21,6 +21,14 @@ async function bench() {
   await ctx.plugin(SlotRegistry).await()
   const locale = new LocaleRuntime(ctx)
   ctx.provide('locale', locale)
+  const panelInfo = {
+    getSnapshot: () => ({ activePanelId: null }),
+    subscribe: () => () => {},
+  }
+  ctx.provide('layout', {
+    panelInfo,
+    selectPanel: vi.fn(),
+  } as never)
   class LocaleHolder extends Service {
     constructor(serviceCtx: Context) {
       super(serviceCtx, 'localeHolder')
@@ -54,7 +62,7 @@ function declare(slots: SlotRegistry): () => void {
 
 describe('ui-plugin-manager browser plugin', () => {
   it('declares only the services the page and its Remote methods use', () => {
-    expect(inject).toEqual(['slots', 'locale', 'remote', 'remote.pluginManager', 'remote.pluginInventory', 'remote.pluginRegistryProbe', 'configForms'])
+    expect(inject).toEqual(['slots', 'locale', 'remote', 'remote.pluginManager', 'remote.pluginInventory', 'remote.pluginRegistryProbe', 'configForms', 'layout'])
   })
 
   it('registers the sidebar entry and its page, which reads the Host only once rendered and follows Host changes', async () => {

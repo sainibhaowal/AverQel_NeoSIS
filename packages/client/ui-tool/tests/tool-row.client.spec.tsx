@@ -309,10 +309,11 @@ describe('ToolRow', () => {
         newText: 'start\nsecond\nthird\nnew\nfourth\nfifth\nend',
       }] },
     }} />)
-    expect(view.getByText('+1 -1')).toBeTruthy()
+    expect(view.container.querySelector('[class*="_diffStat_"]')?.textContent).toBe('+1 -1')
     expect(view.container.querySelector('[data-diff]')).toBeNull()
     fireEvent.click(view.getByRole('button'))
-    expect(view.getAllByText('+1 -1')).toHaveLength(1)
+    expect(view.container.querySelectorAll('[class*="_diffStat_"]')).toHaveLength(1)
+    expect(view.container.querySelector('[class*="_diffStat_"]')?.textContent).toBe('+1 -1')
     expect(view.getAllByText('start')).toHaveLength(1)
     expect(view.getAllByText('end')).toHaveLength(1)
     expect(view.getByText('old', { exact: true })).toBeTruthy()
@@ -422,7 +423,7 @@ describe('ToolRow', () => {
   it('an error row without an error summary keeps the args summary', () => {
     const view = render(<ToolRow {...rowProps} state="error" errorSummary={null} />)
     const summary = view.getByText('List files')
-    expect(summary.parentElement?.className).toContain('errorSummary')
+    expect(summary.parentElement?.className).not.toContain('errorSummary')
   })
 
   it('renders summarySuffix outside the ellipsized summary span, and drops it on a failure line', () => {
@@ -525,7 +526,7 @@ describe('GenericToolCard', () => {
 
   it('unknown tools land on the others variant titled Tool call', () => {
     const view = render(
-      <GenericToolCard {...props('todo_write', running({ name: 'todo_write', argsRaw: '{"note":"x"}' }))} />,
+      <GenericToolCard {...props('unknown_tool', running({ name: 'unknown_tool', argsRaw: '{"note":"x"}' }))} />,
     )
     expect(view.getByText('工具调用')).toBeTruthy()
     expect(view.container.querySelector('[data-variant="others"]')).not.toBeNull()

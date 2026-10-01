@@ -15,6 +15,7 @@ import type { ChatSnapshot } from '../contract/snapshot.ts'
 import { PendingSteeringBubble, PendingSubmissionBubble } from './MessageItem.tsx'
 import { ChatNodeSeat } from './ChatNodeSeat.tsx'
 import { ChatGroupSeat } from './ChatGroupSeat.tsx'
+import { RunningStatus } from './RunningStatus.tsx'
 import { chatRenderKey } from './render-entry.ts'
 import { assertNever } from '@averqel/neosis-util-values'
 import { TurnNavigator } from './TurnNavigator.tsx'
@@ -106,6 +107,7 @@ export function ChatView({
   const entries = useMemo<readonly RenderEntry[]>(() => groupedEntries
     ?? order.map(key => ({ kind: 'node', key: key as NodeKey })), [groupedEntries, order])
   const nodeStore = useChat(s => s.nodes)
+  const activeTurnStartTime = useChat(s => [...s.legacy.turnTimings.values()].at(-1)?.startTime)
   // The rail's items are accumulated in the Chat snapshot, so this selector is
   // both the data and its change signal: the array identity moves only when a
   // Turn enters, leaves, or changes its preview.
@@ -260,6 +262,7 @@ export function ChatView({
                 renderSlot={renderSlot}
                 t={t}
               />
+              {running && <RunningStatus startTime={activeTurnStartTime} t={t} />}
             </MarkdownDelegateProvider>
             {/* No pending placeholders: questions (ui-user-questions) and approvals
                 (ApprovalPanel) both take over the composer, so a flow card would

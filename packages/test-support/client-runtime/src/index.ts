@@ -127,6 +127,48 @@ export interface TestFileUpload {
 }
 
 /**
+ * Provide the keyboard service required by Conversation-owned feature mounts.
+ *
+ * Client feature tests do not exercise shortcut persistence or DOM arbitration;
+ * those behaviors belong to the shortcuts package's own tests. Keeping this
+ * service in the shared runtime makes every feature fixture use the same
+ * lifecycle-safe no-op implementation while preserving the production inject
+ * requirement.
+ */
+function installTestShortcuts(ctx: Context): void {
+  const catalog = createSnapshotStore<readonly never[]>([])
+  const fixedCatalog = createSnapshotStore<readonly never[]>([])
+  const config = createSnapshotStore({
+    revision: 'test-shortcuts' as never,
+    sequence: 0,
+    document: { schemaVersion: 1 as const, profiles: {} },
+    status: 'ready' as const,
+    error: null,
+    usingDefaults: true,
+  })
+  ctx.provide('shortcuts', {
+    runtime: 'web',
+    platform: 'linux',
+    catalog,
+    config,
+    fixedCatalog,
+    stopSequenceMs: 500,
+    register: () => () => {},
+    registerFixed: () => () => {},
+    observeFixedInput: () => () => {},
+    describeBinding: (binding: { readonly code: string; readonly modifiers: readonly string[] }) => ({
+      binding: binding as never,
+      keys: binding.modifiers.length === 0 ? [binding.code] : [...binding.modifiers, binding.code],
+      issue: null,
+      conflicts: [],
+    }),
+    edit: async () => ({ status: 'not-ready' as const, snapshot: config.getSnapshot() }),
+    recording: async () => {},
+    closeWindow: async () => {},
+  } as never)
+}
+
+/**
  * Owner-props cell behind the auto frame: one external store the frame
  * subscribes to, so {@link SlotTestRuntime.renderSlot} and
  * {@link SlotView.update} drive React through the standard uSES boundary.
@@ -283,6 +325,7 @@ export class SlotTestRuntime {
     const ctx = new Context()
     const fiber = ctx.plugin(SlotRegistry)
     await fiber.await()
+    installTestShortcuts(ctx)
     const runtime = new SlotTestRuntime(ctx, ctx.get('slots') as SlotRegistry)
     await ctx.plugin({ inject: [...uiSessionInject], apply: applyUiSession }).await()
     return runtime

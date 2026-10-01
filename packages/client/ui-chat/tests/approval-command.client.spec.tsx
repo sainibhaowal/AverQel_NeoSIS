@@ -31,7 +31,7 @@ describe('ApprovalCommand', () => {
     render(<ApprovalCommand {...props([
       { kind: 'assistant-step', data: {} },
       { kind: 'tool-call', data: { root: { callId: 'other', argsRaw: '{"command":"wrong"}' } } },
-      { kind: 'tool-call', data: { root: { callId: 'call-1', argsRaw: '{"command":"pnpm test"}' } } },
+      { kind: 'tool-call', data: { root: { callId: 'call-1', phase: 'start', argsRaw: '{"command":"pnpm test"}' } } },
     ] as never)} />)
 
     expect(screen.getByText('pnpm test')).toBeTruthy()

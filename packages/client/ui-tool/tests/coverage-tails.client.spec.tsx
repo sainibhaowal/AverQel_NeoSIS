@@ -49,7 +49,7 @@ describe('Tool presentation tails', () => {
     )
     expect(view.queryByTestId('icon')).not.toBeNull()
     const summary = view.getByText('s')
-    expect(summary.parentElement?.className).toContain('stoppedSummary')
+    expect(summary.closest('[class*="_stoppedSummary_"]')).not.toBeNull()
   })
 
   it('a settled others-variant row renders the sparkle icon in the leading slot', () => {
