@@ -5,6 +5,7 @@ import { cleanup, renderHook } from '@testing-library/react'
 import { bindSnapshotSelector } from '@averqel/neosis-client-test-runtime'
 import { keyedObservableHook } from '@averqel/neosis-client-ui-renderer/src/client/bindings.tsx'
 import type { SessionId } from '@averqel/neosis-session/types'
+import type { ShortcutCatalogEntry } from '@averqel/neosis-client-shortcuts/client'
 import type { TabId } from '@averqel/neosis-client-ui-dockkit'
 import type { UseSidebarRightTabInfo } from '../src/client/contract/slots.ts'
 import { createSidebarRightStore } from '../src/client/stores.ts'
@@ -42,6 +43,7 @@ function harness() {
     return tabInfoFactory(standard, {
       tabId, title: false, fullscreen: false, active: true,
       signal: occurrence.signal, actions: occurrence.tabActions, useStore, useTabNavigation,
+      shortcuts: [] as readonly ShortcutCatalogEntry[],
     })
   }
   const open = (beforeCommit?: (tabId: TabId) => void): TabId => {

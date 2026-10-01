@@ -28,6 +28,12 @@ declare module '../src/client/contract/params.ts' {
 
 const SESSION = 's-test' as SessionId
 
+const HOST = {
+  autoFullscreen: () => false,
+  openWithFocus: (_sessionId: SessionId, open: () => PaneId | undefined) => { open() },
+  closeWithFocus: (_sessionId: SessionId, _paneId: PaneId, close: () => void) => { close() },
+}
+
 /** Key-echoing translate: this file asserts behaviour, not copy. */
 const t = ((key: string) => key) as Parameters<typeof guideDefinition>[0]
 
@@ -47,8 +53,9 @@ function harness() {
     title: address => address.slice(address.lastIndexOf('/') + 1),
   })
   const pin = vi.fn<(address: string, signal: AbortSignal) => void>()
-  const { controller, adopt } = createSidebarRightController(tabs, pin)
-  const instance = createSidebarRightStore(() => ({ kind: 'guide', title: 'seed' })).create()
+  const { controller, adopt, measure, show } = createSidebarRightController(tabs, pin, HOST)
+  const instance = createSidebarRightStore(() => ({ kind: 'guide', title: 'seed' })).create(SESSION)
+  adopt(SESSION, instance)
   const layout = (): LayoutState => {
     const surface = instance.getSnapshot().bySession[SESSION]
     if (surface === undefined) throw new Error('expected a surface')
@@ -57,12 +64,14 @@ function harness() {
   /** Republish the way the seat does after each commit, and sync the domain the way it does too. */
   /** The room rule's verdict the seat would report; a spec flips it to model a narrow pane. */
   const room = { allowed: true }
+  let publication = 0
   const publish = (): (() => void) => {
+    const token = ++publication
+    show(SESSION)
     const surface = instance.getSnapshot().bySession[SESSION]
     if (surface !== undefined) controller.tabDomain.sync(SESSION, surface.layout)
-    return controller.bind({
-      sessionId: SESSION, actions: instance.actions, surfaces: instance.getSnapshot().bySession, canSplitPane: () => room.allowed,
-    })
+    measure(SESSION, () => room.allowed)
+    return () => { if (publication === token) show(undefined) }
   }
   const titles = (): string[] => {
     const surface = instance.getSnapshot().bySession[SESSION]
@@ -519,12 +528,7 @@ describe('SidebarRightController — a tab\'s own actions', () => {
     const { controller, adopt, instance, titles } = harness()
     const releaseOwn = adopt(SESSION, instance)
     const other = createSidebarRightStore(() => ({ kind: 'guide', title: 'seed' })).create(OTHER)
-    const releaseBinding = controller.bind({
-      sessionId: OTHER,
-      actions: other.actions,
-      surfaces: other.getSnapshot().bySession,
-      canSplitPane: () => true,
-    })
+    const releaseBinding = adopt(OTHER, other)
     controller.openResourceIn(SESSION, A_TXT)
     expect(titles()).toContain('a.txt')
     releaseBinding()
@@ -550,7 +554,7 @@ describe('SidebarRightController — a tab\'s own actions', () => {
     other.actions.setExpanded(OTHER, true)
     const otherSurface = other.getSnapshot().bySession[OTHER]
     if (otherSurface === undefined) throw new Error('expected the other surface')
-    controller.bind({ sessionId: OTHER, actions: other.actions, surfaces: other.getSnapshot().bySession, canSplitPane: () => true })
+    adopt(OTHER, other)
     fromOwn.openResource(B_TXT)
     fromOwn.openTab('guide', { revealIfOpened: false })
     expect(Object.values(layout().tabs).map(tab => tab.title)).toContain('b.txt')

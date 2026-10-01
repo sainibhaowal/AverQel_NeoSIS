@@ -15,6 +15,8 @@ import type { ConfigLedger } from '../src/client/config-ledger.ts'
 import { rowKey, type InstallState, type PackageRow, type PackageView, type PluginManagerState } from '../src/client/manager-store.ts'
 import { en, zh, type PluginManagerLocaleKey } from '../src/client/locales.ts'
 import type { PluginActivationOwnerProps, PluginDetailProps, PluginsSubject } from '../src/client/slot-contract.ts'
+import { INSTALL_GIT_EXAMPLE } from '../src/client/locales.ts'
+import { createNavigationStore } from '../src/client/navigation-store.ts'
 
 afterEach(cleanup)
 
@@ -49,8 +51,9 @@ const OFFICIAL = 'https://registry.npmjs.org/'
 const REGISTRIES = { registry: null, fallbackRegistries: [MIRROR], resolved: OFFICIAL }
 
 /** pnpm's own registry as the options label it while it names npm's own; the control and the messages use the name alone. */
-const OFFICIAL_OPTION = en.registryWithHost.replace('{name}', en.registryDefault).replace('{host}', 'registry.npmjs.org')
-const MIRROR_OPTION = en.registryWithHost.replace('{name}', en.registryNpmmirror).replace('{host}', 'registry.npmmirror.com')
+const registryWithHost = (name: string, host: string): string => `${name} (${host})`
+const OFFICIAL_OPTION = registryWithHost(en.registryDefault, 'registry.npmjs.org')
+const MIRROR_OPTION = registryWithHost(en.registryNpmmirror, 'registry.npmmirror.com')
 
 const IDLE_INSTALL: InstallState = {
   open: false, spec: '', registries: null, registry: { kind: 'offered', registry: null }, registryOpen: false, registryError: false, attempts: null,
@@ -60,6 +63,7 @@ const IDLE_INSTALL: InstallState = {
 
 const READY: PluginManagerState = {
   status: 'ready',
+  refreshStatus: 'idle',
   packages: [],
   busy: [],
   notice: null,
@@ -93,6 +97,7 @@ function renderTab(
   const resolveText: PluginManagerPageProps['resolveText'] = text => locale.resolveText(text)
   const store = createSnapshotStore<PluginManagerState>({ ...READY, ...state })
   const ledger = createSnapshotStore<ConfigLedger>({ ...NO_CONFIG, ...config })
+  const navigation = createNavigationStore().create()
   const actions = {
     ensure: vi.fn(),
     refresh: vi.fn(),
@@ -124,6 +129,7 @@ function renderTab(
     useSessionStatus: unusedStandardHook,
     useSessionRetainInfo: unusedStandardHook,
     useResource: unusedStandardHook,
+    useGithubMirror: vi.fn(),
   }
   const props: PluginManagerPageProps = {
     ...standard,
@@ -131,6 +137,8 @@ function renderTab(
     resolveText,
     ...actions,
     usePluginManager: bindSnapshotSelector(store),
+    useStore: bindSnapshotSelector(navigation),
+    actions: navigation.actions,
     useConfigLedger: bindSnapshotSelector(ledger),
     useConfigurations: bindSnapshotSelector(createSnapshotStore<SettingsMirrorSnapshot>({
       status: 'ready', error: null,
@@ -710,7 +718,7 @@ describe('PluginManagerPage', () => {
     fireEvent.click(toggle)
     expect(screen.getByRole('button', { name: en.installGuideHide }).getAttribute('aria-expanded')).toBe('true')
     expect(screen.getByText(en.installGuideIdHint)).toBeTruthy()
-    expect(screen.getByText(en.installGuideGitExample)).toBeTruthy()
+    expect(screen.getByText(INSTALL_GIT_EXAMPLE)).toBeTruthy()
     fireEvent.click(screen.getByRole('button', { name: en.installGuideFillAria.replace('{example}', en.installGuideIdExample) }))
     expect(actions.editInstallSpec).toHaveBeenCalledExactlyOnceWith(en.installGuideIdExample)
     fireEvent.click(screen.getByRole('button', { name: en.installGuideHide }))
@@ -1112,7 +1120,7 @@ describe('PluginManagerPage', () => {
     expect(screen.getAllByRole('radio').map(radio => radio.parentElement?.textContent)).toEqual(['npm.corp.example', OFFICIAL_OPTION, en.registryCustom])
     // pnpm's own configuration naming another registry reads as the default registry with that host.
     set({ install: { ...open, registryOpen: true, registries: { ...REGISTRIES, resolved: 'https://npm.corp.example/' } } })
-    expect(screen.getByRole('radio', { name: en.registryWithHost.replace('{name}', en.registryDefault).replace('{host}', 'npm.corp.example') })).toBeTruthy()
+    expect(screen.getByRole('radio', { name: registryWithHost('npm.corp.example', 'npm.corp.example') })).toBeTruthy()
     // Before the Host answers, only pnpm's own is offered, read as npm's own.
     set({ install: { ...open, registryOpen: true, registries: null } })
     expect(screen.getAllByRole('radio')).toHaveLength(2)

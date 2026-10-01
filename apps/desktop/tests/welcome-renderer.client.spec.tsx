@@ -15,6 +15,7 @@ function mount(language = 'zh-CN') {
   cleanup()
   const stopAccount = vi.fn()
   const api = {
+    analyticsEnabled: vi.fn(async () => false),
     onAccountState: vi.fn((_listener: (state: AccountView) => void) => stopAccount),
     startSignIn: vi.fn(async (): Promise<AccountView> => ({ links: { usageUrl: 'http://localhost/usage', topUpUrl: 'http://localhost/top_up' }, status: 'signed-out', attempt: null })),
     cancelSignIn: vi.fn(async (): Promise<AccountView> => ({ links: { usageUrl: 'http://localhost/usage', topUpUrl: 'http://localhost/top_up' }, status: 'signed-out', attempt: null })),

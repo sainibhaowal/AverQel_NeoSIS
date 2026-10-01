@@ -20,7 +20,7 @@ const steps: SpeechPreparationStep[] = [
 function fixture(preparation: SpeechPreparationState, connected = true) {
   const prepare = vi.fn(async (_id: SpeechProviderId) => {}), cancelPreparation = vi.fn(async (_id: SpeechProviderId) => {})
   const props = { provider: { id, name: 'SenseVoiceSmall', location: 'host-local' as const, languages: ['auto', 'zh', 'en', 'ja'], preparation },
-    connected, prepare, cancelPreparation, t }
+    connected, prepare, cancelPreparation, openSettings: vi.fn(), t }
   return { ...render(<PreparationCard {...props} />), prepare, cancelPreparation, props }
 }
 it('collapses by default, expands all steps, and shows details only for the active step', async () => {
@@ -117,7 +117,8 @@ it('persists settings and reports disconnection in the detail card', async () =>
   } })
   const configure = vi.fn<VoiceInputProps['configure']>(async () => {})
   const props = { useSpeechReadiness: bindSnapshotSelector(store), configure, t,
-    prepare: vi.fn(async () => {}), cancelPreparation: vi.fn(async () => {}), transcribe: vi.fn(), createRecording: vi.fn() }
+    prepare: vi.fn(async () => {}), cancelPreparation: vi.fn(async () => {}), transcribe: vi.fn(),
+    createRecording: vi.fn(), openSettings: vi.fn() }
   const view = render(<VoicePreparation {...props} />)
   fireEvent.change(screen.getByLabelText(zh.provider), { target: { value: 'cloud' } })
   await waitFor(() => { expect(configure).toHaveBeenCalledWith({ providerId: 'cloud' }) })

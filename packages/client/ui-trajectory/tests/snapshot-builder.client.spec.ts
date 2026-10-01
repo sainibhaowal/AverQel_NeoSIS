@@ -216,6 +216,7 @@ describe('TrajectorySnapshotBuilder', () => {
       contribution('tool', 7, {
         kind: 'tool',
         root: {
+          phase: 'start',
           callId: 'call-edit',
           name: 'edit',
           argsRaw: '{}',

@@ -63,7 +63,7 @@ const pathsMeta = (over?: Partial<PathsMeta>): PathsMeta => ({
 })
 
 const runningGrep = (over?: Partial<RunningToolCall>): RunningToolCall => ({
-  callId: 'c1', name: 'grep', argsRaw: GREP_ARGS,
+  phase: 'start', callId: 'c1', name: 'grep', argsRaw: GREP_ARGS,
   turn: 1, step: 1, time: 1_000, subCalls: [], ...over,
 })
 
@@ -175,10 +175,13 @@ describe('searchCardModel', () => {
 })
 
 describe('chat row search body (GenericToolCard fallback)', () => {
-  const ownerProps = (block: RunningToolCall | ToolResultNode, toolName: string): GenericToolCardProps => ({
-    loadImage: vi.fn(() => Promise.reject(new Error('not used'))),
-    useDisclosure, callId: 'c1', toolName, block, openFile: vi.fn(), t,
-  })
+  const ownerProps = (block: RunningToolCall | ToolResultNode, toolName: string): GenericToolCardProps => {
+    const common = { loadImage: vi.fn(() => Promise.reject(new Error('not used'))), useDisclosure,
+      callId: 'c1', toolName, openFile: vi.fn(), t }
+    if ('kind' in block) return { ...common, phase: 'result', block }
+    if (block.phase === 'preparing') return { ...common, phase: 'preparing', block }
+    return { ...common, phase: 'start', block }
+  }
   /** The whole summary row is the expand toggle (ToolRow's unified interaction). */
   const toggleRow = (view: { container: HTMLElement }) => {
     fireEvent.click(view.container.querySelector('[data-expandable]')!)

@@ -46,7 +46,7 @@ function mountBrowser(navigation?: { readonly url?: string },
   const injected = createBrowserControllers(store.actions, options.createPage ?? createIframePage, () => true)
   controllers.push(injected)
   const { keyedHooks, ...commands } = injected
-  const tabActions = { openResource: vi.fn(), openTab: vi.fn(), close: vi.fn() }
+  const tabActions = { bindCommands: vi.fn(() => () => {}), openResource: vi.fn(), openTab: vi.fn(), close: vi.fn() }
   const props: Pick<BrowserBodyProps, 'sessionId' | 'useTabInfo' | 'useStore' | 'actions' | 't' | 'useBrowserState'>
     & Omit<BrowserInjected, 'keyedHooks'> = {
       sessionId: SESSION,

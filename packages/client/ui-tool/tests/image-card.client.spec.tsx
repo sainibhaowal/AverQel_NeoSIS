@@ -57,7 +57,7 @@ const withImage = (attachment: unknown) => [
 ]
 
 const running = (over?: Partial<RunningToolCall>): RunningToolCall => ({
-  callId: 'c1', name: 'read_image', argsRaw: ARGS,
+  phase: 'start', callId: 'c1', name: 'read_image', argsRaw: ARGS,
   turn: 1, step: 1, time: 1_000, subCalls: [], ...over,
 })
 

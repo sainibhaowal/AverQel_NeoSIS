@@ -86,6 +86,7 @@ function mountBar(shell: SessionInputShell, over?: { running?: boolean; disabled
     useNotices: bindSnapshotSelector(shell.notices),
     useLexicon: bindSnapshotSelector(shell.lexicon),
     useMenuLauncher: bindSnapshotSelector(createSnapshotStore<string | null>(null)),
+    useStopShortcut: bindSnapshotSelector(createSnapshotStore<readonly string[]>([])),
     renderSlot: (() => null) as InputBarProps['renderSlot'],
     stop: vi.fn(),
     t: makeTranslate(zh, commonZh),

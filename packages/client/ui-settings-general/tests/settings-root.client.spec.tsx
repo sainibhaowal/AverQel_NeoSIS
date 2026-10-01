@@ -3,13 +3,14 @@ import type { GlobalStandardProps } from '@averqel/neosis-client-ui-slots'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { useEffect, useState } from 'react'
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
-import { makeTranslate } from '@averqel/neosis-client-test-runtime'
+import { bindSnapshotSelector, makeTranslate } from '@averqel/neosis-client-test-runtime'
 import type { SessionListState } from '@averqel/neosis-api-session-controller/client'
 import { SessionId } from '@averqel/neosis-session/types'
 import type { SettingsRootComponentProps } from '../src/client/shell-contract.ts'
 import { SettingsRoot } from '../src/client/SettingsRoot.tsx'
 import { en, zh } from '../src/client/locales.ts'
 import type { DesktopUpdateView } from '../src/types.ts'
+import { createSettingsShellStore } from '../src/client/shell-store.ts'
 
 // Every fixture carries the resource hook the resources plugin merges into GlobalStandardProps.
 const useResource = (() => ({ status: 'none' as const, value: undefined, failure: undefined, reload: () => {} })) as GlobalStandardProps['useResource']
@@ -92,6 +93,8 @@ function mount({
   }
   const unusedHook = (() => { throw new Error('unused by SettingsRoot') }) as never
   const props: SettingsRootComponentProps = {
+    useStore: bindSnapshotSelector(createSettingsShellStore().create()),
+    actions: createSettingsShellStore().create().actions,
     useSessions: select => select(sessions),
     useSessionStatus,
     usePanelInfo, useSessionRetainInfo: () => undefined, useResource,
@@ -111,6 +114,7 @@ function mount({
       return select(currentConnectionState)
     },
     useOnboardingSteps: select => select(steps),
+    useShortcuts: select => select([]),
     useSections: (select) => {
       const [, force] = useState(0)
       useEffect(() => {

@@ -139,7 +139,7 @@ describe('ToolCallTree', () => {
   it('dispatches a running call by its wire name and forwards inspect', () => {
     const owners: ToolCallOwnerProps[] = []
     const block: ToolCallBlock = {
-      callId: 'running', name: 'bash', argsRaw: '{"command":"pwd"}',
+      phase: 'start', callId: 'running', name: 'bash', argsRaw: '{"command":"pwd"}',
       turn: 1, step: 0, time: 1_000, subCalls: [],
     }
     const treeProps = props(block, undefined, owners)

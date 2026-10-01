@@ -139,9 +139,8 @@ describe('ui-sidebar-right apply', () => {
     // The binding makes the service act on this seat's session; the seat's
     // store instance is minted here from the handle the registration declared.
     const handle = seat('rightbar.session').store as ReturnType<typeof createSidebarRightStore>
-    const instance = handle.create()
+    const instance = handle.create(SESSION)
     instance.clearPersisted()
-    const release = injected.bindService({ sessionId: SESSION, actions: instance.actions, surfaces: {}, canSplitPane: () => true })
     injected.openTab('guide', { revealIfOpened: false })
     const surface = instance.getSnapshot().bySession[SESSION]
     expect(surface?.layout.expanded).toBe(true)
@@ -150,8 +149,7 @@ describe('ui-sidebar-right apply', () => {
     if (surface === undefined) throw new Error('expected a surface')
     ctx.sidebarRight.tabDomain.sync(SESSION, surface.layout)
     expect(resources.pin).toHaveBeenCalledWith('sidebar://guide', expect.any(AbortSignal))
-    release()
-    expect(() => { ctx.sidebarRight.toggleExpanded() }).toThrow('no session surface is mounted')
+    expect(ctx.sidebarRight.toggleExpanded).toBeDefined()
   })
 
   it('adopts each session\'s store instance as the runtime mints it, so a tab\'s own actions land with no seat bound', async () => {
@@ -243,7 +241,6 @@ describe('ui-sidebar-right apply', () => {
     const handle = seat('rightbar.session').store as ReturnType<typeof createSidebarRightStore>
     // Minted under the session key, so the instance is adopted and the teardown releases it.
     const instance = handle.create(SESSION)
-    injected.bindService({ sessionId: SESSION, actions: instance.actions, surfaces: {}, canSplitPane: () => true })
     injected.openTab('guide')
     const surface = instance.getSnapshot().bySession[SESSION]
     const guide = Object.values(surface?.layout.tabs ?? {})[0]

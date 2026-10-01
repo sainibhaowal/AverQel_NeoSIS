@@ -55,7 +55,7 @@ const readMeta = (over?: Partial<ReadMetaFixture>): ReadMetaFixture => ({
 const readContent = (body = 'export const a = 1'): string => `<path>src/a.ts</path>\n<type>file</type>\n<content>\n${body}\n</content>`
 
 const running = (over?: Partial<RunningToolCall>): RunningToolCall => ({
-  callId: 'c1', name: 'read', argsRaw: ARGS,
+  phase: 'start', callId: 'c1', name: 'read', argsRaw: ARGS,
   turn: 1, step: 1, time: 1_000, subCalls: [], ...over,
 })
 
@@ -164,10 +164,13 @@ describe('readCallLine', () => {
 })
 
 describe('GenericToolCard read body', () => {
-  const ownerProps = (block: RunningToolCall | ToolResultNode): GenericToolCardProps => ({
-    loadImage: vi.fn(() => Promise.reject(new Error('not used'))),
-    useDisclosure, callId: 'c1', toolName: 'read', block, openFile: vi.fn(), t,
-  })
+  const ownerProps = (block: RunningToolCall | ToolResultNode): GenericToolCardProps => {
+    const common = { loadImage: vi.fn(() => Promise.reject(new Error('not used'))), useDisclosure,
+      callId: 'c1', toolName: 'read', openFile: vi.fn(), t }
+    if ('kind' in block) return { ...common, phase: 'result', block }
+    if (block.phase === 'preparing') return { ...common, phase: 'preparing', block }
+    return { ...common, phase: 'start', block }
+  }
 
   /** The whole summary row is the expand toggle (ToolRow's unified interaction). */
   const toggleRow = (view: { container: HTMLElement }) => {
@@ -188,7 +191,7 @@ describe('GenericToolCard read body', () => {
 
   it('a non-read tool renders the bare row with no read card', () => {
     const view = render(<GenericToolCard {...({
-      useDisclosure, callId: 'c1', toolName: 'echo', block: settled({
+      useDisclosure, callId: 'c1', toolName: 'echo', phase: 'result', block: settled({
         call: { name: 'echo', argsRaw: '{"text":"x"}' }, meta: undefined,
       }), openFile: vi.fn(), loadImage: vi.fn(() => Promise.reject(new Error('not used'))), t,
     })} />)

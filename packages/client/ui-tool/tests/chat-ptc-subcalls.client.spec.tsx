@@ -51,7 +51,7 @@ const codeResult = (seq: number, callId: string): ToolResultNode => ({
 })
 
 const runningCode = (callId: string): RunningToolCall => ({
-  callId, name: 'run_code', argsRaw: RUN_CODE_ARGS, turn: 9, step: 0, time: 9_000,
+  phase: 'start', callId, name: 'run_code', argsRaw: RUN_CODE_ARGS, turn: 9, step: 0, time: 9_000,
   subCalls: [],
 })
 
@@ -258,7 +258,7 @@ describe('run_code sub-calls through the real chat machinery', () => {
   it('a started-but-unsettled sub-call renders the running state exactly like a native in-flight row', async () => {
     const parent = 'call-live'
     const runningSub: ToolCallBlock = {
-      callId: `${parent}:code:1`, name: 'grep', argsRaw: '{"pattern":"todo"}',
+      phase: 'start', callId: `${parent}:code:1`, name: 'grep', argsRaw: '{"pattern":"todo"}',
       parentCallId: parent,
       turn: 0, step: 0, time: 21_000, subCalls: [],
     }

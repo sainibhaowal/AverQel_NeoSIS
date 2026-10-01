@@ -28,7 +28,7 @@ const ARGS = '{"file_path":"notes/demo.txt","old_string":"hello","new_string":"h
 const DIFFS = [{ path: 'notes/demo.txt', oldText: 'hello', newText: 'hello fixture' }]
 
 const running = (over?: Partial<RunningToolCall>): RunningToolCall => ({
-  callId: 'c1', name: 'edit', argsRaw: ARGS,
+  phase: 'start', callId: 'c1', name: 'edit', argsRaw: ARGS,
   turn: 1, step: 1, time: 1_000, subCalls: [], ...over,
 })
 
@@ -159,10 +159,13 @@ describe('diffCardModel', () => {
 })
 
 describe('chat row diff body', () => {
-  const ownerProps = (block: RunningToolCall | ToolResultNode): GenericToolCardProps => ({
-    loadImage: vi.fn(() => Promise.reject(new Error('not used'))),
-    useDisclosure, callId: 'c1', toolName: 'edit', block, openFile: vi.fn(), t,
-  })
+  const ownerProps = (block: RunningToolCall | ToolResultNode): GenericToolCardProps => {
+    const common = { loadImage: vi.fn(() => Promise.reject(new Error('not used'))), useDisclosure,
+      callId: 'c1', toolName: 'edit', openFile: vi.fn(), t }
+    if ('kind' in block) return { ...common, phase: 'result', block }
+    if (block.phase === 'preparing') return { ...common, phase: 'preparing', block }
+    return { ...common, phase: 'start', block }
+  }
 
   it('the expanded body is the applied diff, capped tighter than the panel', () => {
     expect(CHAT_DIFF_MAX_LINES).toBeLessThan(16)
@@ -187,7 +190,7 @@ describe('chat row diff body', () => {
     const view = render(<GenericToolCard {...{
       useDisclosure, callId: 'c1', toolName: 'some_tool', openFile: vi.fn(),
       loadImage: vi.fn(() => Promise.reject(new Error('not used'))), t,
-      block: settled({
+      phase: 'result', block: settled({
         call: { name: 'some_tool', argsRaw: '{"foo":"bar"}' },
         meta: undefined,
       }),

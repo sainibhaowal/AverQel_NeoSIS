@@ -50,7 +50,7 @@ const fetchMeta = (over?: Partial<FetchMeta>): FetchMeta => ({
 })
 
 const runningSearch = (over?: Partial<RunningToolCall>): RunningToolCall => ({
-  callId: 'c1', name: 'web_search', argsRaw: SEARCH_ARGS,
+  phase: 'start', callId: 'c1', name: 'web_search', argsRaw: SEARCH_ARGS,
   turn: 1, step: 1, time: 1_000, subCalls: [], ...over,
 })
 
@@ -124,9 +124,13 @@ describe('webCardModel', () => {
 })
 
 describe('chat row web body', () => {
-  const ownerProps = (block: RunningToolCall | ToolResultNode, toolName: string): ToolCallOwnerProps => ({
-    useDisclosure, callId: block.callId, toolName, block, openFile: vi.fn(), loadImage: vi.fn(() => Promise.reject(new Error('not used'))),
-  })
+  const ownerProps = (block: RunningToolCall | ToolResultNode, toolName: string): ToolCallOwnerProps => {
+    const common = { useDisclosure, callId: block.callId, toolName, openFile: vi.fn(),
+      loadImage: vi.fn(() => Promise.reject(new Error('not used'))) }
+    if ('kind' in block) return { ...common, phase: 'result', block }
+    if (block.phase === 'preparing') return { ...common, phase: 'preparing', block }
+    return { ...common, phase: 'start', block }
+  }
   // WebRow reads only toolName/block off the full runtime share plus the locale
   // seat; the standard kit is unused, so the cast supplies the owner slice and
   // `t` alone (as BashRow's tests do for the terminal card).

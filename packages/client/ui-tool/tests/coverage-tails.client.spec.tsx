@@ -61,7 +61,7 @@ describe('Tool presentation tails', () => {
     }
     const props: GenericToolCardProps = {
       loadImage: vi.fn(() => Promise.reject(new Error('not used'))),
-      useDisclosure, callId: 'c5', toolName: 'todo_write', block: settled, openFile: vi.fn(), t,
+      useDisclosure, callId: 'c5', toolName: 'todo_write', phase: 'result', block: settled, openFile: vi.fn(), t,
     }
     const view = render(<GenericToolCard {...props} />)
     expect(view.container.querySelector('[data-variant="others"] svg')).not.toBeNull()
@@ -84,7 +84,7 @@ describe('Tool presentation tails', () => {
 
   it('BashRow retains its business icon for failed and stopped states', () => {
     const running: RunningToolCall = {
-      callId: 'c1', name: 'bash', argsRaw: '{"command":"ls","description":"List"}',
+      phase: 'start', callId: 'c1', name: 'bash', argsRaw: '{"command":"ls","description":"List"}',
       turn: 1, step: 1, time: 1_000, subCalls: [],
     }
     const errorResult: ToolResultNode = {

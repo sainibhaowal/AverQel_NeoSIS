@@ -189,6 +189,7 @@ async function scopedBench(register?: (inputTriggers: InputTriggerService) => vo
     useNotices: bindSnapshotSelector(shell.notices),
     useLexicon: bindSnapshotSelector(shell.lexicon),
     useMenuLauncher: bindSnapshotSelector(controller.launcher),
+    useStopShortcut: bindSnapshotSelector(createSnapshotStore<readonly string[]>([])),
     renderSlot: (() => null) as InputBarProps['renderSlot'],
     stop: vi.fn(),
     t: makeTranslate(zh, commonZh),

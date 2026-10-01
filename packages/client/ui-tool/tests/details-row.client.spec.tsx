@@ -62,7 +62,7 @@ describe('detailsCardModel', () => {
     expect(detailsCardModel({ ...block, call: { name: 'create_goal', argsRaw: '{' } }, t, 'en')).toBeNull()
     expect(detailsCardModel({ ...block, content: [{ type: 'text', text: 'partial {' }] }, t, 'en')).toBeNull()
     expect(detailsCardModel({ ...block, content: [...block.content, { type: 'text', text: 'Extra result' }] }, t, 'en')).toBeNull()
-    expect(detailsCardModel({ callId: 'c1', name: 'create_goal', argsRaw: '{}', turn: 1, step: 1, time: 1000, subCalls: [] }, t, 'en')).toBeNull()
+    expect(detailsCardModel({ phase: 'start', callId: 'c1', name: 'create_goal', argsRaw: '{}', turn: 1, step: 1, time: 1000, subCalls: [] }, t, 'en')).toBeNull()
     expect(detailsCardModel({ ...block, parentCallId: 'parent' }, t, 'en')?.items[0]?.title).toBe(goal.objective)
   })
 })

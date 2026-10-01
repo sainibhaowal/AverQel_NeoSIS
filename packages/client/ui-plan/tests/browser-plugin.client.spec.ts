@@ -109,12 +109,13 @@ describe('ui-plan browser apply', () => {
     const tabs = new SidebarRightTabRegistry(b.ctx)
     b.registerType.mockImplementation(definition => tabs.register(definition))
     const store = createSidebarRightStore(() => ({ kind: 'guide', title: 'Guide' })).create()
-    const { controller, adopt } = createSidebarRightController(tabs, vi.fn())
+    const { controller, adopt } = createSidebarRightController(tabs, vi.fn(), {
+      autoFullscreen: () => false,
+      openWithFocus: (_sessionId, open) => { open() },
+      closeWithFocus: (_sessionId, _paneId, close) => { close() },
+    })
     const release = adopt(parent, store)
     store.actions.open(parent)
-    const unbind = controller.bind({
-      sessionId: parent, actions: store.actions, surfaces: store.getSnapshot().bySession, canSplitPane: () => true,
-    })
     b.openResource.mockImplementation(controller.openResource.bind(controller))
     b.openResourceIn.mockImplementation(controller.openResourceIn.bind(controller))
     b.subagentAddress.mockReturnValue({ parentSessionId: parent, childSessionId: child, mode: 'continuable' })
@@ -135,7 +136,6 @@ describe('ui-plan browser apply', () => {
       expect(store.getSnapshot().bySession[child]).toBeUndefined()
     } finally {
       await fiber.dispose()
-      unbind()
       release()
       controller.tabDomain.dispose()
     }

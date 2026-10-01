@@ -115,7 +115,7 @@ describe('deriveTrajectoryLayout', () => {
       nodes: [],
       partial: null,
       runningCalls: [{
-        callId: 'r1', name: 'bash', argsRaw: '{"command":"pwd"}',
+        phase: 'start', callId: 'r1', name: 'bash', argsRaw: '{"command":"pwd"}',
         turn: 1, step: 2, time: 9_000, subCalls: [],
       }],
     })
@@ -179,7 +179,7 @@ describe('deriveTrajectoryLayout', () => {
       nodes: [],
       partial: { ...partial, blocks: [] },
       runningCalls: [{
-        callId: 'c1', name: 'bash', argsRaw: '{"command":"pwd"}',
+        phase: 'start', callId: 'c1', name: 'bash', argsRaw: '{"command":"pwd"}',
         turn: 1, step: 1, time: 9_000, subCalls: [],
       }],
     })

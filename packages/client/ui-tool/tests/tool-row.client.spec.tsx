@@ -22,7 +22,7 @@ afterEach(() => {
 const t: GenericToolCardProps['t'] = makeTranslate(zh, commonZh)
 
 const running = (over?: Partial<RunningToolCall>): RunningToolCall => ({
-  callId: 'c1', name: 'bash', argsRaw: '{"command":"ls -la","description":"List files"}',
+  phase: 'start', callId: 'c1', name: 'bash', argsRaw: '{"command":"ls -la","description":"List files"}',
   turn: 1, step: 1, time: 1_000, subCalls: [], ...over,
 })
 
@@ -494,10 +494,13 @@ describe('ToolRow', () => {
 })
 
 describe('GenericToolCard', () => {
-  const props = (toolName: string, block: RunningToolCall | ToolResultNode): GenericToolCardProps => ({
-    loadImage: vi.fn(() => Promise.reject(new Error('not used'))),
-    useDisclosure, callId: 'c1', toolName, block, openFile: vi.fn(), t,
-  })
+  const props = (toolName: string, block: RunningToolCall | ToolResultNode): GenericToolCardProps => {
+    const common = { loadImage: vi.fn(() => Promise.reject(new Error('not used'))), useDisclosure,
+      callId: 'c1', toolName, openFile: vi.fn(), t }
+    if ('kind' in block) return { ...common, phase: 'result', block }
+    if (block.phase === 'preparing') return { ...common, phase: 'preparing', block }
+    return { ...common, phase: 'start', block }
+  }
 
   it('renders the classified variant row from the frozen slice', () => {
     const view = render(<GenericToolCard {...props('bash', result())} />)

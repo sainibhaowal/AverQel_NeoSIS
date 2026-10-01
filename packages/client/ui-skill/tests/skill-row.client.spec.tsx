@@ -31,7 +31,7 @@ function settled(over: Partial<ToolResultNode> = {}): ToolResultNode {
 
 function running(argsRaw = '{"name":"neosis-manage-issues"}'): RunningToolCall {
   return {
-    callId: 'call-skill', name: 'skill', argsRaw, turn: 1, step: 1, time: 2_000, subCalls: [],
+    phase: 'start', callId: 'call-skill', name: 'skill', argsRaw, turn: 1, step: 1, time: 2_000, subCalls: [],
   }
 }
 

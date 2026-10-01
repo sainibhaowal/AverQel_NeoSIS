@@ -46,7 +46,7 @@ const shellArgs = (over: Record<string, unknown> = {}): string => JSON.stringify
 })
 
 const running = (over?: Partial<RunningToolCall>): RunningToolCall => ({
-  callId: 'c1', name: 'bash', argsRaw: ARGS,
+  phase: 'start', callId: 'c1', name: 'bash', argsRaw: ARGS,
   turn: 1, step: 1, time: 1_000, subCalls: [], ...over,
 })
 
@@ -292,10 +292,13 @@ describe('terminalCardModel', () => {
 })
 
 describe('chat row terminal body', () => {
-  const ownerProps = (block: RunningToolCall | ToolResultNode): GenericToolCardProps => ({
-    loadImage: vi.fn(() => Promise.reject(new Error('not used'))),
-    useDisclosure, callId: 'c1', toolName: 'bash', block, openFile: vi.fn(), t,
-  })
+  const ownerProps = (block: RunningToolCall | ToolResultNode): GenericToolCardProps => {
+    const common = { loadImage: vi.fn(() => Promise.reject(new Error('not used'))), useDisclosure,
+      callId: 'c1', toolName: 'bash', openFile: vi.fn(), t }
+    if ('kind' in block) return { ...common, phase: 'result', block }
+    if (block.phase === 'preparing') return { ...common, phase: 'preparing', block }
+    return { ...common, phase: 'start', block }
+  }
 
   /** The whole summary row is the expand toggle (ToolRow's unified interaction). */
   const toggleRow = (view: { container: HTMLElement }) => {

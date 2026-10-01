@@ -35,7 +35,7 @@ function tool(key: string, seq: number, name = 'bash', owner = turn): ChatNode<'
   return {
     key, id: key, kind: 'tool-call', target: 'chat', anchorSeq: seq,
     location: { kind: 'turn', turn: owner }, visibility: 'visible',
-    data: { root: { callId: key, name, argsRaw: '{"command":"pwd"}', turn: owner.turn, step: 1, time: seq, subCalls: [] } },
+    data: { root: { phase: 'start', callId: key, name, argsRaw: '{"command":"pwd"}', turn: owner.turn, step: 1, time: seq, subCalls: [] } },
   }
 }
 
