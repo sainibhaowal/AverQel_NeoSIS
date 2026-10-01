@@ -196,6 +196,7 @@
     { "path": "./packages/client/ui-settings-general/tsconfig.host.json" },
 
     { "path": "./packages/host/product-telemetry-otel" },
+    { "path": "./packages/telemetry/otel" },
     { "path": "./packages/boot/config-editor" },
     { "path": "./packages/client/connection/tsconfig.host.json" },
     { "path": "./packages/skill/skill-office" },
