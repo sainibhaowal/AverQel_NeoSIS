@@ -1,11 +1,14 @@
 // @vitest-environment jsdom
 import { cleanup, fireEvent, render, screen, act } from '@testing-library/react'
+import { useSyncExternalStore } from 'react'
 import { afterEach, expect, it, onTestFinished, vi } from 'vitest'
 import type { GlobalStandardProps } from '@averqel/neosis-client-ui-slots'
 import type { AccountDetails, AccountView, SignInAttemptId } from '@averqel/neosis-deepseek-account/types'
 import type { ThemeSnapshot } from '@averqel/neosis-client-ui-theme/client'
 import type { PlatformBridge } from '../src/client/PlatformOverlay.tsx'
+import { AccountPlatformHost } from '../src/client/AccountPlatformHost.tsx'
 import { AccountSection, type AccountSectionInjected, type AccountSnapshot } from '../src/client/AccountSection.tsx'
+import { createPlatformPages, type PlatformPages } from '../src/client/platform-pages.ts'
 import type {} from '../src/client/index.ts'
 import { en, zh, type AccountKey } from '../src/client/locales.ts'
 
@@ -17,9 +20,12 @@ const themeOf = (colorScheme: 'light' | 'dark'): ThemeSnapshot => ({
   active: { id: colorScheme, colorScheme, tokens: {} }, themes: [], revision: 0,
 })
 
-function operationsOf(state: Omit<AccountView, 'links'>, details?: Partial<AccountDetails>, platform?: PlatformBridge): AccountSectionInjected {
+type AccountTestOperations = AccountSectionInjected & { platformPages?: PlatformPages }
+
+function operationsOf(state: Omit<AccountView, 'links'>, details?: Partial<AccountDetails>, platform?: PlatformBridge): AccountTestOperations {
+  const platformPages = platform === undefined ? undefined : createPlatformPages()
   return {
-    ...platform === undefined ? {} : { platform },
+    ...platformPages === undefined ? {} : { openPlatformPage: platformPages.open, platformPages },
     hooks: {
       account: {
         getSnapshot: () => ({ view: { ...state, links: { usageUrl: 'http://localhost:8081/usage', topUpUrl: 'http://localhost:8081/top_up' } }, details, failed: false }),
@@ -43,13 +49,20 @@ function mount(state: Omit<AccountView, 'links'>, copy: typeof en | typeof zh = 
     useAccount={selector => selector(operations.hooks.account.getSnapshot())}
     useTheme={selector => selector(operations.hooks.theme.getSnapshot())}
     close={() => {}} t={key => key in copy ? copy[key as AccountKey] : key} />)
+  if (platform !== undefined) {
+    const platformPages = operations.platformPages
+    if (platformPages === undefined) throw new Error('account test: missing platform page channel')
+    render(<AccountPlatformHost {...globals} platform={platform}
+      usePage={selector => selector(useSyncExternalStore(platformPages.subscribe, platformPages.getSnapshot, platformPages.getSnapshot))}
+      closePage={platformPages.close} t={key => key in copy ? copy[key as AccountKey] : key} />)
+  }
   return operations
 }
 
 it.each([en, zh])('renders account cards without inventing profile or balance data', async (copy) => {
   mount({ status: 'credential-stored', attempt: null }, copy)
   expect(screen.getByText(copy.signedIn)).toBeTruthy()
-  expect(screen.getAllByText(copy.loading)).toHaveLength(2)
+  expect(screen.getAllByText(copy.loading)).toHaveLength(3)
   expect(screen.getByRole('link', { name: copy.usage }).getAttribute('href')).toBe('http://localhost:8081/usage')
   expect(screen.getByRole('link', { name: copy.topUp }).getAttribute('href')).toBe('http://localhost:8081/top_up')
   expect(screen.queryByRole('button', { name: copy.signOut })).toBeNull()
@@ -236,7 +249,7 @@ it('shows the profile while the balance is still loading', async () => {
     profile: { status: 'ready', value: { id: null, name: 'Ready User', contact: '138****0000' } },
   })
   expect(screen.getByText('Ready User')).toBeTruthy()
-  expect(screen.getByText(en.loading)).toBeTruthy()
+  expect(screen.getAllByText(en.loading)).toHaveLength(2)
   expect(screen.queryByText(en.balanceUnavailable)).toBeNull()
   await expect(`${screen.getByRole('region').textContent}\n`).toMatchFileSnapshot('./expected/profile-before-balance.txt')
 })
@@ -339,7 +352,7 @@ it('opens more account information externally without invoking the embedded Plat
   const platform: PlatformBridge = { open: vi.fn(), close: vi.fn(), setBounds: vi.fn() }
   mount({ status: 'credential-stored', attempt: null }, en, undefined, platform)
   const link = screen.getByRole('link', { name: en.accountInfo })
-  expect(link.getAttribute('href')).toBe('https://platform.deepseek.com')
+  expect(link.getAttribute('href')).toBe('http://localhost:8081/')
   expect(link.getAttribute('target')).toBe('_blank')
   expect(link.getAttribute('rel')).toBe('noopener noreferrer')
   fireEvent.click(link)
@@ -378,7 +391,7 @@ it('shows unavailable details and keeps external Platform links usable in a brow
     profile: { status: 'failed' }, balance: { status: 'failed' },
   })
   expect(screen.getByText(en.profileUnavailable)).toBeTruthy()
-  expect(screen.getByText(en.balanceUnavailable)).toBeTruthy()
+  expect(screen.getAllByText(en.balanceUnavailable)).toHaveLength(2)
   for (const name of [en.usage, en.topUp]) {
     const event = new MouseEvent('click', { bubbles: true, cancelable: true })
     screen.getByRole('link', { name }).dispatchEvent(event)
