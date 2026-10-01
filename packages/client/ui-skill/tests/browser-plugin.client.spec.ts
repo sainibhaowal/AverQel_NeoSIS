@@ -133,6 +133,7 @@ describe('apply', () => {
       namespace: 'skill', dictionaries: {
         zh: {
           'row.title': '加载技能',
+          'row.preparing': '正在准备加载 skill',
           'row.running': '正在加载 skill',
           'row.failed': 'skill 加载失败',
           'row.stopped': 'skill 加载已中止',
@@ -142,6 +143,7 @@ describe('apply', () => {
         },
         en: {
           'row.title': 'Skill',
+          'row.preparing': 'Preparing skill load',
           'row.running': 'Loading skill',
           'row.failed': 'Skill load failed',
           'row.stopped': 'Skill load stopped',

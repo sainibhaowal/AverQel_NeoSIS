@@ -67,7 +67,11 @@ function transition(property = 'transform') {
 async function mountSeat(viewportWidth = 1440, canShow = true, entryCount = 0, opener = false, keepMounted = false) {
   const runtime = await SlotTestRuntime.create()
   runtimes.push(runtime)
-  const frame = { openRightbar: vi.fn(), closeRightbar: vi.fn() }
+  const frame = {
+    openRightbar: vi.fn(),
+    closeRightbar: vi.fn(),
+    panelInfo: runtime.panelInfo,
+  }
   const pin = vi.fn<(address: string, signal: AbortSignal) => void>()
   runtime.ctx.provide('layout', frame as never)
   runtime.ctx.provide('resources', { pin } as never)
@@ -303,7 +307,7 @@ describe('RightbarSeat presentation', () => {
     }
   })
 
-  it('pulses the app-region nudge at each open and close edge on macOS only', async () => {
+  it('does not add an app-region nudge during open and close edges', async () => {
     const h = await mountSeat()
     const panel = element(h.view.container, '[data-sidebar-right-panel]')
     const marks = vi.spyOn(panel, 'setAttribute')
@@ -315,20 +319,10 @@ describe('RightbarSeat presentation', () => {
     document.documentElement.dataset.platform = 'darwin'
     try {
       act(() => { h.controller.toggleExpanded() })
-      expect(nudges()).toBe(1)
-      expect(panel.hasAttribute('data-sidebar-right-region-nudge')).toBe(true)
-      // A frame later the mark lifts (the pulse itself is the recollection
-      // trigger), and the settle pulse re-marks after the 0.3s slide.
-      await act(async () => { await new Promise(resolve => setTimeout(resolve, 450)) })
-      expect(nudges()).toBe(2)
-      expect(panel.hasAttribute('data-sidebar-right-region-nudge')).toBe(false)
-      // The close edge pulses again so the hidden panel's stale rects drop.
       act(() => { h.controller.toggleExpanded() })
-      expect(nudges()).toBe(3)
-      expect(panel.hasAttribute('data-sidebar-right-region-nudge')).toBe(true)
-    } finally {
-      delete document.documentElement.dataset.platform
-    }
+      expect(nudges()).toBe(0)
+      expect(panel.hasAttribute('data-sidebar-right-region-nudge')).toBe(false)
+    } finally { delete document.documentElement.dataset.platform }
   })
 
   it('fills the viewport without replacing the content tree or releasing the wide track', async () => {
@@ -656,7 +650,8 @@ describe('slot-owned useTabInfo', () => {
     const stored = h.instance.getSnapshot()
     act(() => { expect(h.controller.split()).toBeUndefined() })
     expect(h.instance.getSnapshot()).toBe(stored)
-    expect(splitButtons()).toHaveLength(0)
+    expect(splitButtons()).toHaveLength(2)
+    expect([...splitButtons()].every(button => button.disabled)).toBe(true)
     const right = dockPaneIds(h.layout())[1]!
     h.open('right.txt', { paneId: right })
     const guide = getPane(h.layout(), right).tabs.find(id => h.layout().tabs[id]?.kind === 'guide')!

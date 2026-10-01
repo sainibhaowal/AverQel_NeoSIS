@@ -127,6 +127,7 @@ export const SERVICE_PAGE: Record<string, string> = {
   jobs: 'jobs.md',
   jobController: 'jobs.md',
   sessionTelemetry: 'session-telemetry.md',
+  otel: 'session-telemetry.md',
   agentTeams: 'agent-team.md',
   tokenMeter: 'token-meter.md',
   toolResultPruner: 'compaction.md',
@@ -205,7 +206,6 @@ export const SERVICE_WALK_EXEMPTIONS: Record<string, string> = {
   shortcuts: 'client-side keyboard shortcut registry — packages/client/shortcuts/README.md owns the API',
   pluginNavigation: 'client-side plugin navigation registry — packages/client/ui-plugin-manager/README.md owns the API',
   userQuestionPanels: 'client-side timed question presentation slots — packages/client/ui-tool/README.md owns the API',
-  otel: 'client-side telemetry exporter facade — packages/telemetry/otel/README.md owns the API',
 }
 
 /**
@@ -812,6 +812,10 @@ export const FOUNDATION_TYPE_NAMES: ReadonlySet<string> = new Set([
 
 /** Project types deliberately documented outside the subsystems catalog. */
 export const TYPE_LINK_EXEMPTIONS: Readonly<Record<string, string>> = {
+  EventLogOptions: 'OTel event reporting options are owned by packages/telemetry/otel/src/event-log.ts',
+  EventLogReporter: 'OTel event reporting lifecycle is owned by packages/telemetry/otel/src/event-log.ts',
+  SessionLogOptions: 'OTel Session-log reporting options are owned by packages/telemetry/otel/src/session-log.ts',
+  SessionLogReporter: 'OTel Session-log reporting lifecycle is owned by packages/telemetry/otel/src/session-log.ts',
   ConnectionFetchHandler: 'shared Fetch dispatch is owned by packages/client/connection/src/rpc.ts',
   ConnectionRequestRejection: 'transport rejection status is owned by packages/client/connection/src/rpc.ts',
   ConnectionTrustRequest: 'transport authentication input is owned by packages/client/connection/src/rpc.ts',

@@ -55,7 +55,7 @@ function harness() {
   const pin = vi.fn<(address: string, signal: AbortSignal) => void>()
   const { controller, adopt, measure, show } = createSidebarRightController(tabs, pin, HOST)
   const instance = createSidebarRightStore(() => ({ kind: 'guide', title: 'seed' })).create(SESSION)
-  adopt(SESSION, instance)
+  const releaseAdoption = adopt(SESSION, instance)
   const layout = (): LayoutState => {
     const surface = instance.getSnapshot().bySession[SESSION]
     if (surface === undefined) throw new Error('expected a surface')
@@ -85,7 +85,7 @@ function harness() {
   const entries = (): number => instance.getSnapshot().bySession[SESSION]?.history.entries.length ?? 0
   // A surface starts empty; expanding seeds the default guide ('seed').
   const expand = (): void => { instance.actions.setExpanded(SESSION, true) }
-  return { controller, adopt, tabs, instance, pin, publish, titles, tabOf, layout, entries, room, expand }
+  return { controller, adopt, tabs, instance, pin, publish, titles, tabOf, layout, entries, room, expand, releaseAdoption }
 }
 
 describe('SidebarRightController — opening', () => {
@@ -567,19 +567,20 @@ describe('SidebarRightController — a tab\'s own actions', () => {
     expect(layout().tabs[guide.id]).toBeUndefined()
     expect(guideOccurrence.signal.aborted).toBe(true)
     expect(other.getSnapshot().bySession[OTHER]).toBe(otherSurface)
-    expect(controller.active()?.kind).toBe('guide')
+    expect(controller.active()?.kind).toBe('text')
     releaseOther()
     releaseOwn()
   })
 
   it('do nothing for a session whose store is not adopted, and again once its adoption is released', () => {
-    const { controller, adopt, instance, publish, layout, titles } = harness()
+    const { controller, adopt, instance, publish, layout, titles, releaseAdoption } = harness()
     publish()
     controller.openResource(A_TXT)
     publish()
     const own = Object.values(layout().tabs).find(tab => tab.title === 'a.txt')
     if (own === undefined) throw new Error('expected the opened tab')
     const { tabActions } = controller.tabDomain.occurrence(SESSION, own)
+    releaseAdoption()
     const before = instance.getSnapshot().bySession
     tabActions.openResource(B_TXT)
     tabActions.openTab('guide')

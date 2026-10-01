@@ -193,7 +193,7 @@ describe('WorkspaceBrowser', () => {
       .map(row => row.querySelector('[class*="title"]')?.textContent)
     const pick = (name: string) => {
       fireEvent.click(screen.getByRole('button', { name: '视图选项' }))
-      fireEvent.click(screen.getByRole('menuitem', { name }))
+      fireEvent.click(screen.getByRole('menuitem', { name: name === '显示已归档' ? '全部对话（显示已归档）' : name }))
     }
     expect(names()).toEqual(['a', 'b', 'c'])
     pick('手动排序')
@@ -413,7 +413,7 @@ describe('WorkspaceBrowser', () => {
       expect(screen.getByText('alive')).toBeTruthy()
       expect(screen.queryByText('gone')).toBeNull()
       fireEvent.click(screen.getByRole('button', { name: '视图选项' }))
-      fireEvent.click(screen.getByRole('menuitem', { name: '显示已归档' }))
+      fireEvent.click(screen.getByRole('menuitem', { name: '全部对话（显示已归档）' }))
       expect(b.store.getSnapshot().archivedFilter).toBe('show')
       expect(screen.getByText('gone')).toBeTruthy()
     } finally {
@@ -438,7 +438,7 @@ describe('WorkspaceBrowser', () => {
     expect(screen.getByText('分组方式')).toBeTruthy() // the menu heading label
     expect(screen.getAllByRole('separator')).toHaveLength(2)
     expect(screen.getAllByRole('menuitem').map(item => item.textContent)).toEqual([
-      '按工作区', '按工作区树', '单列表', '手动排序', '最近更新', '显示已归档', '仅显示已归档',
+      '按工作区', '按工作区树', '单列表', '手动排序', '最近更新', '全部对话（显示已归档）', '仅显示已归档',
     ])
     expect(screen.getByRole('menuitem', { name: '按工作区' }).querySelector('svg')).toBeTruthy()
     expect(screen.getByRole('menuitem', { name: '手动排序' }).querySelector('svg')).toBeTruthy()
@@ -474,7 +474,7 @@ describe('WorkspaceBrowser', () => {
     expect(screen.queryByText('stored')).toBeNull()
 
     fireEvent.click(screen.getByRole('button', { name: '视图选项' }))
-    fireEvent.click(screen.getByRole('menuitem', { name: '显示已归档' }))
+    fireEvent.click(screen.getByRole('menuitem', { name: '全部对话（显示已归档）' }))
     expect(screen.getByText('kept')).toBeTruthy()
     expect(screen.getByText('stored')).toBeTruthy()
   })
@@ -487,7 +487,7 @@ describe('WorkspaceBrowser', () => {
     fireEvent.click(screen.getByText('alpha'))
     const pick = (name: string) => {
       fireEvent.click(screen.getByRole('button', { name: '视图选项' }))
-      fireEvent.click(screen.getByRole('menuitem', { name }))
+      fireEvent.click(screen.getByRole('menuitem', { name: name === '显示已归档' ? '全部对话（显示已归档）' : name }))
     }
 
     // 仅显示已归档 hides the live rows and shows the archived one.
@@ -524,7 +524,7 @@ describe('WorkspaceBrowser', () => {
     const b = mount(seats)
     fireEvent.click(screen.getByText('alpha'))
     fireEvent.click(screen.getByRole('button', { name: '视图选项' }))
-    fireEvent.click(screen.getByRole('menuitem', { name: '显示已归档' }))
+    fireEvent.click(screen.getByRole('menuitem', { name: '全部对话（显示已归档）' }))
     expect(b.store.getSnapshot().archivedFilter).toBe('show')
 
     cleanup()
@@ -1131,7 +1131,7 @@ describe('WorkspaceBrowser', () => {
       unarchiveSession,
     })
     fireEvent.click(screen.getByRole('button', { name: '视图选项' }))
-    fireEvent.click(screen.getByRole('menuitem', { name: '显示已归档' }))
+    fireEvent.click(screen.getByRole('menuitem', { name: '全部对话（显示已归档）' }))
     fireEvent.click(screen.getByRole('button', { name: '搜索会话' }))
     fireEvent.change(screen.getByPlaceholderText('搜索会话名称'), { target: { value: 'e' } })
     await act(async () => { await Promise.resolve() })
