@@ -450,53 +450,35 @@ describe('WorkspaceController follow', () => {
 describe('first-use Remote', () => {
   it('reuses an initialized Workspace without looking up system Documents', async () => {
     const { controller, ctx, root } = await harness({ systemDocuments: true })
-    const workspace = await ctx.workspaceRegistry.initializeDefault(async () => ({ path: root, title: 'Existing default' }))
+    const workspace = await ctx.workspaceRegistry.initializeDefault(async () => root)
     const signal = AbortSignal.abort()
-    await expect(controller.initializeDefault({ directoryName: 'Default workspace', title: 'Default workspace' }, signal))
-      .resolves.toMatchObject({ workspace: { workspaceId: workspace!.id, path: root, title: 'Existing default' } })
+    await expect(controller.initializeDefault(signal))
+      .resolves.toMatchObject({ workspace: { workspaceId: workspace!.id, path: root } })
   })
 
-  it.each(['', ' ', '.', '..', '../outside', 'nested/name', 'nested\\name', 'C:outside', 'name\0', '.. ', 'tail.'])(
-    'rejects invalid directory name %j before invoking the registry', async (directoryName) => {
-      const { controller, ctx } = await harness()
-      const initialize = vi.spyOn(ctx.workspaceRegistry, 'initializeDefault').mockResolvedValue(undefined)
-      await expect(controller.initializeDefault({ directoryName, title: 'Default workspace' }, new AbortController().signal))
-        .rejects.toMatchObject({ code: 'gateway/bad-request' })
-      expect(initialize).not.toHaveBeenCalled()
-    },
-  )
-
-  it('rejects a blank initial title before invoking the registry', async () => {
-    const { controller, ctx } = await harness()
-    const initialize = vi.spyOn(ctx.workspaceRegistry, 'initializeDefault').mockResolvedValue(undefined)
-    await expect(controller.initializeDefault({ directoryName: 'default-workspace', title: ' ' }, new AbortController().signal))
-      .rejects.toMatchObject({ code: 'gateway/bad-request' })
-    expect(initialize).not.toHaveBeenCalled()
-  })
-
-  it('uses the requested display title independently of the directory name', async () => {
+  it('uses the configured default directory', async () => {
     const { controller, root } = await harness()
-    const result = await controller.initializeDefault({ directoryName: 'default-workspace', title: 'Default workspace' }, new AbortController().signal)
-    expect(result?.workspace).toMatchObject({ path: join(root, 'averqel-neosis', 'default-workspace'), title: 'Default workspace' })
+    const result = await controller.initializeDefault(new AbortController().signal)
+    expect(result?.workspace).toMatchObject({ path: join(root, 'averqel-neosis', 'default-workspace'), title: 'default-workspace' })
   })
 
   it('returns a durable Workspace without allocating a Session', async () => {
     const { controller, ctx, root } = await harness()
     const signal = new AbortController().signal
-    const result = await controller.initializeDefault({ directoryName: 'Default workspace', title: 'Default workspace' }, signal)
-    expect(result!.workspace.path).toBe(join(root, 'averqel-neosis', 'Default workspace'))
+    const result = await controller.initializeDefault(signal)
+    expect(result!.workspace.path).toBe(join(root, 'averqel-neosis', 'default-workspace'))
     expect(existsSync(result!.workspace.path)).toBe(true)
     expect(ctx.sessions.list()).toEqual([])
-    expect(await controller.initializeDefault({ directoryName: '默认工作区', title: '默认工作区' }, signal)).toEqual(result)
+    expect(await controller.initializeDefault(signal)).toEqual(result)
   })
 
   it('skips ineligible first use and propagates preparation failures', async () => {
     const { controller, ctx, root } = await harness()
     await ctx.workspaceRegistry.create(root)
-    await expect(controller.initializeDefault({ directoryName: 'Default workspace', title: 'Default workspace' }, new AbortController().signal))
+    await expect(controller.initializeDefault(new AbortController().signal))
       .resolves.toBeUndefined()
     vi.spyOn(ctx.workspaceRegistry, 'initializeDefault').mockRejectedValueOnce(new Error('permission denied'))
-    await expect(controller.initializeDefault({ directoryName: 'Default workspace', title: 'Default workspace' }, new AbortController().signal))
+    await expect(controller.initializeDefault(new AbortController().signal))
       .rejects.toThrow('permission denied')
   })
 })

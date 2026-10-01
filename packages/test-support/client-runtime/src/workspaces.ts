@@ -1,7 +1,7 @@
 /** Test-owned workspaces face: the renderer standard-kit observable plus recorded actions. */
 import { createSnapshotStore } from '@averqel/neosis-client-store'
 import type {
-  IWorkspaces, WorkspaceId, WorkspaceInitializeDefaultRequest, WorkspaceSnapshot, WorkspaceView,
+  IWorkspaces, WorkspaceId, WorkspaceSnapshot, WorkspaceView,
 } from '@averqel/neosis-api-workspace-controller/client'
 import type { SessionId } from '@averqel/neosis-session/types'
 import type { SnapshotStore } from '@averqel/neosis-client-store'
@@ -82,14 +82,13 @@ export class TestWorkspaces implements IWorkspaces {
 
   /**
    * Initialize the default Workspace through a test stub; defaults to an ineligible first use.
-   * @param request - initial directory name and title.
    * @param signal - caller lifetime.
    * @returns the stubbed Workspace, or undefined when initialization is ineligible.
    */
-  async initializeDefault(request: WorkspaceInitializeDefaultRequest, signal?: AbortSignal): Promise<WorkspaceView | undefined> {
-    this.calls.push({ method: 'initializeDefault', args: [request, signal] })
+  async initializeDefault(signal?: AbortSignal): Promise<WorkspaceView | undefined> {
+    this.calls.push({ method: 'initializeDefault', args: [signal] })
     const stub = this.stubs.get('initializeDefault')
-    return await (stub?.(request, signal) as Promise<WorkspaceView | undefined> | undefined)
+    return await (stub?.(signal) as Promise<WorkspaceView | undefined> | undefined)
   }
 
   /**
