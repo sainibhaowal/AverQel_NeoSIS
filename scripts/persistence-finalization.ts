@@ -119,9 +119,8 @@ export function loadPersistenceFinalization(root: string, history: Pick<Persiste
   const directory = join(root, DIRECTORY)
   const files = existsSync(directory) ? readdirSync(directory).filter(file => file.endsWith('.json')).sort() : []
   const version = status(root, 'docs/session-format-status.md')
-  const translated = status(root, 'docs/session-format-status.zh.md')
-  if (version === undefined && translated === undefined && files.length === 0) return undefined
-  if (version === undefined || translated !== version) throw new Error('persistence finalization status is missing or differs between languages')
+  if (version === undefined && files.length === 0) return undefined
+  if (version === undefined) throw new Error('persistence finalization status is missing')
   if (!files.includes(`v${version}.json`)) throw new Error(`missing persistence finalization checkpoint v${version}.json`)
   const entries = new Map(history.entries.map(entry => [entry.record.id, entry]))
   const acceptedRecords = new Set<string>()

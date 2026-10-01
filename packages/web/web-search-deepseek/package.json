@@ -29,6 +29,7 @@
   "peerDependencies": {
     "@averqel/neosis-agent": "workspace:*",
     "@averqel/neosis-credentials": "workspace:*",
+    "@averqel/neosis-deepseek-account": "workspace:*",
     "@averqel/neosis-launch-environment": "workspace:*",
     "@averqel/neosis-session": "workspace:*",
     "@averqel/neosis-web": "workspace:*",
@@ -40,6 +41,7 @@
   "devDependencies": {
     "@averqel/neosis-agent": "workspace:*",
     "@averqel/neosis-credentials": "workspace:*",
+    "@averqel/neosis-deepseek-account": "workspace:*",
     "@averqel/neosis-credentials-local": "workspace:*",
     "@averqel/neosis-launch-environment": "workspace:*",
     "@averqel/neosis-session": "workspace:*",

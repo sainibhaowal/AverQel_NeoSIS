@@ -29,11 +29,13 @@
     "lib/index.js",
     "lib/runner.js",
     "lib/types-*.js",
+    "assets",
     "lib/types/**/*.d.ts"
   ],
   "license": "Apache-2.0",
   "peerDependencies": {
     "@averqel/cordis": "workspace:~",
+    "@averqel/neosis-skill": "workspace:*",
     "@averqel/neosis-subprocess": "workspace:*"
   },
   "dependencies": {
@@ -44,6 +46,7 @@
   "devDependencies": {
     "@averqel/neosis-pwsh-local": "workspace:*",
     "@averqel/neosis-sandbox-local": "workspace:*",
+    "@averqel/neosis-skill": "workspace:*",
     "@averqel/cordis": "workspace:~",
     "@averqel/neosis-subprocess": "workspace:*",
     "@averqel/neosis-subprocess-local": "workspace:*"

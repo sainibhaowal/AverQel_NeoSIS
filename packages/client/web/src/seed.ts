@@ -17,6 +17,12 @@ import * as UiPrimitives from '@averqel/neosis-client-ui-primitives'
 import * as UiDockkit from '@averqel/neosis-client-ui-dockkit'
 import type { PlatformModule } from './platform.ts'
 
+// Dynamic client bundles resolve these namespaces through the module table.
+// Materializing the namespace with object spread keeps Vite from pruning an
+// export that the statically linked shell does not call directly.
+const UiSlotsModule = { ...UiSlots }
+const UiPrimitivesModule = { ...UiPrimitives }
+
 /**
  * Build the static table handed to the module loader at boot.
  * @returns module specifier → exported entity (one entry per platform word).
@@ -32,8 +38,8 @@ export function getStaticModules(): Record<string, unknown> {
     'react-dom/client': ReactDomClient,
     '@averqel/cordis': Cordis,
     '@averqel/neosis-client-store': ClientStore,
-    '@averqel/neosis-client-ui-slots': UiSlots,
-    '@averqel/neosis-client-ui-primitives': UiPrimitives,
+    '@averqel/neosis-client-ui-slots': UiSlotsModule,
+    '@averqel/neosis-client-ui-primitives': UiPrimitivesModule,
     '@averqel/neosis-client-ui-dockkit': UiDockkit,
   } satisfies Record<PlatformModule, unknown>
 }

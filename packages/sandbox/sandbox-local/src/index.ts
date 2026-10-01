@@ -38,7 +38,7 @@ import z from '@averqel/schemastery'
 import { SandboxProvider, SandboxUnavailableError, canonicalPath } from '@averqel/neosis-sandbox'
 import type { ConfinedArgv, ConfinedSandboxMode, RunnerFailureRule, SandboxEnforcement, SandboxPolicy } from '@averqel/neosis-sandbox'
 import type { SessionId } from '@averqel/neosis-session'
-import { AclWriteGrant, assertTempRootOutsideWorkspace, tempWriteSid, workspaceWriteSid } from '@averqel/neosis-sandbox-windows-acl'
+import { AclWriteGrant, assertTempRootOutsideWorkspace, registerAclDiagnosisSkill, tempWriteSid, workspaceWriteSid } from '@averqel/neosis-sandbox-windows-acl'
 import { assertNever } from '@averqel/neosis-util-values'
 import { bwrapProfileArgs, landlockProfileArgs, seatbeltProfileArgs } from './profiles.ts'
 
@@ -298,6 +298,12 @@ export class LocalSandboxProvider extends SandboxProvider {
     this.configuredRunnerFailureSignatures = runnerFailureSignatures
     this.probeTimeoutMs = config.probeTimeoutMs as number
     assertPositiveFinite('probeTimeoutMs', this.probeTimeoutMs)
+    // The diagnosis skill is only relevant to the built-in Windows ACL backend.
+    // The skill registry is optional and may be mounted after this provider.
+    /* v8 ignore next 3 -- Windows-only registration; the Linux coverage lane cannot take this branch */
+    if (process.platform === 'win32' && this.runnerCommand === undefined) {
+      ctx.inject(['skills'], (skillsCtx) => { registerAclDiagnosisSkill(skillsCtx) })
+    }
     // The temp grants are revoked with the provider: a clean server
     // shutdown leaves no temp ACEs behind (workspace ACEs stand by design —
     // the reuse cache; an unclean shutdown leaves them for the next

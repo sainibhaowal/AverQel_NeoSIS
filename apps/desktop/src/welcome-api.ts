@@ -1,11 +1,14 @@
 /** Operations available to the isolated native welcome renderer. */
 
 import type { AccountView, SignInAttemptId } from '@averqel/neosis-deepseek-account/types'
+import type { ProductEventMap } from '@averqel/neosis-client-product-analytics/types'
 import type { DesktopLocale } from './locale.ts'
 
 /** Private native welcome channels, installed only while its window exists. */
 export const WELCOME_IPC = {
   saveApiKey: 'neosis-welcome:save-api-key',
+  analytics: 'neosis-welcome:analytics',
+  analyticsEnabled: 'neosis-welcome:analytics-enabled',
   skip: 'neosis-welcome:skip',
   start: 'neosis-welcome:start',
   cancel: 'neosis-welcome:cancel',
@@ -16,8 +19,14 @@ export const WELCOME_IPC = {
 /** Credential writes return a safe outcome without exposing Host diagnostics. */
 export type WelcomeSaveResult = { readonly ok: true } | { readonly ok: false }
 
+type WelcomeEventName = 'auth_page_view' | 'auth_page_click' | 'api_key_save_click'
+
 /** Host-owned operations used by the welcome window. */
 export interface WelcomeOperations {
+  /** @param eventName - approved welcome event. @param attributes - non-sensitive event fields. */
+  analytics?<K extends WelcomeEventName>(eventName: K, attributes: ProductEventMap[K]): Promise<void>
+  /** @returns the Host's current analytics collection policy. */
+  analyticsEnabled(): Promise<boolean>
   /** @returns account state after starting a login attempt. */
   startSignIn(): Promise<AccountView>
   /** @param id - attempt to cancel. @returns the settled state. */

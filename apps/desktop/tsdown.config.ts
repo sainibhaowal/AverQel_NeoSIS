@@ -5,7 +5,7 @@ import { readFile } from 'node:fs/promises'
 
 export default defineConfig([
   {
-    entry: ['lib/types/main.js'],
+    entry: ['lib/types/main.js', 'lib/types/command-manager-entry.js'],
     onSuccess: async () => {
       await build({
         configFile: false,

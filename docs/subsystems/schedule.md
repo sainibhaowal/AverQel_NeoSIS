@@ -6,15 +6,17 @@ Schedule owns durable reminders that return to the original live Session as ordi
 
 ## Durable records
 
-`ScheduleId` is a [branded id](core.md#branded-ids), unique and never reused within one Session. Version 1 supports a positive safe-integer `after_seconds` delay, an explicit absolute `at` target, or a safe-integer `every_seconds` interval of at least five minutes. Creation canonicalizes every first target into a four-digit-year RFC 3339 UTC `scheduledAt`; an `after` record retains its submitted delay, an `at` record stores only the resulting instant, and an `every` record retains its fixed interval and next target.
+`ScheduleId` is a [branded id](core.md#branded-ids), unique and never reused within one Session. Version 1 supports a positive safe-integer `after_seconds` delay, an explicit absolute `at` target, or a safe-integer `every_seconds` interval of at least one minute. Creation canonicalizes every first target into a four-digit-year RFC 3339 UTC `scheduledAt`; an `after` record retains its submitted delay, an `at` record stores only the resulting instant, and an `every` record retains its fixed interval and next target.
 
 ```ts type-equiv
 /** Durable one-shot reminder created from a positive delay. */
 interface AfterScheduleRecord {
-  /** Session-local stable identity. */
+  /** Globally unique task identity. */
   readonly id: ScheduleId
   /** Rule discriminator for a delayed one-shot reminder. */
   readonly kind: 'after'
+  /** Required stored task name; already trimmed, non-empty, and at most 120 characters. */
+  readonly title: string
   /** Trimmed reminder content supplied at creation. */
   readonly prompt: string
   /** Positive safe-integer delay accepted at creation. */
@@ -27,10 +29,12 @@ interface AfterScheduleRecord {
 ```ts type-equiv
 /** Durable one-shot reminder created from an absolute instant. */
 interface AtScheduleRecord {
-  /** Session-local stable identity. */
+  /** Globally unique task identity. */
   readonly id: ScheduleId
   /** Rule discriminator for an absolute one-shot reminder. */
   readonly kind: 'at'
+  /** Required stored task name; already trimmed, non-empty, and at most 120 characters. */
+  readonly title: string
   /** Trimmed reminder content supplied at creation. */
   readonly prompt: string
   /** Four-digit-year RFC 3339 UTC target. */
@@ -39,29 +43,31 @@ interface AtScheduleRecord {
 ```
 
 ```ts type-equiv
-/** Durable fixed-rate reminder whose next target remains creation-anchor-aligned. */
+/** Durable fixed-rate reminder aligned to creation or its most recent interval edit. */
 interface EveryScheduleRecord {
-  /** Session-local stable identity. */
+  /** Globally unique task identity. */
   readonly id: ScheduleId
   /** Rule discriminator for a fixed-rate recurring reminder. */
   readonly kind: 'every'
+  /** Required stored task name; already trimmed, non-empty, and at most 120 characters. */
+  readonly title: string
   /** Trimmed reminder content supplied at creation. */
   readonly prompt: string
-  /** Fixed safe-integer interval, never below five minutes. */
+  /** Fixed safe-integer interval, never below one minute. */
   readonly everySeconds: number
-  /** Earliest anchor-aligned occurrence not yet dispatched. */
+  /** Next anchor-aligned occurrence while active, or final occurrence when inactive. */
   readonly scheduledAt: string
 }
 ```
 
 ```ts type-equiv
-/** One-shot record variants that terminate on an id-only dispatch. */
+/** One-shot task variants. */
 type OneShotScheduleRecord = AfterScheduleRecord | AtScheduleRecord
 ```
 
 ```ts type-equiv
-/** The v1 durable reminder record union. */
-type ScheduleRecord = OneShotScheduleRecord | EveryScheduleRecord
+/** Reminder rule and target, stored with its original Session binding. */
+type ScheduleRecord = OneShotScheduleRecord | RecurringScheduleRecord
 ```
 
 ## Absolute-time input
@@ -69,7 +75,7 @@ type ScheduleRecord = OneShotScheduleRecord | EveryScheduleRecord
 The `at` selector is either a strict offset-bearing RFC 3339 string or an exact local-calendar object. The local form keeps its interpretation explicit at the tool boundary:
 
 ```ts type-equiv
-/** Structured local-calendar input accepted by `schedule_create`. */
+/** Structured local-calendar input accepted by creation and timing edits. */
 interface LocalAtInput {
   /** Four-digit ISO calendar date. */
   readonly date: string
@@ -81,7 +87,7 @@ interface LocalAtInput {
 ```
 
 ```ts type-equiv
-/** Absolute selector accepted by `schedule_create`. */
+/** Absolute selector accepted by creation and timing edits. */
 type AtInput = string | LocalAtInput
 ```
 
@@ -91,7 +97,7 @@ Schedule rejects invalid offsets and zones, offset-free strings, non-future targ
 
 ## Fixed-rate input and catch-up
 
-`every_seconds` is a per-record interval of at least 300 seconds, anchored to creation time. It is fixed-rate recurrence only: the protocol has no calendar or Cron expression, recurrence time zone, shared cooldown, or cross-record admission gate.
+`every_seconds` is a per-record interval of at least 60 seconds, anchored to creation time. It is fixed-rate recurrence only: the protocol has no calendar or Cron expression, recurrence time zone, shared cooldown, or cross-record admission gate.
 
 When a Session was cold or busy across several targets, one Every record contributes only its latest due occurrence. The dispatch advances it directly to the first creation-anchor-aligned target after the dispatch decision time, without enumerating, persisting, or replaying missed intervals. If that next target cannot fit in a four-digit UTC year, the final dispatch terminates the record.
 
@@ -106,7 +112,7 @@ The version-1 `schedule/change` Session event is the only durable Schedule autho
 interface ScheduleCreateChange {
   readonly version: 1
   readonly operation: 'create'
-  readonly schedule: ScheduleRecord
+  readonly schedule: LegacyScheduleRecord
 }
 ```
 
@@ -153,7 +159,7 @@ The strict decoder and fold reject unknown versions, extra fields, reused ids, m
 
 ## Active views and management
 
-Tool values combine the durable record with delivery state derived from the current wall clock. `session-local` means the original Session must be live: no external notification channel or cold-session scheduler exists.
+Tool values combine the durable record with delivery state derived from the current wall clock. `host` means the Host can resume the original Session when needed.
 
 ```ts type-equiv
 /** Current delivery timing derived from the durable record and wall clock. */
@@ -161,8 +167,8 @@ type ScheduleState = 'scheduled' | 'overdue'
 ```
 
 ```ts type-equiv
-/** Fixed v1 delivery boundary: the original session must be live. */
-type ScheduleDeliveryMode = 'session-local'
+/** Host-driven delivery resumes the original Session when needed. */
+type ScheduleDeliveryMode = 'host'
 ```
 
 ```ts type-equiv
@@ -190,3 +196,108 @@ The process-local owner derives its earliest timer from the durable fold and rer
 Due work waits for the Agent to become fully idle and claims the maintenance phase before it refolds state, samples the decision, queues one `followup()`, and appends the corresponding dispatch changes. It never calls `steer()` and never interrupts a current turn.
 
 The admitted one-shot or fixed-rate batch starts one normal later turn and appears only through the ordinary conversation transcript; Schedule has no independent durable Web receipt. The read-only active catalog above never represents delivery success. If framing or synchronous queue admission fails, no dispatch is recorded and the reminder stays active. The narrow crash interval after admission but before durable dispatch can repeat reminder content after recovery, so the boundary is best-effort at-least-once rather than exactly-once delivery.
+
+<!-- BEGIN GENERATED cordis-surface (gen-cordis-catalog.ts) — do not edit between markers -->
+
+<a id="cordis-surface"></a>
+
+## Cordis API
+
+Generated from source by `scripts/gen-cordis-catalog.ts` (verified fresh by `pnpm run verify-cordis-catalog` in doc-sync; regenerate with `pnpm run gen-cordis-catalog`) — the language sides differ only in locale-specific paired document paths. Signature blocks use a `ts cordis-catalog` fence and keep the original source JSDoc; dispatch modes are defined in the [primer](../cordis-primer.md#dispatch-modes), and the framework-inherited `ctx` API lives in [cordis-api/inherited.md](../cordis-api/inherited.md).
+
+<a id="ctxschedule--scheduleservice"></a>
+
+### `ctx.schedule` — `ScheduleService`
+
+Shared management service; reads, deletion, and timing edits never activate a Session.
+
+`sessionPersistence` is a load-order requirement rather than a directly called service: a delivery commits only when `ctx.sessions.flush()` reports that a `session/flush` listener participated, and the persistence backend providing this service is the plugin that registers that listener.
+
+```ts cordis-catalog
+/**
+ * Create a reminder bound to the caller-selected Session without activating it.
+ *
+ * The request must supply a title; a missing, blank-after-trim, or over-long
+ * title rejects with `invalid_prompt` instead of deriving one from the prompt.
+ * The record is built from the clock reading taken before the request joins the
+ * serialized queue, so a create that waits behind a longer operation keeps its
+ * request-time anchor and may already be due when the queue reaches it.
+ * @param sessionId - Original Session receiving the reminder.
+ * @param request - Validated tool selector, required title, and reminder content.
+ * @param signal - Optional cancellation checked before persistence begins, including after FIFO waits.
+ * @returns The durably stored schedule. Cancellation does not roll back an in-flight write.
+ */
+async create(sessionId: SessionId, request: ScheduleCreateRequest, signal?: AbortSignal): Promise<ScheduleRecord>
+
+/**
+ * Read the selected Session's active tasks without resuming its Agent.
+ * @param request - Session whose task list is requested.
+ * @returns Persisted reminders in storage order.
+ */
+@Remote('list') async list(request: ScheduleListRequest): Promise<ScheduleRecord[]>
+
+/**
+ * Read all active and inactive Host reminders with their original Session bindings.
+ * A deleted reminder has no row, so it is absent here.
+ * Does not activate Sessions or read Session history.
+ * @returns Reminders ordered by scheduledAt ascending, then lexicographically by id.
+ */
+@Remote('catalog') async catalog(): Promise<ScheduleCatalogEntry[]>
+
+/**
+ * Read saved inbox deliveries without activating or reading the original Session.
+ * The task's own row supplies its binding, so its records stay readable through this lookup.
+ * @param request - Session binding, task identity, explicit limit, and optional exclusive message cursor.
+ * @returns Newest-first deliveries in append order, or a task/cursor lookup failure.
+ * @throws ScheduleInputError when limit is not a safe integer from 1 through 100.
+ */
+@Remote('history') async history(request: ScheduleDeliveryHistoryRequest): Promise<ScheduleDeliveryHistoryResult>
+
+/**
+ * Delete one task belonging to the selected Session, leaving queued messages intact.
+ *
+ * The row is removed: the task no longer schedules, leaves `list` and `catalog`, and its
+ * saved delivery records go with it.
+ * @param request - Session and exact task identity.
+ * @param signal - Optional cancellation checked before persistence begins, including after FIFO waits.
+ * @returns Whether that Session owned a deleted task. Cancellation does not roll back an in-flight write.
+ */
+@Remote('delete') async delete(request: ScheduleDeleteRequest, signal?: AbortSignal): Promise<ScheduleDeleteResult>
+
+/**
+ * Update the name, instruction, and timing of an active task within the original Session
+ * binding without activating the Session or changing saved deliveries.
+ *
+ * Each supplied field replaces its stored value; an omitted field keeps it. A name or
+ * instruction change alone does not reset the committed target.
+ * @param request - Task binding, complete observed record, and any combination of timing, name, and instruction.
+ * @param signal - Cancellation checked after domain readiness and FIFO waits, before persistence begins.
+ * @returns The committed record, unchanged record for a no-op, or a non-mutating input/lookup/conflict result.
+ * Storage and lifecycle failures reject; cancellation after a write starts does not roll it back.
+ */
+@Remote('update') async update(request: ScheduleUpdateRequest, signal?: AbortSignal): Promise<ScheduleUpdateResult>
+```
+
+Types: [SessionId](core.md)
+
+Source: [`packages/schedule/schedule/src/index.ts`](../../packages/schedule/schedule/src/index.ts)
+
+<a id="schedule-events"></a>
+
+### `schedule/*` events
+
+<a id="schedulechanged--emit"></a>
+
+#### `schedule/changed` — emit
+
+Durable task set changed; clients refetch global task and Session-active catalogs.
+
+```ts cordis-catalog
+/** Durable task set changed; clients refetch global task and Session-active catalogs.
+ * @mode emit
+ */
+'schedule/changed'(): void
+```
+
+Source: [`packages/schedule/schedule/src/types.ts`](../../packages/schedule/schedule/src/types.ts)
+<!-- END GENERATED cordis-surface -->

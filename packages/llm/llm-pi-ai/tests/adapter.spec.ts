@@ -389,8 +389,8 @@ describe('PiAiAdapter provider routing', () => {
   })
 
   it('uses the resolved catalog context window for usage-based overflow detection', async () => {
-    const model = getBuiltinModels('deepseek').find(candidate => candidate.id === 'deepseek-v4-flash')
-    if (model === undefined) throw new Error('deepseek-v4-flash missing from pi-ai test catalog')
+    const model = getBuiltinModels('deepseek').find(candidate => candidate.id === 'deepseek-flash')
+    if (model === undefined) throw new Error('deepseek-flash missing from pi-ai test catalog')
     const events = [
       '{"choices":[{"delta":{"role":"assistant","content":""},"index":0,"finish_reason":null}]}',
       JSON.stringify({

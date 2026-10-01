@@ -143,6 +143,8 @@ export const SERVICE_PAGE: Record<string, string> = {
   workspaceChanges: 'deliverables.md',
   terminalController: 'workspace.md',
   directoryPickerController: 'workspace.md',
+  productAnalytics: 'product-telemetry.md',
+  schedule: 'schedule.md',
 }
 
 /**
@@ -200,6 +202,10 @@ export const SERVICE_WALK_EXEMPTIONS: Record<string, string> = {
   sidebarRight: 'client-side right-Sidebar navigation face — packages/client/ui-sidebar-right/README.md owns the API',
   sidebarRightTabs: 'client-side right-Sidebar tab-type registry — packages/client/ui-sidebar-right/README.md owns the API',
   documentPreviews: 'client-side document renderer registry — docs/subsystems/sidebar-right.md owns the API',
+  shortcuts: 'client-side keyboard shortcut registry — packages/client/shortcuts/README.md owns the API',
+  pluginNavigation: 'client-side plugin navigation registry — packages/client/ui-plugin-manager/README.md owns the API',
+  userQuestionPanels: 'client-side timed question presentation slots — packages/client/ui-tool/README.md owns the API',
+  otel: 'client-side telemetry exporter facade — packages/telemetry/otel/README.md owns the API',
 }
 
 /**
@@ -224,6 +230,7 @@ export const EVENT_SCOPE_PAGE: Record<string, string> = {
   'cordis': 'extensions.md',
   'authorization': 'credentials.md',
   'credentials': 'credentials.md',
+  'deepseek-account': 'credentials.md',
   'domain': 'storage.md',
   'fs': 'filesystem.md',
   'goal': 'goal.md',
@@ -235,6 +242,7 @@ export const EVENT_SCOPE_PAGE: Record<string, string> = {
   'subagent': 'subagent.md',
   'system-prompt': 'system-prompt.md',
   'session-telemetry': 'session-telemetry.md',
+  schedule: 'schedule.md',
   'feedback': 'feedback.md',
   'tools': 'tools.md',
   'user-questions': 'user-questions.md',
@@ -910,6 +918,24 @@ export const TYPE_LINK_EXEMPTIONS: Readonly<Record<string, string>> = {
   TerminalFrame: 'Browser terminal stream frames are owned by packages/api/terminal-controller/README.md',
   TerminalRetentionFrame: 'Browser terminal window holds are owned by packages/api/terminal-controller/README.md',
   WebTerminalId: 'Browser terminal identity is owned by packages/api/terminal-controller/README.md',
+  ProductEvent: 'product analytics event payload is owned by packages/client/product-analytics/src/events.ts',
+  AccountClientMetadata: 'account request metadata is owned by packages/credentials/deepseek-account/src/types.ts',
+  AccountBonusBatch: 'account bonus projection is owned by packages/credentials/deepseek-account/src/types.ts',
+  AccountBonusOrderId: 'account bonus order identity is owned by packages/credentials/deepseek-account/src/types.ts',
+  AccountUserId: 'account user identity is owned by packages/credentials/deepseek-account/src/types.ts',
+  SpeechPreparationOptions: 'speech preparation options are owned by packages/experimental/speech-to-text/src/index.ts',
+  ScheduleCreateRequest: 'schedule creation input is owned by packages/schedule/schedule/src/types.ts',
+  ScheduleRecord: 'schedule record is owned by packages/schedule/schedule/src/types.ts',
+  ScheduleListRequest: 'schedule listing input is owned by packages/schedule/schedule/src/types.ts',
+  ScheduleCatalogEntry: 'schedule catalog entry is owned by packages/schedule/schedule/src/types.ts',
+  ScheduleDeliveryHistoryRequest: 'schedule delivery history input is owned by packages/schedule/schedule/src/types.ts',
+  ScheduleDeliveryHistoryResult: 'schedule delivery history result is owned by packages/schedule/schedule/src/types.ts',
+  ScheduleDeleteRequest: 'schedule deletion input is owned by packages/schedule/schedule/src/types.ts',
+  ScheduleDeleteResult: 'schedule deletion result is owned by packages/schedule/schedule/src/types.ts',
+  ScheduleUpdateRequest: 'schedule update input is owned by packages/schedule/schedule/src/types.ts',
+  ScheduleUpdateResult: 'schedule update result is owned by packages/schedule/schedule/src/types.ts',
+  ToolCallId: 'tool call identity is owned by packages/core/agent/src/types.ts',
+  TimedUserQuestionResult: 'timed user-question result is owned by packages/interaction/user-questions/src/types.ts',
 }
 
 /** Repository data policy consumed by the Cordis catalog projector. */

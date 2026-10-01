@@ -11,6 +11,8 @@ export type WireBlock = WireInput
   | { type: 'thinking'; thinking: string; signature?: string }
   | { type: 'tool_use'; id: string; name: string; input: Record<string, unknown> }
   | { type: 'tool_result'; tool_use_id: string; content: WireInput[]; is_error?: boolean }
+  | { type: 'tool_addition'; tool: { type: 'tool_reference'; name: string } }
+  | { type: 'tool_removal'; tool: { type: 'tool_reference'; name: string } }
 
 /** Conversation turn; capable routes retain later system updates in message history. */
 export type WireMessage = {
@@ -29,5 +31,5 @@ export type WireRequest = {
   output_config?: { effort: 'low' | 'high' | 'max' }
   temperature?: number
   stop_sequences?: string[]
-  tools?: { name: string; description: string; input_schema: Record<string, unknown> }[]
+  tools?: { name: string; description: string; input_schema: Record<string, unknown>; defer_loading?: true }[]
 }

@@ -49,6 +49,7 @@ export function Welcome({ api }: { api: WelcomeApi }) {
     mounted.current = true
     document.documentElement.lang = api.id
     document.title = m.welcomeTitle
+    void api.analytics?.('auth_page_view', {})
     const stop = api.onAccountState((state) => {
       revision.current++
       showAccount(state)
@@ -84,6 +85,7 @@ export function Welcome({ api }: { api: WelcomeApi }) {
     setBusy(true)
     setError('')
     try {
+      void api.analytics?.('api_key_save_click', {})
       const result = await api.saveApiKey(value)
       if (!mounted.current) return
       if (result.ok) setDraft('')
@@ -192,8 +194,8 @@ export function Welcome({ api }: { api: WelcomeApi }) {
           onClick={() => { void cancel() }}>{m.welcomeAuthCancel}</button>
       </div>
       <div id="entry-actions" className="actions" hidden={page !== 'entry'}>
-        <button id="sign-in" className="primary" type="button" onClick={() => { void start() }}>{m.welcomeSignIn}</button>
-        <button ref={keyButton} id="api-key" className="secondary" type="button" onClick={() => { navigate('key') }}>{m.welcomeApiKey}</button>
+        <button id="sign-in" className="primary" type="button" onClick={() => { void api.analytics?.('auth_page_click', { button_name: 'sign_in' }); void start() }}>{m.welcomeSignIn}</button>
+        <button ref={keyButton} id="api-key" className="secondary" type="button" onClick={() => { void api.analytics?.('auth_page_click', { button_name: 'api-key' }); navigate('key') }}>{m.welcomeApiKey}</button>
       </div>
       <div id="key-actions" className="actions" hidden={page !== 'key'}>
         <button id="save-key" className="primary" type="submit" form="key-form" disabled={busy || draft.trim() === ''}>{m.welcomeKeySave}</button>

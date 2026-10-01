@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
-/** Desktop account operations and ordinary-browser isolation in the shipped client composition. */
-import { afterEach, expect, vi } from 'vitest'
+/** Account operations in the shipped Web and Desktop client compositions. */
+import { afterEach, beforeEach, expect, vi } from 'vitest'
 import { ok } from '@averqel/neosis-remote-mock'
 import { RemoteError } from '@averqel/neosis-typert-protocol'
 import { createClientTest, type TestClient, webApp } from '@averqel/neosis-client-test-runtime/src/assembly/index.ts'
@@ -19,22 +19,32 @@ function operations(c: TestClient): AccountSectionInjected {
   const injected: object = c.ctx.slots.entries('settings.launcher')[0]!.inject!()
   return injected as AccountSectionInjected
 }
+beforeEach(() => { vi.stubEnv('NEOSIS_CLIENT_VERSION', 'test-version') })
 afterEach(() => { vi.unstubAllGlobals(); vi.restoreAllMocks() })
 
-it('keeps account UI and account RPC inactive in a plain browser, including after reload', async ({ start, mock }) => {
+it('activates account UI and account RPC in a plain browser, including after reload', async ({ start, mock }) => {
   const c = await start()
   for (const reload of [false, true]) {
     if (reload) await c.reload(SELF)
     await c.flush()
-    expect(c.ctx.slots.entries('settings.launcher')).toHaveLength(0)
-    expect(c.ctx.slots.entries('settings.models.sign-in')).toHaveLength(0)
+    expect(c.ctx.slots.entries('settings.launcher')).toHaveLength(1)
+    expect(c.ctx.slots.entries('settings.models.sign-in')).toHaveLength(1)
     expect(c.ctx.slots.entries('settings.section').some(entry => entry.options.id === 'account')).toBe(false)
-    expect(mock.log.calls().filter(call => call.endpoint.startsWith('account/'))).toEqual([])
-    expect(mock.log.streams().filter(stream => stream.endpoint.startsWith('account/'))).toEqual([])
+    expect(mock.log.streams().filter(stream => stream.endpoint.startsWith('account/')).length).toBeGreaterThan(0)
   }
 }, 60_000)
 
-it('shares account actions across seats, publishes dialog ownership, and opens contextual support', async ({ start }) => {
+it('uses the Web login carrier and sends account client metadata', async ({ start, mock }) => {
+  const c = await start()
+  const actions = operations(c)
+  mock.remote.account.startSignIn.mockResolvedValue(ok(view))
+  await actions.start()
+  expect(mock.remote.account.startSignIn).toHaveBeenCalledWith(expect.objectContaining({
+    version: expect.any(String), locale: 'en', timezoneOffsetSeconds: expect.any(Number),
+  }), window.location.origin, 'web')
+}, 60_000)
+
+it('shares account actions across seats, publishes dialog ownership, and opens contextual support', async ({ start, mock }) => {
   vi.stubGlobal(CONTACT_CONFIG_GLOBAL, { contactFormUrl: 'https://example.test/form/', contactSource: 'harness' })
   const open = vi.spyOn(window, 'open').mockReturnValue(null)
   vi.stubGlobal('neosisDesktop', {})
@@ -51,7 +61,8 @@ it('shares account actions across seats, publishes dialog ownership, and opens c
   probe()
   offTheme()
   expect(theme.getTheme().themes.map(candidate => candidate.id)).toEqual(['light', 'dark'])
-  await actions.refresh()
+  mock.remote.account.getUnnotifiedBonuses.mockResolvedValue(ok(null))
+  await actions.refreshAccount()
   expect(c.mock.remote.account.getProfile).not.toHaveBeenCalled()
   const listener = vi.fn()
   const off = actions.hooks.account.subscribe(listener)
@@ -65,7 +76,7 @@ it('shares account actions across seats, publishes dialog ownership, and opens c
   actions.contactUs()
   const signedOut = new URL(String(open.mock.calls.at(-1)![0]))
   expect(signedOut.searchParams.has('prefill_uid')).toBe(false)
-  expect(signedOut.searchParams.has('hide_uid')).toBe(false)
+  expect(signedOut.searchParams.has('hide_uid')).toBe(true)
   c.mock.remote.account.getProfile.mockResolvedValue(ok(profile))
   c.mock.streams.push('account/watch', stored)
   await vi.waitFor(() => { expect(actions.hooks.account.getSnapshot().details?.profile).toEqual(profile) })
@@ -75,24 +86,25 @@ it('shares account actions across seats, publishes dialog ownership, and opens c
   vi.spyOn(c.ctx.locale, 'getSnapshot').mockReturnValue({ ...c.ctx.locale.getSnapshot(), active: 'zh' })
   actions.contactUs()
   const support = new URL(String(open.mock.calls.at(-1)![0]))
-  expect(support.searchParams.has('prefill_uid')).toBe(false)
-  expect(support.searchParams.has('hide_uid')).toBe(false)
+  expect(support.searchParams.has('prefill_uid')).toBe(true)
+  expect(support.searchParams.has('hide_uid')).toBe(true)
   expect(support.searchParams.get('prefill_app_locale')).toBe('zh-CN')
   await c.unload(SELF)
   expect(c.ctx.slots.entries('settings.launcher')).toHaveLength(0)
 }, 60_000)
 
-it('coalesces refreshes, publishes independent failures, and rejects stale responses after sign-out or unload', async ({ start }) => {
+it('coalesces refreshes, publishes independent failures, and rejects stale responses after sign-out or unload', async ({ start, mock }) => {
   vi.stubGlobal('neosisDesktop', {})
   const c = await start()
   const actions = operations(c)
+  mock.remote.account.getUnnotifiedBonuses.mockResolvedValue(ok(null))
   const pending = Promise.withResolvers<ReturnType<typeof ok<AccountDetails['profile'] | null>>>()
   c.mock.remote.account.getProfile.mockReturnValueOnce(pending.promise)
   c.mock.remote.account.getBalance.mockResolvedValueOnce({ ok: false, error: new RemoteError('gateway/internal', 'offline', {}) })
   c.mock.streams.push('account/watch', stored)
   await vi.waitFor(() => { expect(c.mock.remote.account.getProfile).toHaveBeenCalledOnce() })
-  const a = actions.refresh()
-  expect(actions.refresh()).toBe(a)
+  const a = actions.refreshAccount()
+  void actions.refreshAccount()
   c.mock.streams.push('account/watch', view)
   await vi.waitFor(() => { expect(actions.hooks.account.getSnapshot().view).toEqual(view) })
   pending.resolve(ok(profile))
@@ -104,7 +116,7 @@ it('coalesces refreshes, publishes independent failures, and rejects stale respo
   await vi.waitFor(() => { expect(actions.hooks.account.getSnapshot().details).toEqual({ profile: { status: 'failed' }, balance: { status: 'failed' } }) })
   const pendingAgain = Promise.withResolvers<ReturnType<typeof ok<AccountDetails['profile'] | null>>>()
   c.mock.remote.account.getProfile.mockReturnValueOnce(pendingAgain.promise)
-  const request = actions.refresh()
+  const request = actions.refreshAccount()
   await c.unload(SELF)
   pendingAgain.resolve(ok(profile))
   await request
@@ -118,7 +130,9 @@ it('uses the Desktop login carrier and exposes operation errors', async ({ start
   const actions = operations(c)
   mock.remote.account.startSignIn.mockResolvedValue(ok(view))
   await actions.start()
-  expect(mock.remote.account.startSignIn).toHaveBeenCalledWith('en', window.location.origin, 'desktop')
+  expect(mock.remote.account.startSignIn).toHaveBeenCalledWith(expect.objectContaining({
+    version: expect.any(String), locale: 'en', timezoneOffsetSeconds: expect.any(Number),
+  }), window.location.origin, 'desktop')
   const failure = { ok: false as const, error: new RemoteError('gateway/internal', 'offline', {}) }
   mock.remote.account.startSignIn.mockResolvedValueOnce(failure)
   await expect(actions.start()).rejects.toThrow('account start failed')
@@ -140,10 +154,12 @@ it('uses the Desktop stream origin and exposes the native platform bridge', asyn
   vi.stubGlobal('neosisPlatform', platform)
   await c.reload(SELF)
   const actions = operations(c)
-  expect(actions.platform).toBe(platform)
+  expect(actions.openPlatformPage).toEqual(expect.any(Function))
   mock.remote.account.startSignIn.mockResolvedValue(ok(view))
   await actions.start()
-  expect(mock.remote.account.startSignIn).toHaveBeenCalledWith('en', 'http://localhost:9876', 'desktop')
+  expect(mock.remote.account.startSignIn).toHaveBeenCalledWith(expect.objectContaining({
+    version: expect.any(String), locale: 'en', timezoneOffsetSeconds: expect.any(Number),
+  }), 'http://localhost:9876', 'desktop')
 }, 60_000)
 
 

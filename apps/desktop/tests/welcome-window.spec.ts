@@ -40,6 +40,7 @@ function createWindow() {
 beforeEach(() => { electron.create.mockReset(); electron.handlers.clear() })
 
 const operations = {
+  analyticsEnabled: () => Promise.resolve(false),
   startSignIn: async () => ({ links: { usageUrl: 'http://localhost/usage', topUpUrl: 'http://localhost/top_up' }, status: 'signed-out' as const, attempt: null }),
   cancelSignIn: async () => ({ links: { usageUrl: 'http://localhost/usage', topUpUrl: 'http://localhost/top_up' }, status: 'signed-out' as const, attempt: null }),
   copySignInLink: async () => undefined,

@@ -17,9 +17,16 @@ import Include, { applyEntryPatches, entryListSchema, type PatchOptions } from '
 import Group from '@averqel/cordis-plugin-group'
 import { neosisHomePath, resolveNeosisHome } from '@averqel/neosis-home-paths'
 import { createLaunchEnvironmentSnapshot, type LaunchEnvironmentSnapshot } from '@averqel/neosis-launch-environment'
+import { prepareProfilePatches } from './compatibility-preflight.ts'
 export { readProfilePatches, resolveTelemetryPatch, type ProfileContext, type ProfilePnpmInvocation } from './profile-context.ts'
 export { sanitizeProfile } from './profile-sanitize.ts'
 export { readPluginMeta } from './package-meta.ts'
+export { getNeosisRuntimeVersion, evaluatePluginCompatibility, pluginCompatibilityWarning, type PluginCompatibility } from './plugin-compatibility.ts'
+export {
+  PROFILE_COMPATIBILITY_FILENAME, readProfileCompatibility, readProfileVersionExemptions,
+  setProfileVersionExemption, validatePluginVersionExemption, type ProfileCompatibility,
+} from './profile-compatibility.ts'
+export { prepareProfileEntries, prepareProfilePatches } from './compatibility-preflight.ts'
 export { generateConfigSchema, type ConfigSchemaDump, type NativeConfigSchema } from './config-schema/index.ts'
 export { createConfigProjector, LOADER_EXPRESSION_SCHEMA, type ConfigProjection } from './config-schema/projector.ts'
 export { isNativeConfigSchema } from './config-schema/native.ts'
@@ -274,7 +281,11 @@ export async function reconcileProfilePatches(
     fiber: row.fiber, failed: row.fiber.state === FIBER_FAILED || row.fiber.state === FIBER_DISPOSED,
   }])
   const { patches: _previous, ...includeConfig } = entry.options.config as Include.Config
-  await entry.update({ config: { ...includeConfig, patches } })
+  // Re-apply the same compatibility decision used at launch. Reloaded profile
+  // layers must not bypass the preflight simply because the root Include already exists.
+  const parentURL = new URL('.', new URL(includeConfig.path, entry.parent.tree.ctx.baseUrl)).href
+  const prepared = prepareProfilePatches(ctx, patches, parentURL, binName)
+  await entry.update({ config: { ...includeConfig, patches: prepared } })
   const results = await Promise.allSettled(previousFibers.map(({ fiber }) => fiber.await()))
   await ctx.loader.await()
   const failures = await inactiveEntries(ctx)
@@ -517,6 +528,7 @@ function groupedDump(
  * @param patches - initial app and user patches, applied in order.
  * @param bareModuleBaseUrl - optional installed-host base for bare package
  * names; relative names continue to resolve beside the configuration file.
+ * @param binName - diagnostic prefix for a profile plugin denied by compatibility policy; defaults to `neosis`.
  * @returns the created root Include entry, or `undefined` when a surface
  * disposed the whole tree (taking the Loader service with it) while the
  * entry creation was in flight.
@@ -526,6 +538,7 @@ export async function mountRootInclude(
   absoluteConfigPath: string,
   patches: readonly PatchOptions[] = [],
   bareModuleBaseUrl?: string,
+  binName = 'neosis',
 ): Promise<Entry | undefined> {
   ctx.loader.builtins.include = bareModuleBaseUrl === undefined
     ? Include
@@ -549,9 +562,13 @@ export async function mountRootInclude(
   // Pinned id: the bootstrap include is app glue, not a config row, and its
   // id appears in Loader failure chains — a random id would make startup
   // diagnostics unstable across runs (and snapshot fixtures).
+  // Compatibility decisions must happen before the root Include imports any
+  // profile plugin. This keeps denied entries out of the Loader tree while
+  // leaving the persisted profile layers unchanged.
+  const prepared = prepareProfilePatches(ctx, [...patches], pathToFileURL(dirname(absoluteConfigPath)).href + '/', binName)
   const includeConfig: Include.Config = {
     path: pathToFileURL(absoluteConfigPath).href,
-    ...patches.length > 0 ? { patches: [...patches] } : {},
+    ...prepared.length > 0 ? { patches: prepared } : {},
   }
   const rootInclude: EntryOptions = {
     id: 'include',
@@ -983,7 +1000,7 @@ export async function boot(
     await ctx.plugin(Loader)
     await prepare?.(ctx)
     stage = 'plugin tree failed to load'
-    await mountRootInclude(ctx, absoluteConfigPath, patches, bareModuleBaseUrl)
+    await mountRootInclude(ctx, absoluteConfigPath, patches, bareModuleBaseUrl, binName)
     // A surface can finish and dispose the whole tree while startup is still
     // in flight, before the last entry settles. The Loader service goes with
     // it, and the activation audit describes a live tree — reading `ctx.loader`

@@ -10,6 +10,10 @@ const locale = process.argv.find(argument => argument.startsWith(prefix))?.slice
 if (locale === undefined) throw new Error('desktop welcome: missing window locale')
 const api: WelcomeApi = {
   ...resolveDesktopLocale(locale),
+  analytics: async (eventName, attributes) => {
+    if (await api.analyticsEnabled()) await ipcRenderer.invoke(WELCOME_IPC.analytics, eventName, attributes)
+  },
+  analyticsEnabled: () => ipcRenderer.invoke(WELCOME_IPC.analyticsEnabled) as Promise<boolean>,
   startSignIn: () => ipcRenderer.invoke(WELCOME_IPC.start) as Promise<AccountView>,
   cancelSignIn: (id: SignInAttemptId) => ipcRenderer.invoke(WELCOME_IPC.cancel, id) as Promise<AccountView>,
   copySignInLink: (id: SignInAttemptId) => ipcRenderer.invoke(WELCOME_IPC.copyLink, id) as Promise<void>,

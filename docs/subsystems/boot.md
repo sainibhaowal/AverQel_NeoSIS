@@ -89,6 +89,20 @@ Source: [`packages/boot/hmr/src/index.ts`](../../packages/boot/hmr/src/index.ts)
 Manage profile files and apply their declared reload lifecycle.
 
 ```ts cordis-catalog
+/** Read exact plugin-version exemptions saved in this profile.
+ * @returns Accepted package-name@version keys and any rejected-file warnings.
+ */
+@Remote listVersionExemptions(): { exemptions: Record<string, string[]>; warnings: string[] }
+
+/** Grant or revoke one exact plugin/runtime exemption and reevaluate live plugins.
+ * @param packageVersion Exact package name and version key.
+ * @param runtimeVersion Exact NeoSIS runtime version for the grant.
+ * @param enabled Whether to grant rather than revoke the exemption.
+ * @param acceptRisk Required true when granting an exemption.
+ * @returns The persisted and live-application outcome.
+ */
+@Remote setVersionExemption(packageVersion: string, runtimeVersion: string, enabled: boolean, acceptRisk?: boolean): Promise<ChangeResult>
+
 /** Read current plugins, including why a row cannot be changed through the profile patch.
  * @returns Current runtime entries with persistent patch targets.
  */

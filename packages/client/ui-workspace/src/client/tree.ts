@@ -10,7 +10,6 @@ import type { WorkspaceId, WorkspaceView } from '@averqel/neosis-api-workspace-c
 import type {
   SessionStatusSnapshot,
 } from '@averqel/neosis-client-ui-session/client'
-import type {} from '@averqel/neosis-schedule/client'
 import type { SessionId } from '@averqel/neosis-session/types'
 import { assertNever } from '@averqel/neosis-util-values'
 import { workspaceTitleOf } from '@averqel/neosis-util-workspace-path'
@@ -55,8 +54,6 @@ export interface SessionNode {
   runningSubagentCount: number
   /** Finished running while not selected and not yet opened (the green "done" reminder dot). */
   completed: boolean
-  /** The current list projection contains at least one active Schedule record. */
-  hasActiveSchedule: boolean
   /** In the registry-global pin set: leads its section, reorderable only among pinned rows. */
   pinned: boolean
   /** In the registry-global archive set: shown grayed in place and not openable. */
@@ -98,8 +95,6 @@ export interface SearchResultNode {
   runningSubagentCount: number
   /** Finished running while not selected and not yet opened (the green "done" reminder dot). */
   completed: boolean
-  /** The current list projection contains at least one active Schedule record. */
-  hasActiveSchedule: boolean
   /** In the registry-global archive set: shown grayed and not openable. */
   archived: boolean
   snippet?: string
@@ -300,11 +295,6 @@ function sessionTitle(session: SessionSummary): string {
   return session.blank ? '' : session.displayTitle
 }
 
-/** The list projection alone owns the best-effort active-Schedule indicator. */
-function hasActiveSchedule(session: SessionSummary): boolean {
-  return (session.projectionValues?.schedule?.length ?? 0) > 0
-}
-
 /** Build one group without projecting session lineage into presentation. */
 function buildGroup(
   key: string,
@@ -416,7 +406,6 @@ function sessionNode(
     running: status?.running ?? s.running,
     runningSubagentCount: runningChildCount(list, s.id, statuses),
     completed: status?.completionUnread === true,
-    hasActiveSchedule: hasActiveSchedule(s),
     pinned: !archived.has(s.id) && pinned.has(s.id),
     archived: archived.has(s.id),
     updatedAt: s.updatedAt,
@@ -618,7 +607,6 @@ export function deriveSearchResults(
           ? {}
           : { pendingInteraction }),
         completed: status?.completionUnread === true,
-        hasActiveSchedule: hasActiveSchedule(summary),
         archived: archived.has(summary.id),
         ...match === undefined ? {} : { snippet: match.snippet },
       }

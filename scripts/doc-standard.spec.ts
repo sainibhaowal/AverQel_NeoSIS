@@ -208,11 +208,10 @@ function releaseDocument(body: string, evidence: string): string {
 }
 
 describe('Session format release authority', () => {
-  it('keeps bilingual release metadata consistent with the writer and tagged evidence', () => {
-    const records = ['docs/session-format-status.md', 'docs/session-format-status.zh.md'].map(file =>
-      validateSessionFormatRelease(readFileSync(resolve(root, file), 'utf8'), readCurrentSessionFormatVersion(root)),
-    )
-    expect(records[0]).toEqual(records[1])
+  it('keeps English release metadata consistent with the writer and tagged evidence', () => {
+    expect(validateSessionFormatRelease(
+      readFileSync(resolve(root, 'docs/session-format-status.md'), 'utf8'), readCurrentSessionFormatVersion(root),
+    )).toEqual(sessionFormatReleaseFixture().record)
   })
 
   it('accepts a released writer and a newer development writer, including format zero', () => {
@@ -320,7 +319,6 @@ describe('neosis-doc skill consolidation', () => {
   it('keeps the reference example linked from the skill', () => {
     const skill = readFileSync(resolve(root, '.agents/skills/neosis-doc/SKILL.md'), 'utf8')
     expect(skill).toContain('session-persistence-jsonl/README.md')
-    expect(skill).toContain('session-persistence-jsonl/README.zh.md')
   })
 
   it('defines controlled English as a precision-preserving review discipline', () => {
@@ -436,18 +434,10 @@ describe('neosis-doc skill consolidation', () => {
   })
 })
 
-describe('reference-example README pair', () => {
+describe('reference-example README', () => {
   const dir = 'packages/session/session-persistence-jsonl'
 
-  it('keeps exact English/Chinese physical line alignment', () => {
-    const sourceLines = readFileSync(resolve(root, dir, 'README.md'), 'utf8').split('\n').length
-    const zhLines = readFileSync(resolve(root, dir, 'README.zh.md'), 'utf8').split('\n').length
-    expect(sourceLines).toBe(zhLines)
-  })
-
-  it('keeps the sidecar consistency record present', () => {
-    const sidecar = readFileSync(resolve(root, dir, 'README.i18n.yaml'), 'utf8')
-    expect(sidecar).toMatch(/^README\.md: [0-9a-f]{40}$/m)
-    expect(sidecar).toMatch(/^README\.zh\.md: [0-9a-f]{40}$/m)
+  it('keeps the English reference available', () => {
+    expect(readFileSync(resolve(root, dir, 'README.md'), 'utf8')).toContain('#')
   })
 })

@@ -18,8 +18,8 @@ Source: [`packages/llm/llm/src/types.ts`](../../packages/llm/llm/src/types.ts)
 /**
  * Merge-extensible content blocks keyed by `type`. New core blocks must land
  * with adapter, UI, and compaction support. Developer tool-change blocks are
- * reserved for Session V4 persistence; providers and UI reject them until
- * their producers and consumers are implemented together.
+ * providers that support mid-conversation tool updates serialize them as
+ * developer instructions; other providers may reject them explicitly.
  */
 interface ContentBlockMap {
   'text': TextBlock
@@ -71,7 +71,7 @@ interface AssistantProviderMetadata {
 type Message = MessageRoleMap[keyof MessageRoleMap]
 ```
 
-`DeveloperMessage` records incremental agent session changes in conversation order with the `developer` role. `ToolAdditionBlock.toolName` activates the definition selected by the containing Session event's historical header reference; `ToolRemovalBlock.toolName` removes the active definition. Both blocks are rejected in other message roles. `deferLoading` independently requests deferred definition loading without requiring an addition record. See [Session](../../packages/core/session/README.md) for header binding and the [LLM package](../../packages/llm/llm/README.md#known-limitations-and-deferred-work) for provider support limits.
+`DeveloperMessage` records incremental agent session changes in conversation order with the `developer` role. `ToolAdditionBlock.toolName` activates the definition selected by the containing Session event's historical header reference; `ToolRemovalBlock.toolName` removes the active definition. Both blocks are rejected in other message roles. DeepSeek Messages serializes developer changes as system-role tool references and opts into the provider beta. `deferLoading` independently requests deferred definition loading without requiring an addition record. See [Session](../../packages/core/session/README.md) for header binding and the [LLM package](../../packages/llm/llm/README.md#known-limitations-and-deferred-work) for provider support limits.
 
 Where a message came from is itself a merge-extensible sum type:
 
@@ -615,6 +615,8 @@ interface GenerateOptions {
   system?: string
   /** Tool schemas (adapters map to the provider's `tools` field). */
   tools?: ToolSchema[]
+  /** Session-folded tool history used for route projection. */
+  toolHistory?: ToolHistory
   temperature?: number
   maxTokens?: number
   /**

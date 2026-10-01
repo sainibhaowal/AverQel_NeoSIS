@@ -1,6 +1,6 @@
 {
   "name": "@averqel/neosis-client-ui-schedule",
-  "description": "Read-only active Schedule catalog in the Web Session header",
+  "description": "Host task management page and Session reminder catalog",
   "version": "0.1.7-alpha.2",
   "type": "module",
   "main": "lib/index.js",
@@ -20,8 +20,14 @@
   "neosis": {
     "client": {
       "inject": [
+        "@averqel/neosis-api-remotes",
         "@averqel/neosis-client-locale",
         "@averqel/neosis-client-ui-conversation",
+        "@averqel/neosis-client-ui-layout",
+        "@averqel/neosis-client-ui-sidebar",
+        "@averqel/neosis-client-ui-sidebar-right",
+        "@averqel/neosis-client-ui-tool",
+        "@averqel/neosis-client-ui-workspace",
         "@averqel/neosis-client-ui-primitives"
       ],
       "platform": "web"
@@ -45,19 +51,29 @@
   },
   "devDependencies": {
     "@averqel/neosis-api-session-controller": "workspace:*",
+    "@averqel/neosis-api-remotes": "workspace:*",
+    "@averqel/neosis-api-workspace-controller": "workspace:*",
+    "@averqel/neosis-client-connection": "workspace:*",
     "@averqel/neosis-client-locale": "workspace:*",
     "@averqel/neosis-client-test-runtime": "workspace:*",
     "@averqel/neosis-client-ui-conversation": "workspace:*",
+    "@averqel/neosis-client-ui-layout": "workspace:*",
     "@averqel/neosis-client-ui-primitives": "workspace:*",
     "@averqel/neosis-client-ui-renderer": "workspace:*",
     "@averqel/neosis-client-ui-session": "workspace:*",
+    "@averqel/neosis-client-ui-sidebar": "workspace:*",
+    "@averqel/neosis-client-ui-sidebar-right": "workspace:*",
     "@averqel/neosis-client-ui-slots": "workspace:*",
+    "@averqel/neosis-client-ui-tool": "workspace:*",
+    "@averqel/neosis-client-ui-workspace": "workspace:*",
     "@averqel/neosis-schedule": "workspace:*",
     "@averqel/neosis-session": "workspace:*",
+    "@averqel/neosis-util-values": "workspace:*",
     "@testing-library/react": "^16.1.0",
     "@types/react": "~18.3.1",
     "@types/react-dom": "~18.3.0",
     "@averqel/cordis": "workspace:~",
+    "clsx": "^2.1.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },

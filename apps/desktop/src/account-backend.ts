@@ -2,7 +2,7 @@
 import { randomUUID } from 'node:crypto'
 import WebSocket from 'ws'
 import { parseRemoteStreamServerMessage, REMOTE_STREAM_MUX_PATH } from '@averqel/neosis-api-gateway/stream-protocol'
-import type { AccountView, SignInAttemptId } from '@averqel/neosis-deepseek-account/types'
+import type { AccountClientMetadata, AccountView, SignInAttemptId } from '@averqel/neosis-deepseek-account/types'
 
 /** Authenticated unary caller shared with native onboarding. */
 export type AccountInvoke = (request: { namespace: string; method: string; args: Record<string, unknown> }) => Promise<unknown>
@@ -72,14 +72,28 @@ export interface DesktopAccountBackend {
  * @param origin - Host Web origin.
  * @param invoke - validated unary RPC caller.
  * @param cookies - Electron session cookie reader.
+ * @param clientVersion - Desktop application version sent with account requests.
  * @returns account operations; watch callers own their subscriptions.
  */
-export function desktopAccountBackend(origin: string, invoke: AccountInvoke, cookies: () => Promise<string>): DesktopAccountBackend {
+export function desktopAccountBackend(
+  origin: string,
+  invoke: AccountInvoke,
+  cookies: () => Promise<string>,
+  clientVersion: string,
+): DesktopAccountBackend {
+  let lastLocale = 'en'
+  const metadata = (locale: string): AccountClientMetadata => ({
+    version: clientVersion,
+    locale,
+    timezoneOffsetSeconds: -new Date().getTimezoneOffset() * 60,
+  })
   const call = async (method: string, args: Record<string, unknown> = {}): Promise<AccountView> =>
     accountView(await invoke({ namespace: 'account', method, args }))
   return {
-    state: () => call('getState'), start: locale => call('startSignIn', { locale, callbackOrigin: new URL(origin).origin, loginSource: 'desktop' }),
-    cancel: attemptId => call('cancelSignIn', { attemptId }), signOut: () => call('signOut'),
+    state: () => call('getState'),
+    start: (locale) => { lastLocale = locale; return call('startSignIn', { client: metadata(locale), callbackOrigin: new URL(origin).origin, loginSource: 'desktop' }) },
+    cancel: attemptId => call('cancelSignIn', { attemptId }),
+    signOut: () => call('signOut', { client: metadata(lastLocale) }),
     watch(listener, failed) {
       let closed = false
       let socket: WebSocket | undefined

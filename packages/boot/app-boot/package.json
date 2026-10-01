@@ -32,12 +32,14 @@
   ],
   "license": "Apache-2.0",
   "dependencies": {
+    "@averqel/neosis-atomic-write": "workspace:*",
     "@averqel/neosis-package-manifest": "workspace:*",
     "@eslint-community/regexpp": "^4.12.2",
     "ajv": "^8.20.0",
     "js-yaml": "^4.2.0",
     "node-addon-require-builtin": "^0.1.6",
-    "resolve.exports": "^2.0.3"
+    "resolve.exports": "^2.0.3",
+    "semver": "^7.8.5"
   },
   "peerDependencies": {
     "@averqel/cordis-plugin-group": "workspace:~",
@@ -58,6 +60,7 @@
     "@averqel/neosis-home-paths": "workspace:*",
     "@averqel/neosis-system-prompt": "workspace:*",
     "@types/js-yaml": "^4.0.9",
+    "@types/semver": "^7.8.0",
     "@averqel/cordis": "workspace:~"
   }
 }

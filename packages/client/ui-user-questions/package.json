@@ -33,7 +33,8 @@
         "@averqel/neosis-client-locale",
         "@averqel/neosis-client-ui-conversation",
         "@averqel/neosis-client-ui-renderer",
-        "@averqel/neosis-client-ui-session"
+        "@averqel/neosis-client-ui-session",
+        "@averqel/neosis-client-ui-chat"
       ],
       "platform": "web"
     }
@@ -51,6 +52,7 @@
     "@averqel/neosis-agent": "workspace:*",
     "@averqel/neosis-api-remotes": "workspace:*",
     "@averqel/neosis-api-session-controller": "workspace:*",
+    "@averqel/neosis-brand": "workspace:*",
     "@averqel/neosis-client-locale": "workspace:*",
     "@averqel/neosis-client-store": "workspace:*",
     "@averqel/neosis-system-prompt": "workspace:*",
@@ -64,6 +66,8 @@
     "@averqel/neosis-typert-protocol": "workspace:*",
     "react": "^18.2.0",
     "@averqel/neosis-client-ui-conversation": "workspace:*",
+    "@averqel/neosis-client-ui-chat": "workspace:*",
+    "@averqel/neosis-client-ui-tool": "workspace:*",
     "@averqel/neosis-client-connection": "workspace:*",
     "@averqel/neosis-session": "workspace:*",
     "clsx": "^2.0.0",

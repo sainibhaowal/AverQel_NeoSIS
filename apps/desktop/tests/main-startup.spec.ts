@@ -759,7 +759,7 @@ describe('desktop main startup', () => {
     expect(() => handler(event, 'application', NaN, 34)).toThrow('invalid popup request')
     const application = handler(event, 'application', 48, 34)
     expect(harness.menu.buildFromTemplate.mock.lastCall![0].map(item => item.label ?? item.type)).toEqual([
-      '关于 AverQel NeoSIS', 'separator', '检查更新…', 'separator', '退出',
+      '关于 AverQel NeoSIS', 'separator', '检查更新…', '管理 neosis 命令…', 'separator', '退出',
     ])
     expect(harness.popup.mock.lastCall![0]).toMatchObject({ window, x: 48, y: 34 })
     expect(harness.popup.mock.lastCall![0].callback).toBeTypeOf('function')
@@ -792,11 +792,11 @@ describe('desktop main startup', () => {
       .find(items => items.some(item => item.role === 'editMenu'))
     if (template === undefined) throw new Error('application menu missing')
     expect(template.map(describeItem)).toEqual(platform === 'darwin'
-      ? ['Desktop test', 'fileMenu', 'editMenu', 'windowMenu']
+      ? ['Desktop test', 'Application', 'editMenu', 'windowMenu']
       : ['Application', 'editMenu'])
     const application = template[0]!.submenu as MenuItemConstructorOptions[]
     expect(application.filter(item => item.visible !== false).map(describeItem)).toEqual(platform === 'darwin'
-      ? ['about', 'separator', en.checkUpdatesMenu, 'separator', 'hide', 'hideOthers', 'unhide', 'separator', 'quit']
+      ? ['about', 'separator', en.checkUpdatesMenu, en.cliCommandMenu, 'separator', 'hide', 'hideOthers', 'unhide', 'separator', 'quit']
       : ['about', 'separator', en.checkUpdatesMenu, 'separator', 'quit'])
     expect(harness.menu.setApplicationMenu).toHaveBeenCalledOnce()
   })

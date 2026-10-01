@@ -72,6 +72,12 @@ export interface SessionRowOwnerProps {
   displayTitle: string
 }
 
+/** Owner share of the ambient schedule decorations on one Session row. */
+export interface SessionRowScheduleOwnerProps {
+  /** Session this row shows; the occupant addresses its own Host task data. */
+  readonly sessionId: SessionId
+}
+
 /** The row menu's open state as its owner holds it: the `useState` pair. */
 export type MenuOpenState = readonly [open: boolean, setOpen: (open: boolean) => void]
 
@@ -99,6 +105,10 @@ declare module '@averqel/neosis-client-ui-slots' {
     'conversation.hero.workspace.directoryFlow': { kind: 'single'; scope: 'root'; owner: DirectoryFlowOwnerProps }
     /** Directory-flow hole under the sidebar browsing region (declared by the WorkspaceBrowser entry). */
     'sidebar.workspaces.directoryFlow': { kind: 'single'; scope: 'root'; owner: DirectoryFlowOwnerProps }
+    /** Leading decoration for an idle Session row. */
+    'sidebar.session.row.leading': { kind: 'list'; scope: 'root'; owner: SessionRowScheduleOwnerProps }
+    /** Scheduled-task section in a Session row hover card. */
+    'sidebar.session.row.hover': { kind: 'list'; scope: 'root'; owner: SessionRowScheduleOwnerProps }
     /**
      * The rows of one Session's "..." menu, in ascending `order`. ui-workspace
      * registers the shipped rows here — `pin` (100), `rename` (200), `fork`
@@ -401,7 +411,11 @@ export type RowToastProps =
 export type WorkspaceBrowserProps =
   PropsRuntime<'sidebar.workspaces'>
   & PropsRenderSlots<
-    'sidebar.workspaces.directoryFlow' | 'sidebar.workspaces.session.menu.item' | 'sidebar.workspaces.session.row.action'
+    | 'sidebar.workspaces.directoryFlow'
+    | 'sidebar.workspaces.session.menu.item'
+    | 'sidebar.workspaces.session.row.action'
+    | 'sidebar.session.row.leading'
+    | 'sidebar.session.row.hover'
   >
   & PropsStore<WorkspaceViewStoreHandle>
   & Omit<WorkspaceBrowserInjected, 'hooks'>

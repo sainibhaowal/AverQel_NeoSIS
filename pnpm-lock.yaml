@@ -10,7 +10,7 @@ overrides:
   '@averqel/schemastery': link:vendor/schemastery
 
 patchedDependencies:
-  '@earendil-works/pi-ai@0.85.1': b9bcce474fb2ac44633dff0fa722816a5bff5451b4575d5874035ea14ba70a4f
+  '@earendil-works/pi-ai@0.87.1': b9bcce474fb2ac44633dff0fa722816a5bff5451b4575d5874035ea14ba70a4f
   '@electron/osx-sign@1.3.3': 280e7b2816caf01423097d24e79107a66afeb563a348630ce9928ae8499a5861
   '@fortune-sheet/core@1.0.4': 488dad2a7648b7d4df31f6bd776b7849fd0fb85be8f1acf268efff758caba3c0
   '@fortune-sheet/react@1.0.4': c17549e117c8fb99f408497c1e84292c21f25516fb762a32518f91b4d9ab0f04
@@ -244,6 +244,9 @@ importers:
       '@averqel/neosis-experimental-agent-team-profile':
         specifier: workspace:*
         version: link:../../packages/experimental/agent-team-profile
+      '@averqel/neosis-experimental-schedule-bundle':
+        specifier: workspace:*
+        version: link:../../packages/experimental/schedule-bundle
       '@averqel/neosis-experimental-voice-input-bundle':
         specifier: workspace:*
         version: link:../../packages/experimental/voice-input-bundle
@@ -566,6 +569,9 @@ importers:
       '@averqel/neosis-api-gateway':
         specifier: workspace:*
         version: link:../../packages/api/gateway
+      '@averqel/neosis-client-product-analytics':
+        specifier: workspace:*
+        version: link:../../packages/client/product-analytics
       electron-updater:
         specifier: ^6.8.9
         version: 6.8.9
@@ -579,6 +585,12 @@ importers:
       '@averqel/neosis-app-boot':
         specifier: workspace:*
         version: link:../../packages/boot/app-boot
+      '@averqel/neosis-atomic-write':
+        specifier: workspace:*
+        version: link:../../packages/util/atomic-write
+      '@averqel/neosis-client-shortcuts':
+        specifier: workspace:*
+        version: link:../../packages/client/shortcuts
       '@averqel/neosis-client-ui-primitives':
         specifier: workspace:*
         version: link:../../packages/client/ui-primitives
@@ -1147,6 +1159,9 @@ importers:
       '@averqel/neosis-client-file-upload':
         specifier: workspace:*
         version: link:../../client/file-upload
+      '@averqel/neosis-client-product-analytics':
+        specifier: workspace:*
+        version: link:../../client/product-analytics
       '@averqel/neosis-client-ui-plugin-manager':
         specifier: workspace:*
         version: link:../../client/ui-plugin-manager
@@ -1186,6 +1201,9 @@ importers:
       '@averqel/neosis-plugin-manager':
         specifier: workspace:*
         version: link:../../boot/plugin-manager
+      '@averqel/neosis-schedule':
+        specifier: workspace:*
+        version: link:../../schedule/schedule
       '@averqel/neosis-scope':
         specifier: workspace:*
         version: link:../../core/scope
@@ -1579,6 +1597,9 @@ importers:
 
   packages/boot/app-boot:
     dependencies:
+      '@averqel/neosis-atomic-write':
+        specifier: workspace:*
+        version: link:../../util/atomic-write
       '@averqel/neosis-package-manifest':
         specifier: workspace:*
         version: link:../../util/package-manifest
@@ -1597,6 +1618,9 @@ importers:
       resolve.exports:
         specifier: ^2.0.3
         version: 2.0.3
+      semver:
+        specifier: ^7.8.5
+        version: 7.8.5
     devDependencies:
       '@averqel/cordis':
         specifier: workspace:~
@@ -1628,6 +1652,9 @@ importers:
       '@types/js-yaml':
         specifier: ^4.0.9
         version: 4.0.9
+      '@types/semver':
+        specifier: ^7.8.0
+        version: 7.8.0
 
   packages/boot/cmdline:
     devDependencies:
@@ -2329,9 +2356,15 @@ importers:
       '@averqel/neosis-client-modules':
         specifier: workspace:*
         version: link:../../client/modules
+      '@averqel/neosis-client-product-analytics':
+        specifier: workspace:*
+        version: link:../../client/product-analytics
       '@averqel/neosis-client-resources':
         specifier: workspace:*
         version: link:../../client/resources
+      '@averqel/neosis-client-shortcuts':
+        specifier: workspace:*
+        version: link:../../client/shortcuts
       '@averqel/neosis-client-ui-agent-preset':
         specifier: workspace:*
         version: link:../../client/ui-agent-preset
@@ -2437,6 +2470,9 @@ importers:
       '@averqel/neosis-client-ui-settings-web-search':
         specifier: workspace:*
         version: link:../../client/ui-settings-web-search
+      '@averqel/neosis-client-ui-shortcuts':
+        specifier: workspace:*
+        version: link:../../client/ui-shortcuts
       '@averqel/neosis-client-ui-sidebar':
         specifier: workspace:*
         version: link:../../client/ui-sidebar
@@ -2524,6 +2560,9 @@ importers:
       '@averqel/neosis-host-plugin-inventory':
         specifier: workspace:*
         version: link:../../host/plugin-inventory
+      '@averqel/neosis-host-product-telemetry-otel':
+        specifier: workspace:*
+        version: link:../../host/product-telemetry-otel
       '@averqel/neosis-host-webserver':
         specifier: workspace:*
         version: link:../../host/webserver
@@ -2660,6 +2699,9 @@ importers:
       '@averqel/neosis-fs-local':
         specifier: workspace:*
         version: link:../../fs/fs-local
+      '@averqel/neosis-otel':
+        specifier: workspace:*
+        version: link:../../telemetry/otel
       '@averqel/neosis-sandbox-policy':
         specifier: workspace:*
         version: link:../../sandbox/sandbox-policy
@@ -2845,6 +2887,52 @@ importers:
         specifier: workspace:*
         version: link:../../util/package-manifest
 
+  packages/client/product-analytics:
+    dependencies:
+      '@averqel/neosis-typert-protocol':
+        specifier: workspace:*
+        version: link:../../typert/protocol
+      '@averqel/schemastery':
+        specifier: link:../../../vendor/schemastery
+        version: link:../../../vendor/schemastery
+      zod:
+        specifier: ^4.4.3
+        version: 4.4.3
+    devDependencies:
+      '@averqel/cordis':
+        specifier: workspace:~
+        version: link:../../../vendor/cordis
+      '@averqel/cordis-plugin-loader':
+        specifier: workspace:~
+        version: link:../../../vendor/loader
+      '@averqel/neosis-api-gateway':
+        specifier: workspace:*
+        version: link:../../api/gateway
+      '@averqel/neosis-compaction':
+        specifier: workspace:*
+        version: link:../../compaction/compaction
+      '@averqel/neosis-deepseek-account':
+        specifier: workspace:*
+        version: link:../../credentials/deepseek-account
+      '@averqel/neosis-host-product-telemetry-otel':
+        specifier: workspace:*
+        version: link:../../host/product-telemetry-otel
+      '@averqel/neosis-host-webserver':
+        specifier: workspace:*
+        version: link:../../host/webserver
+      '@averqel/neosis-llm':
+        specifier: workspace:*
+        version: link:../../llm/llm
+      '@averqel/neosis-otel':
+        specifier: workspace:*
+        version: link:../../telemetry/otel
+      '@averqel/neosis-session':
+        specifier: workspace:*
+        version: link:../../core/session
+      '@averqel/neosis-settings':
+        specifier: workspace:*
+        version: link:../../settings/settings
+
   packages/client/resources:
     devDependencies:
       '@averqel/cordis':
@@ -2865,6 +2953,40 @@ importers:
       '@averqel/neosis-typert-protocol':
         specifier: workspace:*
         version: link:../../typert/protocol
+
+  packages/client/shortcuts:
+    dependencies:
+      '@averqel/neosis-util-crypto':
+        specifier: workspace:*
+        version: link:../../util/crypto
+      '@averqel/neosis-util-values':
+        specifier: workspace:*
+        version: link:../../util/values
+      '@averqel/schemastery':
+        specifier: link:../../../vendor/schemastery
+        version: link:../../../vendor/schemastery
+    devDependencies:
+      '@averqel/cordis':
+        specifier: workspace:~
+        version: link:../../../vendor/cordis
+      '@averqel/neosis-brand':
+        specifier: workspace:*
+        version: link:../../util/brand
+      '@averqel/neosis-client-locale':
+        specifier: workspace:*
+        version: link:../locale
+      '@averqel/neosis-client-store':
+        specifier: workspace:*
+        version: link:../store
+      '@averqel/neosis-client-test-runtime':
+        specifier: workspace:*
+        version: link:../../test-support/client-runtime
+      '@averqel/neosis-client-ui-primitives':
+        specifier: workspace:*
+        version: link:../ui-primitives
+      '@averqel/neosis-host-webserver':
+        specifier: workspace:*
+        version: link:../../host/webserver
 
   packages/client/store:
     devDependencies:
@@ -3302,6 +3424,9 @@ importers:
       '@averqel/neosis-client-locale':
         specifier: workspace:*
         version: link:../locale
+      '@averqel/neosis-client-shortcuts':
+        specifier: workspace:*
+        version: link:../shortcuts
       '@averqel/neosis-client-store':
         specifier: workspace:*
         version: link:../store
@@ -3768,6 +3893,9 @@ importers:
       '@averqel/neosis-client-locale':
         specifier: workspace:*
         version: link:../locale
+      '@averqel/neosis-client-shortcuts':
+        specifier: workspace:*
+        version: link:../shortcuts
       '@averqel/neosis-client-store':
         specifier: workspace:*
         version: link:../store
@@ -4207,6 +4335,9 @@ importers:
       '@averqel/neosis-client-store':
         specifier: workspace:*
         version: link:../store
+      '@averqel/neosis-util-code-language':
+        specifier: workspace:*
+        version: link:../../util/code-language
       '@averqel/neosis-util-workspace-path':
         specifier: workspace:*
         version: link:../../util/workspace-path
@@ -4366,9 +4497,18 @@ importers:
       '@averqel/cordis':
         specifier: workspace:~
         version: link:../../../vendor/cordis
+      '@averqel/neosis-api-remotes':
+        specifier: workspace:*
+        version: link:../../api/remotes
       '@averqel/neosis-api-session-controller':
         specifier: workspace:*
         version: link:../../api/session-controller
+      '@averqel/neosis-api-workspace-controller':
+        specifier: workspace:*
+        version: link:../../api/workspace-controller
+      '@averqel/neosis-client-connection':
+        specifier: workspace:*
+        version: link:../connection
       '@averqel/neosis-client-locale':
         specifier: workspace:*
         version: link:../locale
@@ -4378,6 +4518,9 @@ importers:
       '@averqel/neosis-client-ui-conversation':
         specifier: workspace:*
         version: link:../ui-conversation
+      '@averqel/neosis-client-ui-layout':
+        specifier: workspace:*
+        version: link:../ui-layout
       '@averqel/neosis-client-ui-primitives':
         specifier: workspace:*
         version: link:../ui-primitives
@@ -4387,15 +4530,30 @@ importers:
       '@averqel/neosis-client-ui-session':
         specifier: workspace:*
         version: link:../ui-session
+      '@averqel/neosis-client-ui-sidebar':
+        specifier: workspace:*
+        version: link:../ui-sidebar
+      '@averqel/neosis-client-ui-sidebar-right':
+        specifier: workspace:*
+        version: link:../ui-sidebar-right
       '@averqel/neosis-client-ui-slots':
         specifier: workspace:*
         version: link:../ui-slots
+      '@averqel/neosis-client-ui-tool':
+        specifier: workspace:*
+        version: link:../ui-tool
+      '@averqel/neosis-client-ui-workspace':
+        specifier: workspace:*
+        version: link:../ui-workspace
       '@averqel/neosis-schedule':
         specifier: workspace:*
         version: link:../../schedule/schedule
       '@averqel/neosis-session':
         specifier: workspace:*
         version: link:../../core/session
+      '@averqel/neosis-util-values':
+        specifier: workspace:*
+        version: link:../../util/values
       '@testing-library/react':
         specifier: ^16.1.0
         version: 16.3.3(@testing-library/dom@10.4.2)(@types/react-dom@18.3.7(@types/react@18.3.31))(@types/react@18.3.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -4405,6 +4563,9 @@ importers:
       '@types/react-dom':
         specifier: ~18.3.0
         version: 18.3.7(@types/react@18.3.31)
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
       react:
         specifier: ^18.2.0
         version: 18.3.1
@@ -4606,6 +4767,9 @@ importers:
       '@averqel/neosis-client-locale':
         specifier: workspace:*
         version: link:../locale
+      '@averqel/neosis-client-shortcuts':
+        specifier: workspace:*
+        version: link:../shortcuts
       '@averqel/neosis-client-store':
         specifier: workspace:*
         version: link:../store
@@ -4639,12 +4803,18 @@ importers:
       '@types/react':
         specifier: ~18.3.1
         version: 18.3.31
+      '@types/react-dom':
+        specifier: ~18.3.0
+        version: 18.3.7(@types/react@18.3.31)
       clsx:
         specifier: ^2.0.0
         version: 2.1.1
       react:
         specifier: ^18.2.0
         version: 18.3.1
+      react-dom:
+        specifier: ^18.2.0
+        version: 18.3.1(react@18.3.1)
 
   packages/client/ui-settings-models:
     dependencies:
@@ -4779,6 +4949,51 @@ importers:
         specifier: ^18.2.0
         version: 18.3.1
 
+  packages/client/ui-settings-session-log:
+    devDependencies:
+      '@averqel/cordis':
+        specifier: workspace:~
+        version: link:../../../vendor/cordis
+      '@averqel/neosis-api-remotes':
+        specifier: workspace:*
+        version: link:../../api/remotes
+      '@averqel/neosis-client-locale':
+        specifier: workspace:*
+        version: link:../locale
+      '@averqel/neosis-client-store':
+        specifier: workspace:*
+        version: link:../store
+      '@averqel/neosis-client-test-runtime':
+        specifier: workspace:*
+        version: link:../../test-support/client-runtime
+      '@averqel/neosis-client-ui-layout':
+        specifier: workspace:*
+        version: link:../ui-layout
+      '@averqel/neosis-client-ui-primitives':
+        specifier: workspace:*
+        version: link:../ui-primitives
+      '@averqel/neosis-client-ui-renderer':
+        specifier: workspace:*
+        version: link:../ui-renderer
+      '@averqel/neosis-client-ui-settings':
+        specifier: workspace:*
+        version: link:../ui-settings
+      '@averqel/neosis-client-ui-slots':
+        specifier: workspace:*
+        version: link:../ui-slots
+      '@types/react':
+        specifier: ~18.3.1
+        version: 18.3.31
+      '@types/react-dom':
+        specifier: ~18.3.0
+        version: 18.3.7(@types/react@18.3.31)
+      react:
+        specifier: ^18.2.0
+        version: 18.3.1
+      react-dom:
+        specifier: ^18.2.0
+        version: 18.3.1(react@18.3.1)
+
   packages/client/ui-settings-shell:
     devDependencies:
       '@averqel/cordis':
@@ -4896,6 +5111,51 @@ importers:
         specifier: ^18.2.0
         version: 18.3.1
 
+  packages/client/ui-shortcuts:
+    devDependencies:
+      '@averqel/cordis':
+        specifier: workspace:~
+        version: link:../../../vendor/cordis
+      '@averqel/neosis-brand':
+        specifier: workspace:*
+        version: link:../../util/brand
+      '@averqel/neosis-client-locale':
+        specifier: workspace:*
+        version: link:../locale
+      '@averqel/neosis-client-shortcuts':
+        specifier: workspace:*
+        version: link:../shortcuts
+      '@averqel/neosis-client-store':
+        specifier: workspace:*
+        version: link:../store
+      '@averqel/neosis-client-test-runtime':
+        specifier: workspace:*
+        version: link:../../test-support/client-runtime
+      '@averqel/neosis-client-ui-layout':
+        specifier: workspace:*
+        version: link:../ui-layout
+      '@averqel/neosis-client-ui-primitives':
+        specifier: workspace:*
+        version: link:../ui-primitives
+      '@averqel/neosis-client-ui-renderer':
+        specifier: workspace:*
+        version: link:../ui-renderer
+      '@averqel/neosis-client-ui-settings':
+        specifier: workspace:*
+        version: link:../ui-settings
+      '@averqel/neosis-client-ui-slots':
+        specifier: workspace:*
+        version: link:../ui-slots
+      '@types/react':
+        specifier: ~18.3.1
+        version: 18.3.31
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
+      react:
+        specifier: ^18.2.0
+        version: 18.3.1
+
   packages/client/ui-sidebar:
     devDependencies:
       '@averqel/cordis':
@@ -4907,6 +5167,9 @@ importers:
       '@averqel/neosis-client-locale':
         specifier: workspace:*
         version: link:../locale
+      '@averqel/neosis-client-shortcuts':
+        specifier: workspace:*
+        version: link:../shortcuts
       '@averqel/neosis-client-store':
         specifier: workspace:*
         version: link:../store
@@ -5590,6 +5853,9 @@ importers:
       '@averqel/neosis-tools':
         specifier: workspace:*
         version: link:../../core/tools
+      '@averqel/neosis-user-questions':
+        specifier: workspace:*
+        version: link:../../interaction/user-questions
       '@averqel/neosis-util-workspace-path':
         specifier: workspace:*
         version: link:../../util/workspace-path
@@ -5695,6 +5961,9 @@ importers:
       '@averqel/neosis-api-session-controller':
         specifier: workspace:*
         version: link:../../api/session-controller
+      '@averqel/neosis-brand':
+        specifier: workspace:*
+        version: link:../../util/brand
       '@averqel/neosis-client-connection':
         specifier: workspace:*
         version: link:../connection
@@ -5704,6 +5973,9 @@ importers:
       '@averqel/neosis-client-store':
         specifier: workspace:*
         version: link:../store
+      '@averqel/neosis-client-ui-chat':
+        specifier: workspace:*
+        version: link:../ui-chat
       '@averqel/neosis-client-ui-conversation':
         specifier: workspace:*
         version: link:../ui-conversation
@@ -5719,6 +5991,9 @@ importers:
       '@averqel/neosis-client-ui-slots':
         specifier: workspace:*
         version: link:../ui-slots
+      '@averqel/neosis-client-ui-tool':
+        specifier: workspace:*
+        version: link:../ui-tool
       '@averqel/neosis-llm':
         specifier: workspace:*
         version: link:../../llm/llm
@@ -7537,6 +7812,22 @@ importers:
         specifier: workspace:*
         version: link:../../util/values
 
+  packages/experimental/schedule-bundle:
+    dependencies:
+      '@averqel/neosis-client-ui-schedule':
+        specifier: workspace:*
+        version: link:../../client/ui-schedule
+      '@averqel/neosis-schedule':
+        specifier: workspace:*
+        version: link:../../schedule/schedule
+      '@averqel/neosis-time-context':
+        specifier: workspace:*
+        version: link:../../context/time-context
+    devDependencies:
+      '@averqel/cordis':
+        specifier: workspace:~
+        version: link:../../../vendor/cordis
+
   packages/experimental/speech-to-text:
     dependencies:
       '@averqel/neosis-brand':
@@ -8101,6 +8392,9 @@ importers:
 
   packages/fs/tool-fs:
     dependencies:
+      '@averqel/neosis-util-code-language':
+        specifier: workspace:*
+        version: link:../../util/code-language
       '@averqel/schemastery':
         specifier: link:../../../vendor/schemastery
         version: link:../../../vendor/schemastery
@@ -8886,6 +9180,10 @@ importers:
         version: link:../user-approval
 
   packages/interaction/tool-ask-user:
+    dependencies:
+      '@averqel/schemastery':
+        specifier: link:../../../vendor/schemastery
+        version: link:../../../vendor/schemastery
     devDependencies:
       '@averqel/cordis':
         specifier: workspace:~
@@ -8938,6 +9236,13 @@ importers:
         version: link:../../core/system-prompt
 
   packages/interaction/user-questions:
+    dependencies:
+      '@averqel/schemastery':
+        specifier: link:../../../vendor/schemastery
+        version: link:../../../vendor/schemastery
+      zod:
+        specifier: ^4.4.3
+        version: 4.6.5
     devDependencies:
       '@averqel/cordis':
         specifier: workspace:~
@@ -8951,6 +9256,21 @@ importers:
       '@averqel/neosis-scope':
         specifier: workspace:*
         version: link:../../core/scope
+      '@averqel/neosis-session':
+        specifier: workspace:*
+        version: link:../../core/session
+      '@averqel/neosis-session-persistence-jsonl':
+        specifier: workspace:*
+        version: link:../../session/session-persistence-jsonl
+      '@averqel/neosis-session-projection':
+        specifier: workspace:*
+        version: link:../../session/session-projection
+      '@averqel/neosis-tools':
+        specifier: workspace:*
+        version: link:../../core/tools
+      '@averqel/neosis-typert-protocol':
+        specifier: workspace:*
+        version: link:../../typert/protocol
 
   packages/jobs/jobs:
     devDependencies:
@@ -9181,6 +9501,55 @@ importers:
         specifier: workspace:*
         version: link:../../core/tools
 
+  packages/llm/llm-deepseek-account:
+    devDependencies:
+      '@averqel/cordis':
+        specifier: workspace:~
+        version: link:../../../vendor/cordis
+      '@averqel/cordis-plugin-loader':
+        specifier: workspace:~
+        version: link:../../../vendor/loader
+      '@averqel/neosis-deepseek-account':
+        specifier: workspace:*
+        version: link:../../credentials/deepseek-account
+      '@averqel/neosis-launch-environment':
+        specifier: workspace:*
+        version: link:../../util/launch-environment
+      '@averqel/neosis-llm':
+        specifier: workspace:*
+        version: link:../llm
+      '@averqel/neosis-llm-deepseek':
+        specifier: workspace:*
+        version: link:../llm-deepseek
+      '@averqel/neosis-llm-deepseek-api-key':
+        specifier: workspace:*
+        version: link:../llm-deepseek-api-key
+
+  packages/llm/llm-deepseek-api-key:
+    dependencies:
+      '@averqel/schemastery':
+        specifier: link:../../../vendor/schemastery
+        version: link:../../../vendor/schemastery
+    devDependencies:
+      '@averqel/cordis':
+        specifier: workspace:~
+        version: link:../../../vendor/cordis
+      '@averqel/cordis-plugin-loader':
+        specifier: workspace:~
+        version: link:../../../vendor/loader
+      '@averqel/neosis-credentials':
+        specifier: workspace:*
+        version: link:../../credentials/credentials
+      '@averqel/neosis-launch-environment':
+        specifier: workspace:*
+        version: link:../../util/launch-environment
+      '@averqel/neosis-llm':
+        specifier: workspace:*
+        version: link:../llm
+      '@averqel/neosis-llm-deepseek':
+        specifier: workspace:*
+        version: link:../llm-deepseek
+
   packages/llm/llm-pi-ai:
     dependencies:
       '@averqel/neosis-brand':
@@ -9193,8 +9562,8 @@ importers:
         specifier: link:../../../vendor/schemastery
         version: link:../../../vendor/schemastery
       '@earendil-works/pi-ai':
-        specifier: ^0.85.1
-        version: 0.85.1(patch_hash=b9bcce474fb2ac44633dff0fa722816a5bff5451b4575d5874035ea14ba70a4f)(@modelcontextprotocol/sdk@1.30.0(zod@4.6.5))(ws@8.21.0)(zod@4.6.5)
+        specifier: ^0.87.1
+        version: 0.87.1(patch_hash=b9bcce474fb2ac44633dff0fa722816a5bff5451b4575d5874035ea14ba70a4f)(@modelcontextprotocol/sdk@1.30.0(zod@4.6.5))(ws@8.21.0)(zod@4.6.5)
     devDependencies:
       '@averqel/cordis':
         specifier: workspace:~
@@ -9888,6 +10257,9 @@ importers:
       '@averqel/neosis-sandbox-local':
         specifier: workspace:*
         version: link:../sandbox-local
+      '@averqel/neosis-skill':
+        specifier: workspace:*
+        version: link:../../skill/skill
       '@averqel/neosis-subprocess':
         specifier: workspace:*
         version: link:../../subprocess/subprocess
@@ -9897,6 +10269,12 @@ importers:
 
   packages/schedule/schedule:
     dependencies:
+      '@averqel/schemastery':
+        specifier: link:../../../vendor/schemastery
+        version: link:../../../vendor/schemastery
+      '@js-temporal/polyfill':
+        specifier: 0.5.1
+        version: 0.5.1
       zod:
         specifier: ^4.4.3
         version: 4.6.5
@@ -9916,6 +10294,9 @@ importers:
       '@averqel/neosis-agent-loop-testkit':
         specifier: workspace:*
         version: link:../../test-support/agent-loop-testkit
+      '@averqel/neosis-api-session-controller':
+        specifier: workspace:*
+        version: link:../../api/session-controller
       '@averqel/neosis-brand':
         specifier: workspace:*
         version: link:../../util/brand
@@ -9937,12 +10318,18 @@ importers:
       '@averqel/neosis-session-projection':
         specifier: workspace:*
         version: link:../../session/session-projection
+      '@averqel/neosis-storage-domain':
+        specifier: workspace:*
+        version: link:../../storage/storage-domain
       '@averqel/neosis-system-prompt':
         specifier: workspace:*
         version: link:../../core/system-prompt
       '@averqel/neosis-tools':
         specifier: workspace:*
         version: link:../../core/tools
+      '@averqel/neosis-typert-protocol':
+        specifier: workspace:*
+        version: link:../../typert/protocol
       '@averqel/neosis-workspace':
         specifier: workspace:*
         version: link:../../workspace/workspace
@@ -11950,6 +12337,76 @@ importers:
         specifier: workspace:*
         version: link:../../core/tools
 
+  packages/subagent/subagent-dsh-sdk:
+    dependencies:
+      '@averqel/neosis-brand':
+        specifier: workspace:*
+        version: link:../../util/brand
+      '@averqel/schemastery':
+        specifier: link:../../../vendor/schemastery
+        version: link:../../../vendor/schemastery
+    devDependencies:
+      '@averqel/cordis':
+        specifier: workspace:~
+        version: link:../../../vendor/cordis
+      '@averqel/cordis-plugin-loader':
+        specifier: workspace:~
+        version: link:../../../vendor/loader
+      '@averqel/neosis-agent':
+        specifier: workspace:*
+        version: link:../../core/agent
+      '@averqel/neosis-agent-instructions':
+        specifier: workspace:*
+        version: link:../../context/agent-instructions
+      '@averqel/neosis-app-boot':
+        specifier: workspace:*
+        version: link:../../boot/app-boot
+      '@averqel/neosis-llm':
+        specifier: workspace:*
+        version: link:../../llm/llm
+      '@averqel/neosis-llm-deepseek':
+        specifier: workspace:*
+        version: link:../../llm/llm-deepseek
+      '@averqel/neosis-llm-deepseek-api-key':
+        specifier: workspace:*
+        version: link:../../llm/llm-deepseek-api-key
+      '@averqel/neosis-loader-smoke':
+        specifier: workspace:*
+        version: link:../../test-support/loader-smoke
+      '@averqel/neosis-sdk-client':
+        specifier: workspace:*
+        version: link:../../sdk/client
+      '@averqel/neosis-sdk-protocol':
+        specifier: workspace:*
+        version: link:../../sdk/protocol
+      '@averqel/neosis-session':
+        specifier: workspace:*
+        version: link:../../core/session
+      '@averqel/neosis-session-checkpoint-policy':
+        specifier: workspace:*
+        version: link:../../session/session-checkpoint-policy
+      '@averqel/neosis-session-persistence-jsonl':
+        specifier: workspace:*
+        version: link:../../session/session-persistence-jsonl
+      '@averqel/neosis-session-projection':
+        specifier: workspace:*
+        version: link:../../session/session-projection
+      '@averqel/neosis-skill-filesystem':
+        specifier: workspace:*
+        version: link:../../skill/skill-filesystem
+      '@averqel/neosis-subagent':
+        specifier: workspace:*
+        version: link:../subagent
+      '@averqel/neosis-subprocess':
+        specifier: workspace:*
+        version: link:../../subprocess/subprocess
+      '@averqel/neosis-system-prompt':
+        specifier: workspace:*
+        version: link:../../core/system-prompt
+      '@averqel/neosis-tool-subagent':
+        specifier: workspace:*
+        version: link:../tool-subagent
+
   packages/subagent/subagent-fork-in-process:
     dependencies:
       '@averqel/schemastery':
@@ -12341,6 +12798,40 @@ importers:
       '@averqel/cordis':
         specifier: workspace:~
         version: link:../../../vendor/cordis
+
+  packages/telemetry/otel:
+    dependencies:
+      '@opentelemetry/api':
+        specifier: ^1.9.1
+        version: 1.9.1
+      '@opentelemetry/api-logs':
+        specifier: ^0.220.0
+        version: 0.220.0
+      '@opentelemetry/core':
+        specifier: 2.9.0
+        version: 2.9.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/otlp-exporter-base':
+        specifier: ^0.220.0
+        version: 0.220.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/otlp-transformer':
+        specifier: ^0.220.0
+        version: 0.220.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/resources':
+        specifier: ^2.9.0
+        version: 2.11.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/sdk-logs':
+        specifier: ^0.220.0
+        version: 0.220.0(@opentelemetry/api@1.9.1)
+      got:
+        specifier: ^14.6.6
+        version: 14.6.6
+    devDependencies:
+      '@averqel/cordis':
+        specifier: workspace:~
+        version: link:../../../vendor/cordis
+      '@averqel/neosis-session':
+        specifier: workspace:*
+        version: link:../../core/session
 
   packages/terminal/terminal:
     devDependencies:
@@ -12895,6 +13386,12 @@ importers:
         specifier: workspace:~
         version: link:../../../vendor/cordis
 
+  packages/util/code-language:
+    devDependencies:
+      '@averqel/cordis':
+        specifier: workspace:~
+        version: link:../../../vendor/cordis
+
   packages/util/crypto:
     devDependencies:
       '@averqel/cordis':
@@ -13097,6 +13594,9 @@ importers:
       '@averqel/neosis-credentials-local':
         specifier: workspace:*
         version: link:../../credentials/credentials-local
+      '@averqel/neosis-deepseek-account':
+        specifier: workspace:*
+        version: link:../../credentials/deepseek-account
       '@averqel/neosis-http-proxy':
         specifier: workspace:*
         version: link:../../util/http-proxy
@@ -14201,8 +14701,8 @@ packages:
       '@modelcontextprotocol/sdk': ^1.29.0
       zod: ^4.0.0
 
-  '@anthropic-ai/sdk@0.123.0':
-    resolution: {integrity: sha512-Y9oX9mPNGZClHQOFqrWRk43Srcu/UHuPq3rfxxOq7JgW0gi+lJA2MAOK4Ul3k/+AUrwRWFJvd0tK3oC0Pw25dw==}
+  '@anthropic-ai/sdk@0.124.0':
+    resolution: {integrity: sha512-cN5O8i9UVxHeOQAzj/XjshWXG8KiibJDw9OGpH2Z/eR3n/RBxdoLxDJOcfqAJWvjaMDFfHTBADU04hWRJVkDyA==}
     hasBin: true
     peerDependencies:
       zod: ^3.25.0 || ^4.0.0
@@ -14234,21 +14734,8 @@ packages:
   '@asamuzakjp/nwsapi@2.3.9':
     resolution: {integrity: sha512-n8GuYSrI9bF7FFZ/SjhwevlHc8xaVlb/7HmHelnc/PZXBD2ZR49NnN9sMMuDdEGPeeRQ5d0hqlSlEpgCX3Wl0Q==}
 
-  '@aws-crypto/sha256-browser@5.2.0':
-    resolution: {integrity: sha512-AXfN/lGotSQwu6HNcEsIASo7kWXZ5HYWvfOmSNKDsEqC4OashTp8alTmaz+F7TC2L083SFv5RdB+qU3Vs1kZqw==}
-
-  '@aws-crypto/sha256-js@5.2.0':
-    resolution: {integrity: sha512-FFQQyu7edu4ufvIZ+OadFpHHOt+eSTBaYaki44c+akjg7qZg9oOQeLlk77F6tSYqjDAFClrHJk9tMf0HdVyOvA==}
-    engines: {node: '>=16.0.0'}
-
-  '@aws-crypto/supports-web-crypto@5.2.0':
-    resolution: {integrity: sha512-iAvUotm021kM33eCdNfwIN//F77/IADDSs58i+MDaOqFrVjZo9bAal0NK7HurRuWLLpF1iLX7gbWrjHjeo+YFg==}
-
-  '@aws-crypto/util@5.2.0':
-    resolution: {integrity: sha512-4RkU9EsI6ZpBve5fseQlGNUWKMa1RLPQ1dnjnQoe07ldfIzcsGb5hC5W0Dm7u423KWzawlrpbjXBrXCEv9zazQ==}
-
-  '@aws-sdk/client-bedrock-runtime@3.1048.0':
-    resolution: {integrity: sha512-u+NT61JZEkRFtpL0CAw1N1dwxnaLgwVXQl/zjJxTGgLyS/jTIdg2SdoEoCTHxgDyCnqa1HEi9QOoE9/pYRNpOQ==}
+  '@aws-sdk/client-bedrock-runtime@3.1127.0':
+    resolution: {integrity: sha512-IDl/lrPb90aH+pZFHGNDmgH9nAUQj5PlZH1sJ3w7RikctyjHSnY3oNjZhrLoaBoQn/rNK0zsP6OHEqEhj2tdLA==}
     engines: {node: '>=20.0.0'}
 
   '@aws-sdk/core@3.978.1':
@@ -14307,8 +14794,8 @@ packages:
     resolution: {integrity: sha512-Zk08macMvQTHzQJCLJVkOlviVoqwYMrpXv4lmLN7b7sAbiMoOK7Go0NYdR5UeF+MW8LIbRmwrNy9u/5VvX1U5g==}
     engines: {node: '>=20.0.0'}
 
-  '@aws-sdk/token-providers@3.1048.0':
-    resolution: {integrity: sha512-k0y/GcuesuSfWyUM0WamrGyeZmltRYaPbHO82UDA6mZ/doB+FOHKutikPAtSXMn/hDz970cF+iRuuiYO9VEbAA==}
+  '@aws-sdk/token-providers@3.1127.0':
+    resolution: {integrity: sha512-Dv2TMWBshJ+tF6ahs2Sy5bh4Iabsd4GAQqVvE9XZmYmnoaVbpS2QKIKE/HRacc7bTtbjEEvP+laGzHvHlf1CiQ==}
     engines: {node: '>=20.0.0'}
 
   '@aws-sdk/token-providers@3.1138.0':
@@ -14317,10 +14804,6 @@ packages:
 
   '@aws-sdk/types@3.974.6':
     resolution: {integrity: sha512-v/clNZzZnDxGyvpHMOGpJKVXFAExJzUNAAjaWGdcx8QAcXLGwTaOkw33p5SHAi0YAioK32xB3hWwOekRVfmfKg==}
-    engines: {node: '>=20.0.0'}
-
-  '@aws-sdk/util-locate-window@3.965.10':
-    resolution: {integrity: sha512-ycwH6Zd2GhuSqdXX9ihbCjeGTB6xOJs+O3+Jb8/zDG9978XU80qs75dfkPJRMNKe5MvBZPuNeFpd4JZKPoUF4g==}
     engines: {node: '>=20.0.0'}
 
   '@aws-sdk/xml-builder@3.972.41':
@@ -14507,13 +14990,13 @@ packages:
       search-insights:
         optional: true
 
-  '@earendil-works/pi-ai@0.85.1':
-    resolution: {integrity: sha512-+VgVIJDkDO2efYJKEEqvPTH4zmnIaXdAppGbO+vKFA9qy5PdhFiAenuFAkU+oiCSfOC4dMHDyrjdQeL4ZoC5CQ==}
+  '@earendil-works/pi-ai@0.87.1':
+    resolution: {integrity: sha512-X/3PfQBnnoeVdO9Cv8zHghUMglzlgNZYGNzoPnbRoGnHl3Rw3TlA2UKSUB7BRHUOxMryHXYa8dnjWZlbRheDZA==}
     engines: {node: '>=22.19.0'}
     hasBin: true
 
-  '@earendil-works/pi-telemetry@0.85.1':
-    resolution: {integrity: sha512-Bg/YN6kA7Swja/NQxka8xFdecb4E/auIEGF2G5A25EaQXhRnPj300/7/KpgsDDMYUzHTDAv4RyUxaQPJKW81Rw==}
+  '@earendil-works/pi-telemetry@0.87.1':
+    resolution: {integrity: sha512-MC6TRQH5lgMXpcN+Vku2WMI2T8BsiUPzMQHGo81uqFZD3/9O79WWJAysEDGuzduP6R4tvtgwMLwmqIxynM10JQ==}
     engines: {node: '>=22.19.0'}
 
   '@electron-internal/extract-zip@1.0.5':
@@ -15074,8 +15557,8 @@ packages:
       react: '>= 18.2'
       react-dom: '>= 18.2'
 
-  '@google/genai@1.52.0':
-    resolution: {integrity: sha512-gwSvbpiN/17O9TbsqSsE/OzZcpv5Fo4RQjdngGgogtuB9RsyJ8ZHhX5KjHj1bp5N9snN2eK8LDGXSaWW2hof8Q==}
+  '@google/genai@2.21.0':
+    resolution: {integrity: sha512-+PDtco2/Z0ONdzCGekCoCT+O1VJS9xJQNN4XzQpXG/t3El/SWWMkCWlFRO1KmivOHPa4Q0VjUYu1HBKCZ/v33Q==}
     engines: {node: '>=20.0.0'}
     peerDependencies:
       '@modelcontextprotocol/sdk': ^1.25.2
@@ -15308,6 +15791,10 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
+
+  '@js-temporal/polyfill@0.5.1':
+    resolution: {integrity: sha512-hloP58zRVCRSpgDxmqCWJNlizAlUgJFqG2ypq79DCvyv9tHjRYMDOcPFjzfl/A1/YxDvRCZz8wvZvmapQnKwFQ==}
+    engines: {node: '>=12'}
 
   '@keyv/bigmap@1.3.1':
     resolution: {integrity: sha512-WbzE9sdmQtKy8vrNPa9BRnwZh5UF4s1KTmSK0KUVLo3eff5BlQNNWDnFOouNpKfPKDnms9xynJjsMYjMaT/aFQ==}
@@ -16329,6 +16816,10 @@ packages:
     resolution: {integrity: sha512-t09vSN3MdfsyCHoFcTRCH/iUtG7OJ0CsjzB8cjAmKc/va/kIgeDI/TxsigdncE/4be734m0cvIYwNaV4i2XqAw==}
     engines: {node: '>=10'}
 
+  '@sindresorhus/is@7.2.0':
+    resolution: {integrity: sha512-P1Cz1dWaFfR4IR+U13mqqiGsLFf1KbayybWwdd2vfctdV6hDpUkgCY0nKOLLTMSoRd/jJNjtbqzf13K8DCCXQw==}
+    engines: {node: '>=18'}
+
   '@sindresorhus/merge-streams@4.0.0':
     resolution: {integrity: sha512-tlqY9xq5ukxTUZBmoOp+m61cqwQD5pHJtFY3Mn8CA8ps6yghLH/Hw8UPdqg4OLmFW3IFlcXnQNmo/dh8HzXYIQ==}
     engines: {node: '>=18'}
@@ -16345,16 +16836,8 @@ packages:
     resolution: {integrity: sha512-ycSJu3tFAQ4v04CBB0agqFMVsSQ1iG3yw+SpgxRqKfaURpQD4CZ8Wn0zPMmSnOuTpTh65Vz+EA0rMrw089wvkA==}
     engines: {node: '>=18.0.0'}
 
-  '@smithy/is-array-buffer@2.2.0':
-    resolution: {integrity: sha512-GGP3O9QFD24uGeAXYUjwSTXARoqpZykHadOmA8G5vfJPK0/DC67qa//0qvqrJzL1xc8WQWX7/yc7fwudjPHPhA==}
-    engines: {node: '>=14.0.0'}
-
   '@smithy/node-http-handler@4.12.1':
     resolution: {integrity: sha512-ThMkboGeONWXAelq9FvGsuJC4rOi+qyC4/zhUF58xYpxUg5sQKx2VXZYJmtNjr4dSuBJ1HeJXETQILCz3wOHvw==}
-    engines: {node: '>=18.0.0'}
-
-  '@smithy/node-http-handler@4.7.3':
-    resolution: {integrity: sha512-/jPhevcTFPMVl6KNjbaI47iOg1zxC7IsnX4PQDGVZKMFceOXtB8IEYaB7a9VvkP/3oC60WzTeKocvSI7vLT0vA==}
     engines: {node: '>=18.0.0'}
 
   '@smithy/signature-v4@5.7.3':
@@ -16364,14 +16847,6 @@ packages:
   '@smithy/types@4.19.0':
     resolution: {integrity: sha512-r7jh49VJxGerfAcTQA6gXcKc+98zOp/tqRwzYjgOE+iSQsP6cEU1hq2QzbuipmP68QtYdY9wKEhiCQZIzHgZ4Q==}
     engines: {node: '>=18.0.0'}
-
-  '@smithy/util-buffer-from@2.2.0':
-    resolution: {integrity: sha512-IJdWBbTcMQ6DA0gdNhh/BwrLkDR+ADW5Kr1aZmd4k3DIF6ezMV4R2NIAmT08wQJ3yUK82thHWmC/TnK/wpMMIA==}
-    engines: {node: '>=14.0.0'}
-
-  '@smithy/util-utf8@2.3.0':
-    resolution: {integrity: sha512-R8Rdn8Hy72KKcebgLiv8jQcQkXoLMOGGv5uI1/k0l+snqkOzQ1R0ChUBCxWMlBsFMekWjq0wRudIweFs7sKT5A==}
-    engines: {node: '>=14.0.0'}
 
   '@sonarsource/analyzer-commons-configurations@2.31.0-5284':
     resolution: {integrity: sha512-ruk3blMs9BE9RNSp9LPpWZAIjxJmq4Cp00E3cELIHz7Kym3WxdWGRlKOMYLRQ5tJg/de7jN5AtEElY3bGIfTcw==}
@@ -17208,6 +17683,10 @@ packages:
     resolution: {integrity: sha512-MnA+YT8fwfJPgBx3m60MNqakm30XOkyIoH1y6huTQvC0PwZG7ki8NacLBcrPbNoo8vEZy7Jpuk7+jMO+CUovTQ==}
     engines: {node: '>= 14'}
 
+  agent-base@9.0.0:
+    resolution: {integrity: sha512-TQf59BsZnytt8GdJKLPfUZ54g/iaUL2OWDSFCCvMOhsHduDQxO8xC4PNeyIkVcA5KwL2phPSv0douC0fgWzmnA==}
+    engines: {node: '>= 20'}
+
   agentkeepalive@4.6.0:
     resolution: {integrity: sha512-kja8j7PjmncONqaTsB8fQ+wE2mSU2DJ9D4XKoJ5PFWIdRMa6SLSN1ff4mOr4jCbfRSsxR4keIiySJU0N9T5hIQ==}
     engines: {node: '>= 8.0.0'}
@@ -17491,6 +17970,10 @@ packages:
     resolution: {integrity: sha512-tjwM5exMg6BGRI+kNmTntNsvdZS1X8BFYS6tnJ2hdH0kVxM6/eVZ2xy+FqStSWvYmtfFMDLIxurorHwDKfDz5Q==}
     engines: {node: '>=18'}
 
+  byte-counter@0.1.0:
+    resolution: {integrity: sha512-jheRLVMeUKrDBjVw2O5+k4EvR4t9wtxHL+bo/LxfkxsVeuGMy3a5SEGgXdAFA4FSzTrU8rQXQIrsZ3oBq5a0pQ==}
+    engines: {node: '>=20'}
+
   bytes@3.1.2:
     resolution: {integrity: sha512-/Nf7TyzTx6S3yRJObOAV7956r8cr2+Oj8AC5dt8wSP3BQAoeX58NoHyCU8P8zGkNXStjTSi6fzO6F0pBdcYbEg==}
     engines: {node: '>= 0.8'}
@@ -17506,6 +17989,14 @@ packages:
   cacheable-lookup@5.0.4:
     resolution: {integrity: sha512-2/kNscPhpcxrOigMZzbiWF7dz8ilhb/nIHU3EyZiXWXpeq/au8qJ8VhdftMkty3n7Gj6HIGalQG8oiBNB3AJgA==}
     engines: {node: '>=10.6.0'}
+
+  cacheable-lookup@7.0.0:
+    resolution: {integrity: sha512-+qJyx4xiKra8mZrcwhjMRMUhD5NR1R8esPkzIYxX96JiecFoxAXFuz/GpR3+ev4PE1WamHip78wV0vcmPQtp8w==}
+    engines: {node: '>=14.16'}
+
+  cacheable-request@13.0.19:
+    resolution: {integrity: sha512-SVXGH037+Mo1aIMO5B2UcleR43FGjFdN+M8JObSyEoQ2Mn4CODRWx28gN5jiTF0n5ItsgtIZfyargMNs8GX4kg==}
+    engines: {node: '>=18'}
 
   cacheable-request@7.0.4:
     resolution: {integrity: sha512-v+p6ongsrp0yTGbJXjgxPow2+DL93DASP4kXCDKb8/bwRtt9OEF3whggkkDkGNzgcWy2XaF4a8nZglC7uElscg==}
@@ -17937,6 +18428,10 @@ packages:
 
   decode-named-character-reference@1.3.0:
     resolution: {integrity: sha512-GtpQYB283KrPp6nRw50q3U9/VfOutZOe103qlN7BPP6Ad27xYnOIWv4lPzo8HCAL+mMZofJ9KEy30fq6MfaK6Q==}
+
+  decompress-response@10.0.0:
+    resolution: {integrity: sha512-oj7KWToJuuxlPr7VV0vabvxEIiqNMo+q0NueIiL3XhtwC6FVOX7Hr1c0C4eD0bmf7Zr+S/dSf2xvkH3Ad6sU3Q==}
+    engines: {node: '>=20'}
 
   decompress-response@6.0.0:
     resolution: {integrity: sha512-aW35yZM6Bb/4oJlZncMH2LCoZtJXTRxES17vE3hoRiowU2kWHaJKFkSBDnDR+cm9J+9QhXmREyIfv0pji9ejCQ==}
@@ -18402,6 +18897,10 @@ packages:
   form-data-encoder@1.7.2:
     resolution: {integrity: sha512-qfqtYan3rxrnCk1VYaA4H+Ms9xdpPqvLZa6xmMgFvhO32x7/3J/ExcTd6qpxM0vH2GdMI+poehyBZvqfMTto8A==}
 
+  form-data-encoder@4.1.0:
+    resolution: {integrity: sha512-G6NsmEW15s0Uw9XnCg+33H3ViYRyiM0hMrMhhqQOR8NFc5GhYrI+6I3u7OTw7b91J2g8rtvMBZJDbcGb2YUniw==}
+    engines: {node: '>= 18'}
+
   form-data@2.5.6:
     resolution: {integrity: sha512-Ogz/E85h9tlfJzpI6TuFpGcHZFhLrb9Gw8wq9v40CxSCPnv7ahKr6Xgtkn0KYCDQJ8DNn5VoMO8EXr9V5PadyA==}
     engines: {node: '>= 0.12'}
@@ -18561,6 +19060,10 @@ packages:
     resolution: {integrity: sha512-6tfZ91bOr7bOXnK7PRDCGBLa1H4U080YHNaAQ2KsMGlLEzRbk44nsZF2E1IeRc3vtJHPVbKCYgdFbaGO2ljd8g==}
     engines: {node: '>=10.19.0'}
 
+  got@14.6.6:
+    resolution: {integrity: sha512-QLV1qeYSo5l13mQzWgP/y0LbMr5Plr5fJilgAIwgnwseproEbtNym8xpLsDzeZ6MWXgNE6kdWGBjdh3zT/Qerg==}
+    engines: {node: '>=20'}
+
   graceful-fs@4.2.11:
     resolution: {integrity: sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==}
 
@@ -18649,6 +19152,10 @@ packages:
     resolution: {integrity: sha512-T1gkAiYYDWYx3V5Bmyu7HcfcvL7mUrTWiM6yOfa3PIphViJ/gFPbvidQ+veqSOHci/PxBcDabeUNCzpOODJZig==}
     engines: {node: '>= 14'}
 
+  http-proxy-agent@9.1.0:
+    resolution: {integrity: sha512-2NxoveTT58mjYT4n3RPTEfCZGLMbidoO8XEieXfpSYxu+PQJ1qpx4ypwH6N+uF9twBPIvRRgvkvW5HUTYWENig==}
+    engines: {node: '>= 20'}
+
   http-proxy@1.18.1:
     resolution: {integrity: sha512-7mz/721AbnJwIVbnaSv1Cz3Am0ZLT/UBwkC92VlxhXv/k/BBQfM2fXElQNC27BVGr0uwUpplYPQM9LnaBMR5NQ==}
     engines: {node: '>=8.0.0'}
@@ -18666,9 +19173,17 @@ packages:
     resolution: {integrity: sha512-V+23sDMr12Wnz7iTcDeJr3O6AIxlnvT/bmaAAAP/Xda35C90p9599p0F1eHR/N1KILWSoWVAiOMFjBBXaXSMxg==}
     engines: {node: '>=10.19.0'}
 
+  http2-wrapper@2.2.1:
+    resolution: {integrity: sha512-V5nVw1PAOgfI3Lmeaj2Exmeg7fenjhRUgz1lPSezy1CuhPYbgQtbQj4jZfEAEMlaL+vupsvhjqCyjzob0yxsmQ==}
+    engines: {node: '>=10.19.0'}
+
   https-proxy-agent@7.0.6:
     resolution: {integrity: sha512-vK9P5/iUfdl95AI+JVyUuIcVtd4ofvtrOr3HNtM2yxC9bnMbEdp3x01OhQNnjb8IJYi38VlTE3mBXwcfvywuSw==}
     engines: {node: '>= 14'}
+
+  https-proxy-agent@9.1.0:
+    resolution: {integrity: sha512-ag87y7cJJ9/3+GxFr8Oy4O5faDsGRGnBGsJj/YjOSsSx/5eadKLYTMPlzuR6obgoCDDm0abAAZitXXQkMOPSpA==}
+    engines: {node: '>= 20'}
 
   human-signals@8.0.1:
     resolution: {integrity: sha512-eKCa6bwnJhvxj14kZk5NCPc6Hb6BdsU9DZcOnmQKSnO1VKrfV0zCvtttPZUsBvjmNDn8rpcJfpwSYnHBjc95MQ==}
@@ -18861,6 +19376,9 @@ packages:
   js-yaml@4.3.2:
     resolution: {integrity: sha512-SFNOvSJ+Dgf/9An904Yx+CgSlIPCkIpao4qo51lpee25TIRejdH3rhR4EZMGoNx3/TP3O+wzWuiTFl4sqbltzA==}
     hasBin: true
+
+  jsbi@4.3.2:
+    resolution: {integrity: sha512-9fqMSQbhJykSeii05nxKl4m6Eqn2P6rOlYiS+C5Dr/HPIU/7yZxu5qzbs40tgaFORiw2Amd0mirjxatXYMkIew==}
 
   jsbn@0.1.1:
     resolution: {integrity: sha512-UVU9dibq2JcFWxQPA6KCqj5O42VOmAY3zQUfEKxU0KpTGXwNoCjkX1e13eHNvw/xPynt6pU0rZ1htjWTNTSXsg==}
@@ -19229,6 +19747,10 @@ packages:
     resolution: {integrity: sha512-tqNXrS78oMOE73NMxK4EMLQsQowWf8jKooH9g7xPavRT706R6bkQJ6DY2Te7QukaZsulxa30wQ7bk0pm4XiHmA==}
     engines: {node: '>=8'}
 
+  lowercase-keys@3.0.0:
+    resolution: {integrity: sha512-ozCC6gdQ+glXOQsveKD0YsDy8DSQFjDTz4zyzEHNV5+JP5D62LmfDZ6o1cycFx9ouG940M5dE8C8CTewdj2YWQ==}
+    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
+
   lru-cache@11.5.3:
     resolution: {integrity: sha512-U4N8FgzmWxc8k1VH8Kr6lQg18U7Fjvby6wXHVRX/ZZ7IwWbRMgrRbP0Wrb5q5NVinryp4SQampHKdvtecItxUg==}
     engines: {node: 20 || >=22}
@@ -19447,6 +19969,10 @@ packages:
     resolution: {integrity: sha512-z0yWI+4FDrrweS8Zmt4Ej5HdJmky15+L2e6Wgn3+iK5fWzb6T3fhNFq2+MeTRb064c6Wr4N/wv0DzQTjNzHNGQ==}
     engines: {node: '>=10'}
 
+  mimic-response@4.0.0:
+    resolution: {integrity: sha512-e5ISH9xMYU0DzrT+jl8q2ze9D6eWBto+I8CNpe+VI+K2J/F/k3PdkdTdz4wvGVH4NTpo+NRYTVIuMQEMMcsLqg==}
+    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
+
   minimatch@10.2.6:
     resolution: {integrity: sha512-vpLQEs+VLCr1nU0BXS07maYoFwlDAH0gngQuuttxIwutDFEMHq2blX+8vpgxDdK3J1PwjCJiep77OitTZ4Ll1A==}
     engines: {node: 18 || 20 || >=22}
@@ -19637,6 +20163,10 @@ packages:
     resolution: {integrity: sha512-DlL+XwOy3NxAQ8xuC0okPgK46iuVNAK01YN7RueYBqqFeGsBjV9XmCAzAdgt+667bCl5kPh9EqKKDwnaPG1I7A==}
     engines: {node: '>=10'}
 
+  normalize-url@8.1.1:
+    resolution: {integrity: sha512-JYc0DPlpGWB40kH5g07gGTrYuMqV653k3uBKY6uITPWds3M0ov3GaWGp9lbE3Bzngx8+XkfzgvASb9vk9JDFXQ==}
+    engines: {node: '>=14.16'}
+
   npm-run-path@6.0.0:
     resolution: {integrity: sha512-9qny7Z9DsQU8Ou39ERsPU4OZQlSTP47ShQzuKZ6PRXpYLtIFgl/DEBYEXKlvcEa+9tHVcK8CF81Y2V72qaZhWA==}
     engines: {node: '>=18'}
@@ -19726,6 +20256,10 @@ packages:
   p-cancelable@2.1.1:
     resolution: {integrity: sha512-BZOr3nRQHOntUjTrH8+Lh54smKHoHyur8We1V8DSMVrl5A2malOOwuJRnKRDjSnkoeBh4at6BwEnb5I7Jl31wg==}
     engines: {node: '>=8'}
+
+  p-cancelable@4.0.1:
+    resolution: {integrity: sha512-wBowNApzd45EIKdO1LaU+LrMBwAcjfPaYtVzV3lmfM3gf8Z4CHZsiIqlM8TZZ8okYvh5A1cP6gTfCRQtwUpaUg==}
+    engines: {node: '>=14.16'}
 
   p-limit@3.1.0:
     resolution: {integrity: sha512-TYOanM3wGwNGsZN2cVTYPArw454xnXj5qmWF1bEoAc4+cU/ol7GVh7odevjp1FNHduHc3KZMcFduxU5Xc6uJRQ==}
@@ -19945,6 +20479,15 @@ packages:
     resolution: {integrity: sha512-5nnx0yGyVUcY6t9RnWcARWtwT9F1D8O9rt08htPvnd49W1IgZtmLkhu9WfMzQj1cFxjHIO6connUNVW5k7AVyQ==}
     engines: {node: '>= 0.10'}
 
+  proxy-agent-negotiate@1.1.0:
+    resolution: {integrity: sha512-N8IBcM3UgCVzz2L2Lqv8DVntDnnC8/hiV4nEDUPkqq72TPUgYWjQc+bdZlBPZK9LzPAvOY//gAt0S0DApoOXWQ==}
+    engines: {node: '>= 20'}
+    peerDependencies:
+      kerberos: ^2.0.0
+    peerDependenciesMeta:
+      kerberos:
+        optional: true
+
   psl@1.15.0:
     resolution: {integrity: sha512-JZd3gMVBAVQkSs6HdNZo9Sdo0LNcQeMNP3CozBJb3JYC/QUYZTnKxP+f8oWRX4rHP5EurWxqAHTSwUCjlNKa1w==}
 
@@ -20094,6 +20637,10 @@ packages:
 
   responselike@2.0.1:
     resolution: {integrity: sha512-4gl03wn3hj1HP3yzgdI7d3lCkF95F21Pz4BPGvKHinyQzALR5CapwC8yIi0Rh58DEMQ/SguC03wFj2k0M/mHhw==}
+
+  responselike@4.0.2:
+    resolution: {integrity: sha512-cGk8IbWEAnaCpdAt1BHzJ3Ahz5ewDJa0KseTsE3qIRMJ3C698W8psM7byCeWVpd/Ha7FUYzuRVzXoKoM6nRUbA==}
+    engines: {node: '>=20'}
 
   retry@0.12.0:
     resolution: {integrity: sha512-9LkiTwjUh6rT555DtE9rTX+BKByPfrMzEAtnlEtdEwr3Nkffwiihqe2bWADg+OQRjt9gl6ICdmB/ZFDCGAtSow==}
@@ -20661,12 +21208,16 @@ packages:
     resolution: {integrity: sha512-34R7HTnG0XIJcBSn5XhDd7nNFPRcXYRZrBB2O2jdKqYODldSzBAqzsWoZYYvduky73toYS/ESqxPvkDf/F0XMg==}
     engines: {node: '>=10'}
 
+  type-fest@4.41.0:
+    resolution: {integrity: sha512-TeTSQ6H5YHvpqVwBRcnLDCBnDOHWYu7IvGbHT6N8AOymcr9PJGjc1GTtiWZTYg0NCgYwvnYWEkVChQAr9bjfwA==}
+    engines: {node: '>=16'}
+
   type-is@2.1.0:
     resolution: {integrity: sha512-faYHw0anBbc/kWF3zFTEnxSFOAGUX9GFbOBthvDdLsIlEoWOFOtS0zgCiQYwIskL9iGXZL3kAXD8OoZ4GmMATA==}
     engines: {node: '>= 18'}
 
-  typebox@1.3.7:
-    resolution: {integrity: sha512-meKuifc33Pccx0O6PdIzYMq3Og8zvP4TIi/a+Bw3AEMZMxOD0+RHGQvpglEe6Zdy3wZ8nqn/j95h8LUZLk/6Hg==}
+  typebox@1.3.27:
+    resolution: {integrity: sha512-zu+jc1pcy4UiNThxikUr36f0Rybk9PEeCg/NE6adeWr/SKsdNO4EzZHYRDlv2YCVAfj3Odq3dESSo/jNyoBXzA==}
 
   typescript-language-server@5.3.0:
     resolution: {integrity: sha512-5puofxZHgFdAYtfNpmwCAvgtaYgg8wrUnH30m7Ze3QuguId5RNRadKASpOpyDxTyUdAF51FjhTdjntLw/EuWcQ==}
@@ -21344,7 +21895,7 @@ snapshots:
       '@anthropic-ai/claude-agent-sdk-win32-arm64': 0.3.263
       '@anthropic-ai/claude-agent-sdk-win32-x64': 0.3.263
 
-  '@anthropic-ai/sdk@0.123.0(zod@4.6.5)':
+  '@anthropic-ai/sdk@0.124.0(zod@4.6.5)':
     dependencies:
       json-schema-to-ts: 3.1.1
       standardwebhooks: 1.1.1
@@ -21377,46 +21928,18 @@ snapshots:
 
   '@asamuzakjp/nwsapi@2.3.9': {}
 
-  '@aws-crypto/sha256-browser@5.2.0':
+  '@aws-sdk/client-bedrock-runtime@3.1127.0':
     dependencies:
-      '@aws-crypto/sha256-js': 5.2.0
-      '@aws-crypto/supports-web-crypto': 5.2.0
-      '@aws-crypto/util': 5.2.0
-      '@aws-sdk/types': 3.974.6
-      '@aws-sdk/util-locate-window': 3.965.10
-      '@smithy/util-utf8': 2.3.0
-      tslib: 2.8.1
-
-  '@aws-crypto/sha256-js@5.2.0':
-    dependencies:
-      '@aws-crypto/util': 5.2.0
-      '@aws-sdk/types': 3.974.6
-      tslib: 2.8.1
-
-  '@aws-crypto/supports-web-crypto@5.2.0':
-    dependencies:
-      tslib: 2.8.1
-
-  '@aws-crypto/util@5.2.0':
-    dependencies:
-      '@aws-sdk/types': 3.974.6
-      '@smithy/util-utf8': 2.3.0
-      tslib: 2.8.1
-
-  '@aws-sdk/client-bedrock-runtime@3.1048.0':
-    dependencies:
-      '@aws-crypto/sha256-browser': 5.2.0
-      '@aws-crypto/sha256-js': 5.2.0
       '@aws-sdk/core': 3.978.1
       '@aws-sdk/credential-provider-node': 3.972.84
       '@aws-sdk/eventstream-handler-node': 3.972.35
       '@aws-sdk/middleware-eventstream': 3.972.30
       '@aws-sdk/middleware-websocket': 3.972.54
-      '@aws-sdk/token-providers': 3.1048.0
+      '@aws-sdk/token-providers': 3.1127.0
       '@aws-sdk/types': 3.974.6
       '@smithy/core': 3.35.0
       '@smithy/fetch-http-handler': 5.8.0
-      '@smithy/node-http-handler': 4.7.3
+      '@smithy/node-http-handler': 4.12.1
       '@smithy/types': 4.19.0
       tslib: 2.8.1
 
@@ -21557,7 +22080,7 @@ snapshots:
       '@smithy/types': 4.19.0
       tslib: 2.8.1
 
-  '@aws-sdk/token-providers@3.1048.0':
+  '@aws-sdk/token-providers@3.1127.0':
     dependencies:
       '@aws-sdk/core': 3.978.1
       '@aws-sdk/nested-clients': 3.997.46
@@ -21578,10 +22101,6 @@ snapshots:
   '@aws-sdk/types@3.974.6':
     dependencies:
       '@smithy/types': 4.19.0
-      tslib: 2.8.1
-
-  '@aws-sdk/util-locate-window@3.965.10':
-    dependencies:
       tslib: 2.8.1
 
   '@aws-sdk/xml-builder@3.972.41':
@@ -21803,27 +22322,28 @@ snapshots:
     transitivePeerDependencies:
       - '@algolia/client-search'
 
-  '@earendil-works/pi-ai@0.85.1(patch_hash=b9bcce474fb2ac44633dff0fa722816a5bff5451b4575d5874035ea14ba70a4f)(@modelcontextprotocol/sdk@1.30.0(zod@4.6.5))(ws@8.21.0)(zod@4.6.5)':
+  '@earendil-works/pi-ai@0.87.1(patch_hash=b9bcce474fb2ac44633dff0fa722816a5bff5451b4575d5874035ea14ba70a4f)(@modelcontextprotocol/sdk@1.30.0(zod@4.6.5))(ws@8.21.0)(zod@4.6.5)':
     dependencies:
-      '@anthropic-ai/sdk': 0.123.0(zod@4.6.5)
-      '@aws-sdk/client-bedrock-runtime': 3.1048.0
-      '@earendil-works/pi-telemetry': 0.85.1
-      '@google/genai': 1.52.0(@modelcontextprotocol/sdk@1.30.0(zod@4.6.5))
-      '@smithy/node-http-handler': 4.7.3
-      http-proxy-agent: 7.0.2
-      https-proxy-agent: 7.0.6
+      '@anthropic-ai/sdk': 0.124.0(zod@4.6.5)
+      '@aws-sdk/client-bedrock-runtime': 3.1127.0
+      '@earendil-works/pi-telemetry': 0.87.1
+      '@google/genai': 2.21.0(@modelcontextprotocol/sdk@1.30.0(zod@4.6.5))
+      '@smithy/node-http-handler': 4.12.1
+      http-proxy-agent: 9.1.0
+      https-proxy-agent: 9.1.0
       openai: 6.40.0(ws@8.21.0)(zod@4.6.5)
       partial-json: 0.1.7
-      typebox: 1.3.7
+      typebox: 1.3.27
     transitivePeerDependencies:
       - '@modelcontextprotocol/sdk'
       - bufferutil
+      - kerberos
       - supports-color
       - utf-8-validate
       - ws
       - zod
 
-  '@earendil-works/pi-telemetry@0.85.1': {}
+  '@earendil-works/pi-telemetry@0.87.1': {}
 
   '@electron-internal/extract-zip@1.0.5': {}
 
@@ -22231,7 +22751,7 @@ snapshots:
       react-dom: 18.3.1(react@18.3.1)
       regenerator-runtime: 0.14.1
 
-  '@google/genai@1.52.0(@modelcontextprotocol/sdk@1.30.0(zod@4.6.5))':
+  '@google/genai@2.21.0(@modelcontextprotocol/sdk@1.30.0(zod@4.6.5))':
     dependencies:
       google-auth-library: 10.9.1
       p-retry: 4.6.2
@@ -22410,6 +22930,10 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.6.0
+
+  '@js-temporal/polyfill@0.5.1':
+    dependencies:
+      jsbi: 4.3.2
 
   '@keyv/bigmap@1.3.1(keyv@5.6.0)':
     dependencies:
@@ -23237,6 +23761,8 @@ snapshots:
 
   '@sindresorhus/is@4.6.0': {}
 
+  '@sindresorhus/is@7.2.0': {}
+
   '@sindresorhus/merge-streams@4.0.0': {}
 
   '@smithy/core@3.35.0':
@@ -23256,17 +23782,7 @@ snapshots:
       '@smithy/types': 4.19.0
       tslib: 2.8.1
 
-  '@smithy/is-array-buffer@2.2.0':
-    dependencies:
-      tslib: 2.8.1
-
   '@smithy/node-http-handler@4.12.1':
-    dependencies:
-      '@smithy/core': 3.35.0
-      '@smithy/types': 4.19.0
-      tslib: 2.8.1
-
-  '@smithy/node-http-handler@4.7.3':
     dependencies:
       '@smithy/core': 3.35.0
       '@smithy/types': 4.19.0
@@ -23280,16 +23796,6 @@ snapshots:
 
   '@smithy/types@4.19.0':
     dependencies:
-      tslib: 2.8.1
-
-  '@smithy/util-buffer-from@2.2.0':
-    dependencies:
-      '@smithy/is-array-buffer': 2.2.0
-      tslib: 2.8.1
-
-  '@smithy/util-utf8@2.3.0':
-    dependencies:
-      '@smithy/util-buffer-from': 2.2.0
       tslib: 2.8.1
 
   '@sonarsource/analyzer-commons-configurations@2.31.0-5284': {}
@@ -24136,6 +24642,8 @@ snapshots:
 
   agent-base@7.1.4: {}
 
+  agent-base@9.0.0: {}
+
   agentkeepalive@4.6.0:
     dependencies:
       humanize-ms: 1.2.1
@@ -24487,6 +24995,8 @@ snapshots:
     dependencies:
       run-applescript: 7.1.0
 
+  byte-counter@0.1.0: {}
+
   bytes@3.1.2: {}
 
   bytestreamjs@2.0.1: {}
@@ -24494,6 +25004,18 @@ snapshots:
   cac@7.0.0: {}
 
   cacheable-lookup@5.0.4: {}
+
+  cacheable-lookup@7.0.0: {}
+
+  cacheable-request@13.0.19:
+    dependencies:
+      '@types/http-cache-semantics': 4.2.0
+      get-stream: 9.0.1
+      http-cache-semantics: 4.2.0
+      keyv: 5.6.0
+      mimic-response: 4.0.0
+      normalize-url: 8.1.1
+      responselike: 4.0.2
 
   cacheable-request@7.0.4:
     dependencies:
@@ -24939,6 +25461,10 @@ snapshots:
   decode-named-character-reference@1.3.0:
     dependencies:
       character-entities: 2.0.2
+
+  decompress-response@10.0.0:
+    dependencies:
+      mimic-response: 4.0.0
 
   decompress-response@6.0.0:
     dependencies:
@@ -25564,6 +26090,8 @@ snapshots:
 
   form-data-encoder@1.7.2: {}
 
+  form-data-encoder@4.1.0: {}
+
   form-data@2.5.6:
     dependencies:
       asynckit: 0.4.0
@@ -25776,6 +26304,21 @@ snapshots:
       p-cancelable: 2.1.1
       responselike: 2.0.1
 
+  got@14.6.6:
+    dependencies:
+      '@sindresorhus/is': 7.2.0
+      byte-counter: 0.1.0
+      cacheable-lookup: 7.0.0
+      cacheable-request: 13.0.19
+      decompress-response: 10.0.0
+      form-data-encoder: 4.1.0
+      http2-wrapper: 2.2.1
+      keyv: 5.6.0
+      lowercase-keys: 3.0.0
+      p-cancelable: 4.0.1
+      responselike: 4.0.2
+      type-fest: 4.41.0
+
   graceful-fs@4.2.11: {}
 
   hachure-fill@0.5.2: {}
@@ -25879,6 +26422,15 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  http-proxy-agent@9.1.0:
+    dependencies:
+      agent-base: 9.0.0
+      debug: 4.4.3
+      proxy-agent-negotiate: 1.1.0
+    transitivePeerDependencies:
+      - kerberos
+      - supports-color
+
   http-proxy@1.18.1:
     dependencies:
       eventemitter3: 4.0.7
@@ -25917,11 +26469,25 @@ snapshots:
       quick-lru: 5.1.1
       resolve-alpn: 1.2.1
 
+  http2-wrapper@2.2.1:
+    dependencies:
+      quick-lru: 5.1.1
+      resolve-alpn: 1.2.1
+
   https-proxy-agent@7.0.6:
     dependencies:
       agent-base: 7.1.4
       debug: 4.4.3
     transitivePeerDependencies:
+      - supports-color
+
+  https-proxy-agent@9.1.0:
+    dependencies:
+      agent-base: 9.0.0
+      debug: 4.4.3
+      proxy-agent-negotiate: 1.1.0
+    transitivePeerDependencies:
+      - kerberos
       - supports-color
 
   human-signals@8.0.1: {}
@@ -26057,6 +26623,8 @@ snapshots:
   js-yaml@4.3.2:
     dependencies:
       argparse: 2.0.1
+
+  jsbi@4.3.2: {}
 
   jsbn@0.1.1: {}
 
@@ -26388,6 +26956,8 @@ snapshots:
       js-tokens: 4.0.0
 
   lowercase-keys@2.0.0: {}
+
+  lowercase-keys@3.0.0: {}
 
   lru-cache@11.5.3: {}
 
@@ -26805,6 +27375,8 @@ snapshots:
 
   mimic-response@3.1.0: {}
 
+  mimic-response@4.0.0: {}
+
   minimatch@10.2.6:
     dependencies:
       brace-expansion: 5.0.12
@@ -26971,6 +27543,8 @@ snapshots:
 
   normalize-url@6.1.0: {}
 
+  normalize-url@8.1.1: {}
+
   npm-run-path@6.0.0:
     dependencies:
       path-key: 4.0.0
@@ -27071,6 +27645,8 @@ snapshots:
       oxlint-tsgolint: 7.0.2001
 
   p-cancelable@2.1.1: {}
+
+  p-cancelable@4.0.1: {}
 
   p-limit@3.1.0:
     dependencies:
@@ -27268,6 +27844,8 @@ snapshots:
       forwarded: 0.2.0
       ipaddr.js: 1.9.1
 
+  proxy-agent-negotiate@1.1.0: {}
+
   psl@1.15.0:
     dependencies:
       punycode: 2.3.1
@@ -27424,6 +28002,10 @@ snapshots:
   responselike@2.0.1:
     dependencies:
       lowercase-keys: 2.0.0
+
+  responselike@4.0.2:
+    dependencies:
+      lowercase-keys: 3.0.0
 
   retry@0.12.0: {}
 
@@ -28088,13 +28670,15 @@ snapshots:
   type-fest@0.13.1:
     optional: true
 
+  type-fest@4.41.0: {}
+
   type-is@2.1.0:
     dependencies:
       content-type: 2.1.0
       media-typer: 1.1.1
       mime-types: 3.0.2
 
-  typebox@1.3.7: {}
+  typebox@1.3.27: {}
 
   typescript-language-server@5.3.0:
     dependencies:

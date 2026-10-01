@@ -3,7 +3,7 @@ import { Context } from '@averqel/cordis'
 import z from '@averqel/schemastery'
 import { Remote, RemoteError, TypertRemoteService } from '@averqel/neosis-typert-protocol'
 import type {} from '@averqel/neosis-experimental-speech-to-text'
-import type { SpeechProviderId, SpeechSelectionPatch, Transcript } from '@averqel/neosis-experimental-speech-to-text/types'
+import type { SpeechPreparationOptions, SpeechProviderId, SpeechSelectionPatch, Transcript } from '@averqel/neosis-experimental-speech-to-text/types'
 import type { SpeechCatalog, TranscriptionRequest } from './types.ts'
 import { validateWave } from '@averqel/neosis-experimental-speech-to-text/wave'
 
@@ -66,9 +66,10 @@ export default class SpeechController extends TypertRemoteService {
   /**
    * Start or join one Host-owned preparation task.
    * @param providerId - selected recognizer.
+   * @param options - optional preparation settings.
    */
   @Remote
-  prepare(providerId: SpeechProviderId): void { this.ctx.speechToText.prepare(providerId) }
+  prepare(providerId: SpeechProviderId, options?: SpeechPreparationOptions): void { this.ctx.speechToText.prepare(providerId, options) }
 
   /**
    * Explicitly cancel resource preparation.

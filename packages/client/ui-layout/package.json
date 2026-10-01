@@ -31,7 +31,8 @@
         "@averqel/neosis-client-locale",
         "@averqel/neosis-client-ui-renderer",
         "@averqel/neosis-client-ui-session",
-        "@averqel/neosis-client-ui-theme"
+        "@averqel/neosis-client-ui-theme",
+        "@averqel/neosis-client-shortcuts"
       ],
       "platform": "web"
     }
@@ -52,6 +53,7 @@
     "@averqel/neosis-client-ui-session": "workspace:*",
     "@averqel/neosis-client-ui-slots": "workspace:*",
     "@averqel/neosis-client-ui-theme": "workspace:*",
+    "@averqel/neosis-client-shortcuts": "workspace:*",
     "@types/react": "~18.3.1",
     "@averqel/cordis": "workspace:~",
     "react": "^18.2.0"

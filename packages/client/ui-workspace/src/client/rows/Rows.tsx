@@ -15,7 +15,7 @@ import type { RefObject } from 'react'
 import clsx from 'clsx'
 import type { PropsRenderSlots } from '@averqel/neosis-client-ui-slots'
 import {
-  HoverCard, IconAlarmClockOutlineRegular, IconArchiveOutlineRegular, IconEditOutlineRegular,
+  HoverCard, IconArchiveOutlineRegular, IconEditOutlineRegular,
   IconEllipsisOutlineRegular, IconFolderCloseRegular, IconFolderOpenRegular,
   IconNewChatOutlineRegular, IconPinFillRegular, IconTrashOutlineRegular,
   IconTriangleRightFillRegular, IconUnarchiveOutlineRegular, Menu, relativeTime, StateDot, Tooltip,
@@ -28,6 +28,14 @@ import css from './Rows.module.css'
 
 /** The standard locale seat, prop-passed from the browser root. */
 type RowTranslate = WorkspaceBrowserProps['t']
+
+/** Child-seat renderer for row actions and schedule decorations. */
+type RowRenderSlots = PropsRenderSlots<
+  | 'sidebar.workspaces.session.menu.item'
+  | 'sidebar.workspaces.session.row.action'
+  | 'sidebar.session.row.leading'
+  | 'sidebar.session.row.hover'
+>['renderSlot']
 
 /** Row display title: blank rows show the localized New Session label. */
 function displayTitle(node: SessionNode, t: RowTranslate): string {
@@ -391,21 +399,6 @@ function SessionStatusDots({ statuses }: { statuses: readonly [SessionStatus, ..
   )
 }
 
-/** Non-interactive active-Schedule marker; the enclosing row remains the only action. */
-function ActiveScheduleIndicator({ t, search = false }: { t: RowTranslate; search?: boolean }) {
-  const label = t('schedule.active')
-  return (
-    <span
-      className={clsx(css.scheduleIndicator, search && css.searchScheduleIndicator)}
-      role="img"
-      aria-label={label}
-      title={label}
-    >
-      <IconAlarmClockOutlineRegular />
-    </span>
-  )
-}
-
 /** Non-interactive pinned-row marker; the enclosing row remains the only action. */
 function PinnedIndicator({ t }: { t: RowTranslate }) {
   const label = t('row.pinned')
@@ -417,7 +410,12 @@ function PinnedIndicator({ t }: { t: RowTranslate }) {
 }
 
 /** Hover-card body: full title, relative time, and every relevant live status. */
-function SessionHoverContent({ node, now, t }: { node: SessionNode; now: number; t: RowTranslate }) {
+function SessionHoverContent({ node, now, renderSlot, t }: {
+  node: SessionNode
+  now: number
+  renderSlot: RowRenderSlots
+  t: RowTranslate
+}) {
   // On archived rows the archived line already says the session is inactive,
   // so resting statuses (idle/completed) drop; live activity still shows.
   const statuses = sessionStatuses(node, t)
@@ -428,6 +426,7 @@ function SessionHoverContent({ node, now, t }: { node: SessionNode; now: number;
       {/* Same placeholder rule as the row's trailing cell: no timestamp
           before the first prompt. */}
       {!node.blank && <div className={css.hoverTime}>{hoverTimeLabel(node.updatedAt, now, t)}</div>}
+      {renderSlot('sidebar.session.row.hover', { sessionId: node.id })}
       {statuses.map(status => (
         <div className={css.hoverStatus} key={status.label}>
           <StateDot state={status.state} />
@@ -484,7 +483,6 @@ export function SearchResultItem({ result, currentId, onOpen, onUnarchive, t }: 
           )}
         </span>
         <span className={css.searchResultTitle}>{result.title}</span>
-        {result.hasActiveSchedule && <ActiveScheduleIndicator t={t} search />}
         {result.archived && (
           <span className={css.rowActions}>
             <Tooltip label={t('actions.unarchive')} side="bottom" align="end" delayMs={500}>
@@ -542,7 +540,12 @@ export function SessionNodeItem({
   /** The row is rendered without a parent Workspace header. */
   flat?: boolean | undefined
   t: RowTranslate
-} & PropsRenderSlots<'sidebar.workspaces.session.menu.item' | 'sidebar.workspaces.session.row.action'>) {
+} & PropsRenderSlots<
+  | 'sidebar.workspaces.session.menu.item'
+  | 'sidebar.workspaces.session.row.action'
+  | 'sidebar.session.row.leading'
+  | 'sidebar.session.row.hover'
+>) {
   const row = node
   const title = displayTitle(node, t)
   const selected = node.id === currentId
@@ -611,11 +614,11 @@ export function SessionNodeItem({
           and is cleared by opening the session. Archived rows keep the slot
           blank — the grayed row carries the archived look — and their live
           status stays on the hover card only. */}
-      {(!flat || showStatus) && (
-        <span className={css.slot}>
-          {!row.archived && showStatus && <SessionStatusDots statuses={statuses} />}
-        </span>
-      )}
+      <span className={css.slot}>
+        {!row.archived && !row.blank && (showStatus
+          ? <SessionStatusDots statuses={statuses} />
+          : renderSlot('sidebar.session.row.leading', { sessionId: node.id }))}
+      </span>
       <span
         ref={titleRef}
         className={css.title}
@@ -625,7 +628,6 @@ export function SessionNodeItem({
       >
         {title}
       </span>
-      {row.hasActiveSchedule && <ActiveScheduleIndicator t={t} />}
       {/* A blank New Session row is a provisional placeholder: nothing has
           happened in it yet, so a "now" timestamp and the row verbs
           (rename/fork/archive) would all act on content that does not
@@ -676,7 +678,7 @@ export function SessionNodeItem({
   return (
     <HoverCard
       anchor={ownRow}
-      content={<SessionHoverContent node={node} now={now} t={t} />}
+      content={<SessionHoverContent node={node} now={now} renderSlot={renderSlot} t={t} />}
       openDelayMs={800}
       disabled={menuOpen || drag?.active === true}
       copyText={row.blank ? undefined : row.title}

@@ -43,6 +43,9 @@
       "path": "../ui-layout"
     },
     {
+      "path": "../shortcuts/tsconfig.client.json"
+    },
+    {
       "path": "../ui-renderer"
     },
     {

@@ -2,6 +2,7 @@ import { WINDOWS_TITLEBAR_HEIGHT } from './windows-layout.ts'
 /** Electron shell: desktop project ownership, custom protocol, windows, and lifecycle. */
 
 import { readFile, writeFile } from 'node:fs/promises'
+import type { ProductEvent } from '@averqel/neosis-client-product-analytics/types'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import {
@@ -40,6 +41,7 @@ import { connectDesktopWelcome, type DesktopWelcomeBackend } from './welcome-bac
 import { DesktopUpdateJournal } from './update-journal.ts'
 import { DesktopUpdatePreparationError } from './update-error.ts'
 import { DesktopUpdateSchedule, resolveDesktopUpdateScheduleConfig } from './update-schedule.ts'
+import { readDesktopLoginShellEnvironment, resolveDesktopLoginShellConfig } from './login-shell-environment.ts'
 import { desktopUpdateErrorSummary, presentDesktopUpdate } from './update-presentation.ts'
 import { desktopErrorState } from './startup-error.ts'
 import { DesktopMandatoryUpdatePolicy, resolveDesktopPolicyConfig, type DesktopPolicyState } from './mandatory-update-policy.ts'
@@ -48,6 +50,8 @@ import { DesktopPolicyTestAuth } from './policy-test-auth.ts'
 import { DesktopUpdateDialog, type UpdateDialogOptions } from './update-dialog.ts'
 import { readDesktopRuntime } from './runtime-tree.ts'
 import { DesktopBrowserGuests } from './browser-guests.ts'
+import { installDesktopShortcuts } from './keyboard.ts'
+import { DesktopCommandManager } from './command-management.ts'
 
 let focusPrimaryWindow = (): void => {}
 let stopForRecovery = async (): Promise<void> => {}
@@ -291,6 +295,18 @@ async function main(): Promise<void> {
   const development = !app.isPackaged
   const activeProject = paths.profile
   const manager = new DesktopProjectManager(paths, resources)
+  // Finder, Dock, and Linux desktop launches may inherit only the session manager's environment.
+  // Read the user's login shell once so every Host restart sees the same tool paths and variables.
+  const loginShellRead = new AbortController()
+  app.on('will-quit', () => { loginShellRead.abort() })
+  const loginShell = readDesktopLoginShellEnvironment(process.env, resolveDesktopLoginShellConfig(process.env), {
+    signal: loginShellRead.signal,
+  }).then((result) => {
+    for (const failure of result.failures) console.warn(`desktop login shell: ${failure.shell} failed (${failure.reason})`)
+    return result.environment
+  })
+  let hostEnvironment: NodeJS.ProcessEnv = process.env
+  const prepareHostEnvironment = async (): Promise<void> => { hostEnvironment = await loginShell }
   let quitting = false
   let startup: Promise<void> | undefined
   let workspaceRecovery: Promise<void> | undefined
@@ -331,6 +347,15 @@ async function main(): Promise<void> {
       detail: formatDesktopMessage(locale.messages.aboutVersion, { version: app.getVersion() }),
       buttons: [locale.messages.updateAcknowledge], cancelId: 0 })
   }
+  const commandManager = new DesktopCommandManager({
+    resources: process.resourcesPath,
+    isPackaged: app.isPackaged,
+    isInstalledLocation: () => process.platform !== 'darwin' || app.isInApplicationsFolder(),
+    isInstalling: () => updateState.phase === 'installing',
+    isQuitting,
+    messages: () => currentDesktopLocale().messages,
+    show: ordinaryMessageBox,
+  })
   const appPreload = fileURLToPath(new URL('./preload-app.cjs', import.meta.url))
   const applicationUrl = `${SCHEME}://app/`
   let hostUrl: string | undefined
@@ -342,6 +367,9 @@ async function main(): Promise<void> {
   let openedAttempt: string | undefined
   let returnedAttempt: string | undefined
   let previousAccountStatus: string | undefined
+  // The menu closure is installed before the shortcut resource is created.
+  // eslint-disable-next-line prefer-const
+  let desktopShortcuts: ReturnType<typeof installDesktopShortcuts> | undefined
   const assertProductSender = (event: IpcMainInvokeEvent): void => {
     assertDesktopSender(event, ['app'])
     if (mainWindow === undefined || mainWindow.isDestroyed() || event.sender !== mainWindow.webContents
@@ -373,7 +401,7 @@ async function main(): Promise<void> {
       : join(process.resourcesPath, 'office')
     const host = new DesktopHostProcess(resources.node, resources.neosis, activeProject,
       hostInspectPort, {
-        ...process.env, NEOSIS_OFFICE_BUNDLE_ROOT: officeRoot,
+        ...hostEnvironment, NEOSIS_OFFICE_BUNDLE_ROOT: officeRoot,
         ...(development ? {} : { NEOSIS_OFFICE_BUNDLE_REQUIRED: '1' }),
       }, onFailure,
       development ? join(app.getAppPath(), '.desktop-build', 'targets', `${process.platform === 'darwin' ? 'mac' : process.platform === 'win32' ? 'win' : 'linux'}-${process.arch}`, 'runtime', 'primary-runtime')
@@ -386,7 +414,7 @@ async function main(): Promise<void> {
         hostUrl = ready.url
         if (ready.injections === undefined) throw new Error('Desktop Host did not provide boot injections')
         injections = ready.injections
-        welcomeBackend = await connectDesktopWelcome(ready.url, (input, init) => net.fetch(input, init), async () => (await session.defaultSession.cookies.get({ url: ready.url })).map(cookie => `${cookie.name}=${cookie.value}`).join('; '))
+        welcomeBackend = await connectDesktopWelcome(ready.url, (input, init) => net.fetch(input, init), async () => (await session.defaultSession.cookies.get({ url: ready.url })).map(cookie => `${cookie.name}=${cookie.value}`).join('; '), app.getVersion())
         stopAccount?.()
         stopAccount = welcomeBackend.account.watch((state) => {
           if (quitting) return
@@ -453,7 +481,7 @@ async function main(): Promise<void> {
       updateStoppedHost = false
       if (restoreHost) {
         // Only confirmed process exit permits replacement before another installation confirmation.
-        const hostReady = backend.start(async () => {})
+        const hostReady = backend.start(prepareHostEnvironment)
         startup = hostReady
         const recovery = hostReady.then(async () => {
           if (quitting) return
@@ -483,7 +511,7 @@ async function main(): Promise<void> {
     startup ??= (async () => {
       await navigateMain(applicationUrl)
       await backend.start(async () => {
-        await manager.applyRelease()
+        await Promise.all([manager.applyRelease(), prepareHostEnvironment()])
       })
       if (backend.host !== undefined) await openInitialWindow()
       if (backend.host !== undefined) updateJournal?.action('workspace-ready')
@@ -499,6 +527,7 @@ async function main(): Promise<void> {
   const updates = new DesktopUpdateCoordinator(
     publishUpdate,
     async () => {
+      await commandManager.idle()
       await workspaceRecovery
       await startup?.catch(() => undefined)
       const host = backend.host
@@ -788,6 +817,7 @@ async function main(): Promise<void> {
   }
   powerMonitor.on('resume', automaticCheck)
   app.on('will-quit', () => {
+    desktopShortcuts?.dispose()
     updateSchedule.dispose()
     powerMonitor.off('resume', automaticCheck)
     updates.dispose()
@@ -807,7 +837,7 @@ async function main(): Promise<void> {
   // Keep app.name stable: Electron derives its default userData directory from it.
   const darwin = process.platform === 'darwin'
   const platformMenus: MenuItemConstructorOptions[] = darwin
-    ? [{ role: 'fileMenu' }, { role: 'editMenu' }, { role: 'windowMenu' }]
+    ? [{ role: 'editMenu' }, { role: 'windowMenu' }]
     : [{ role: 'editMenu' }]
   const hideCommands: MenuItemConstructorOptions[] = darwin
     ? [{ role: 'hide', label: currentDesktopLocale().messages.hideApplication },
@@ -823,6 +853,9 @@ async function main(): Promise<void> {
       : { label: currentDesktopLocale().messages.aboutMenu, role: 'about' },
     { type: 'separator' },
     { label: currentDesktopLocale().messages.checkUpdatesMenu, click: () => { void openUpdatePrompt(true) } },
+    ...process.platform === 'darwin' || process.platform === 'win32'
+      ? [{ label: currentDesktopLocale().messages.cliCommandMenu, click: () => { void commandManager.show() } }]
+      : [],
     ...development ? [
       { type: 'separator' as const },
       { label: currentDesktopLocale().messages.reloadPageMenu, role: 'reload' as const },
@@ -845,8 +878,17 @@ async function main(): Promise<void> {
     Menu.setApplicationMenu(Menu.buildFromTemplate(process.platform === 'win32' ? devToolsItems : [{
       label: darwin ? app.name : currentDesktopLocale().messages.application,
       submenu: [...applicationItems(), ...devToolsItems],
-    }, ...platformMenus]))
+    }, ...(darwin && desktopShortcuts !== undefined
+      ? [desktopShortcuts.fileMenu({ fileMenu: locale.messages.application, closePage: locale.messages.closePage })]
+      : []), ...platformMenus]))
   }
+  desktopShortcuts = installDesktopShortcuts(
+    currentMainWindow,
+    app.getPath('userData'),
+    process.platform === 'darwin' ? 'macos' : process.platform === 'win32' ? 'windows' : 'linux',
+    installMenu,
+    () => ({ revision: 0, blocked: quitting || isMandatory() || !enteredWorkspace }),
+  )
   installMenu()
 
   if (process.platform === 'win32') {
@@ -901,6 +943,7 @@ async function main(): Promise<void> {
   const createMainWindow = (): BrowserWindow => {
     const window = createWindow(appPreload, false, true)
     mainWindow = window
+    desktopShortcuts?.attach(window)
     browserGuests.bind(window)
     window.on('focus', automaticCheck)
     window.on('closed', () => { if (mainWindow === window) mainWindow = undefined })
@@ -950,6 +993,10 @@ async function main(): Promise<void> {
     }
     openingWelcome ??= (async () => {
       welcomeWindow = await openWelcomeWindow(locale, {
+        analyticsEnabled: async () => welcomeBackend?.analyticsEnabled() ?? false,
+        analytics: async (eventName, attributes) => {
+          await welcomeBackend?.report({ eventName, attributes, timestamp: Date.now() } as ProductEvent)
+        },
         startSignIn: async () => {
           if (welcomeBackend === undefined) throw new Error('desktop welcome: backend unavailable')
           return welcomeBackend.account.start(locale.id)

@@ -99,7 +99,8 @@
     "@averqel/neosis-plugin-manager": "workspace:*",
     "@averqel/neosis-atomic-write": "workspace:*",
     "@averqel/neosis-agent-preset": "workspace:*",
-    "@averqel/neosis-experimental-voice-input-bundle": "workspace:*"
+    "@averqel/neosis-experimental-voice-input-bundle": "workspace:*",
+    "@averqel/neosis-experimental-schedule-bundle": "workspace:*"
   },
   "devDependencies": {
     "@agentclientprotocol/sdk": "1.4.0",

@@ -28,7 +28,8 @@
   "license": "Apache-2.0",
   "dependencies": {
     "diff": "^9.0.0",
-    "@averqel/schemastery": "workspace:~"
+    "@averqel/schemastery": "workspace:~",
+    "@averqel/neosis-util-code-language": "workspace:*"
   },
   "peerDependencies": {
     "@averqel/neosis-attachment": "workspace:*",

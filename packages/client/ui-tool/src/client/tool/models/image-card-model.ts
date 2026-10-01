@@ -61,7 +61,7 @@ function positiveInteger(value: unknown): value is number {
 const IMAGE_ENVELOPE = /^<path>[^\n]*<\/path>\n<type>image<\/type>\n<content>\n[\s\S]*\n<\/content>$/u
 
 /** The media types a durable image block may claim; anything else declines.
- *  Hand-written mirror of `ImageMediaType` from neosis-attachment — the wire
+ *  Hand-written mirror of `ImageMediaType` from dsh-attachment — the wire
  *  boundary needs a runtime check and feature plugins must not import values
  *  from each other; a new member added there must be added here too, or the
  *  decline point below silently degrades that image to the generic card. */

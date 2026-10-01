@@ -38,9 +38,10 @@ describe('Messages request conversion', () => {
     }
   })
 
-  it('rejects deferred tool definitions until provider loading is implemented', () => {
-    expect(() => body([], { tools: [{ name: 'search', description: '', parameters: {}, deferLoading: true }] }))
-      .toThrow(expect.objectContaining({ code: 'UNSUPPORTED_CONTENT' }))
+  it('serializes deferred tool definitions for provider-side loading', () => {
+    expect(body([], { tools: [{ name: 'search', description: '', parameters: {}, deferLoading: true }] }).tools).toEqual([
+      { name: 'search', description: '', input_schema: {}, defer_loading: true },
+    ])
   })
 
   it('preserves the exact request with request-only text after durable tool results', () => {
@@ -73,9 +74,12 @@ describe('Messages request conversion', () => {
     expect(input).not.toHaveProperty('source')
   })
 
-  it('rejects developer history while provider serialization is unsupported', () => {
+  it('serializes developer tool changes as Messages system updates', () => {
     const message = createDeveloperMessage({ content: [{ type: 'tool-addition', toolName: 'search' }], source: { kind: 'tool-registry' } })
-    expect(() => body([message])).toThrow(expect.objectContaining({ code: 'UNSUPPORTED_CONTENT' }))
+    expect(body([message, user()]).messages).toEqual([
+      { role: 'user', content: [{ type: 'text', text: 'hello' }] },
+      { role: 'system', content: [{ type: 'tool_addition', tool: { type: 'tool_reference', name: 'search' } }] },
+    ])
   })
 
   it('keeps the original top-level prompt and cached prefix while appending native system updates', () => {

@@ -14,6 +14,8 @@ import { pluginEntryId, readPluginInventory } from '@averqel/neosis-host-plugin-
 import {
   readPluginMeta, readProfileManifest, resolveBundleDir, loadOverlayPatches, composeEntries,
   reconcileProfilePatches, readProfilePatches, OPTIONAL_BUNDLES, bundlePatchPaths,
+  evaluatePluginCompatibility, readProfileCompatibility, readProfileVersionExemptions,
+  setProfileVersionExemption,
 } from '@averqel/neosis-app-boot'
 import type {} from '@averqel/neosis-hmr'
 import type { ProfileContext, ProfileManifest } from '@averqel/neosis-app-boot'
@@ -22,8 +24,9 @@ import { classifyInstallFailure } from './install-failure.ts'
 import { InvalidInstallSpecError, parseInstallSpec, type ParsedInstallSpec } from './install-spec.ts'
 import { attributeFailure, normalizeRegistry, NPMMIRROR_REGISTRY, registryPlan } from './registry.ts'
 import { writePluginEnabled } from './patch.ts'
-import { ManagementFailure } from './failure.ts'
+import { incompatiblePlugin, ManagementFailure } from './failure.ts'
 import { approveBuilds, readPendingBuilds } from './build-approval.ts'
+import { checkGithubConnection } from './github-connection.ts'
 import type {
   BundleInfo, BundleRowInfo, ChangeResult, InspectOptions, InstallBundleOptions, ManagementError, PackageResult, PluginChange,
   PluginEntryId, PluginInfo, PluginInspectProblem, PluginInstallCancellation, PluginInstallProgress, PluginInstallRequestId,
@@ -43,6 +46,10 @@ export interface Config {
   lockWaitMs?: number
   /** Bound on one registry lookup an inspection runs, in milliseconds. */
   inspectTimeoutMs?: number
+  /** Maximum duration of the GitHub repository connection check before installation, in milliseconds. */
+  githubConnectionTimeoutMs?: number
+  /** Maximum time one captured package run may print nothing before the manager terminates it, in milliseconds. */
+  idleTimeoutMs?: number
   /** The registry lookups and installations ask first, as an http(s) URL; absent, the one pnpm's own configuration names. */
   registry?: string
   /**
@@ -84,7 +91,8 @@ function messageOf(error: unknown): string { return error instanceof Error ? err
 
 /** An expected refusal keeps its code; anything else becomes an operation error carrying its exact diagnostic. */
 function managementError(error: unknown): ManagementError {
-  return error instanceof ManagementFailure ? { code: error.code } : { code: 'operation-error', diagnostic: messageOf(error) }
+  if (!(error instanceof ManagementFailure)) return { code: 'operation-error', diagnostic: messageOf(error) }
+  return { code: error.code, ...error.incompatible === undefined ? {} : { incompatible: error.incompatible } }
 }
 
 /** The caller stopped an installation; its files are restored before this is thrown. */
@@ -172,6 +180,8 @@ export class PluginManager extends TypertRemoteService {
     outputBytes: z.number().step(1).min(1).default(16384),
     lockWaitMs: z.number().step(1).min(0).default(120000),
     inspectTimeoutMs: z.number().step(1).min(1000).default(20000),
+    githubConnectionTimeoutMs: z.number().step(1).min(1000).default(5000),
+    idleTimeoutMs: z.number().step(1).min(1000).default(600000),
     registry: z.string().pattern(REGISTRY_URL),
     fallbackRegistries: z.array(z.string().pattern(REGISTRY_URL)).default([NPMMIRROR_REGISTRY]),
   })
@@ -183,6 +193,8 @@ export class PluginManager extends TypertRemoteService {
   private readonly outputBytes: number
   private readonly lockWaitMs: number
   private readonly inspectTimeoutMs: number
+  private readonly githubConnectionTimeoutMs: number
+  private readonly idleTimeoutMs: number
   private readonly pnpmCommand: string
   private readonly configuredRegistries: Omit<PluginRegistries, 'resolved'>
   private readonly ownerContext: Context
@@ -199,6 +211,8 @@ export class PluginManager extends TypertRemoteService {
     this.outputBytes = (config as Required<Config>).outputBytes
     this.lockWaitMs = (config as Required<Config>).lockWaitMs
     this.inspectTimeoutMs = (config as Required<Config>).inspectTimeoutMs
+    this.githubConnectionTimeoutMs = (config as Required<Config>).githubConnectionTimeoutMs
+    this.idleTimeoutMs = (config as Required<Config>).idleTimeoutMs
     this.pnpmCommand = (config as Required<Config>).pnpmCommand
     this.configuredRegistries = {
       registry: config.registry === undefined ? null : normalizeRegistry(config.registry),
@@ -208,6 +222,30 @@ export class PluginManager extends TypertRemoteService {
       this.abort.abort()
       await Promise.allSettled([...this.packageOperations])
     }, 'plugin-manager: package cancellation')
+  }
+
+  /** Read exact plugin-version exemptions saved in this profile.
+   * @returns Accepted package-name@version keys and any rejected-file warnings.
+   */
+  @Remote
+  listVersionExemptions(): { exemptions: Record<string, string[]>; warnings: string[] } {
+    const { exemptions, warnings } = readProfileCompatibility(this.profile.dir)
+    return { exemptions, warnings }
+  }
+
+  /** Grant or revoke one exact plugin/runtime exemption and reevaluate live plugins.
+   * @param packageVersion Exact package name and version key.
+   * @param runtimeVersion Exact NeoSIS runtime version for the grant.
+   * @param enabled Whether to grant rather than revoke the exemption.
+   * @param acceptRisk Required true when granting an exemption.
+   * @returns The persisted and live-application outcome.
+   */
+  @Remote
+  setVersionExemption(packageVersion: string, runtimeVersion: string, enabled: boolean, acceptRisk?: boolean): Promise<ChangeResult> {
+    return this.change(result => this.configure(async () => {
+      await setProfileVersionExemption(this.profile.dir, packageVersion, runtimeVersion, enabled, acceptRisk === true)
+      result.warnings = await this.reload()
+    }), { stage: 'enable', target: packageVersion, enabled }, 'bundle')
   }
 
   /** Read current plugins, including why a row cannot be changed through the profile patch.
@@ -240,6 +278,7 @@ export class PluginManager extends TypertRemoteService {
   @Remote
   listBundles(): Promise<BundleInfo[]> {
     const manifest = readProfileManifest('neosis', this.profile.dir)
+    const exemptions = readProfileVersionExemptions(this.profile.dir)
     const selected = manifest.neosis?.profile?.bundles ?? []
     const dependencies = Object.keys(manifest.dependencies ?? {})
     const installation = JSON.parse(readFileSync(this.profile.installAnchor, 'utf8')) as InstallationManifest
@@ -257,6 +296,10 @@ export class PluginManager extends TypertRemoteService {
           if (enabled) bundles.push({ name, enabled, installed, optional, removable: removable && readOnlyReason === undefined,
             ...(readOnlyReason === undefined ? {} : { readOnlyReason }), error: { code: 'not-bundle' }, rows: [], overrides: [] })
           continue
+        }
+        const compatibility = evaluatePluginCompatibility(info, exemptions)
+        if (compatibility !== undefined && !compatibility.exempted) {
+          throw new ManagementFailure('incompatible-version', [incompatiblePlugin(compatibility)])
         }
         const dir = resolveBundleDir('neosis', name, this.profile.installAnchor, this.profile.dir)
         const meta = readPluginMeta(info.name ?? name, pathToFileURL(join(dir, 'package.json')).href)
@@ -434,9 +477,24 @@ export class PluginManager extends TypertRemoteService {
       }
       const files = await this.readRestoredFiles()
       const before = readProfileManifest('neosis', this.profile.dir).dependencies ?? {}
-      const plan = registryPlan(options?.registry, await this.registries())
       let name: string
       try {
+        const connection = checkGithubConnection(parsedForRegistry(spec), this.profile.dir, {
+          timeoutMs: this.githubConnectionTimeoutMs, outputBytes: this.outputBytes,
+          signal: AbortSignal.any([this.abort.signal, control.abort.signal]),
+          ...this.profile.packageManager?.env === undefined ? {} : { env: this.profile.packageManager.env },
+        })
+        this.packageOperations.add(connection)
+        let connectionFailure: PackageResult | undefined
+        try { connectionFailure = await connection }
+        finally { this.packageOperations.delete(connection) }
+        if (stopped()) throw new InstallCancelledError()
+        if (connectionFailure?.kind === 'network' || connectionFailure?.kind === 'timeout') {
+          result.packageResult = connectionFailure
+          result.failedAt = 'spec-host'
+          throw new Error(connectionFailure.output)
+        }
+        const plan = registryPlan(options?.registry, await this.registries())
         // The last run is the result's; the registries asked stay listed whatever the outcome.
         let run: PackageResult | undefined
         result.registries = []
@@ -449,6 +507,7 @@ export class PluginManager extends TypertRemoteService {
           run = await this.runPnpm(['add', spec, ...registryArguments(registry)], control.abort.signal, requestId)
           result.packageResult = run
           if (stopped()) throw new InstallCancelledError()
+          if (run.incompatible !== undefined) throw new ManagementFailure('incompatible-version', run.incompatible)
           /* v8 ignore next 2 -- runPnpm classifies every failed run, so kind is never absent here */
           if (run.exitCode === 0 || run.kind === undefined) break
           const failedAt = attributeFailure(run.kind, run.output, parsedForRegistry(spec))
@@ -478,6 +537,10 @@ export class PluginManager extends TypertRemoteService {
         const dir = resolveBundleDir('neosis', name, this.profile.installAnchor, this.profile.dir)
         const manifest = bundleManifest(name, this.profile.dir, this.profile.installAnchor)
         if (manifest?.neosis?.bundle === undefined) throw new ManagementFailure('not-bundle')
+        const compatibility = evaluatePluginCompatibility(manifest, readProfileVersionExemptions(this.profile.dir))
+        if (compatibility !== undefined && !compatibility.exempted) {
+          throw new ManagementFailure('incompatible-version', [incompatiblePlugin(compatibility)])
+        }
         for (const file of bundlePatchPaths(dir, manifest.neosis.bundle)) loadOverlayPatches('neosis', file)
       } catch (error) {
         // pnpm has exited by now, so the files it rewrote go back as they were.
@@ -599,7 +662,8 @@ export class PluginManager extends TypertRemoteService {
     const task = runProfilePnpm({ ...this.profile, profile: this.profile.name }, args, {
       execution: 'service', ...this.profile.packageManager ?? { command: this.pnpmCommand },
       signal: signal === undefined ? this.abort.signal : AbortSignal.any([this.abort.signal, signal]),
-      outputBytes: this.outputBytes, activateNewBundles: false,
+      outputBytes: this.outputBytes, activateNewBundles: false, idleTimeoutMs: this.idleTimeoutMs,
+      lookupTimeoutMs: this.inspectTimeoutMs,
       onOutput: (text, stream) => {
         this.ownerContext.emit('plugin-manager/install-log', { ...identity, jobId, argv, cwd, stream, text })
       },

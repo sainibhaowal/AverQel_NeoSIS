@@ -44,6 +44,7 @@
     "semver": "^7.8.5",
     "ws": "^8.21.0",
     "@averqel/neosis-api-gateway": "workspace:*",
+    "@averqel/neosis-client-product-analytics": "workspace:*",
     "@averqel/cordis": "workspace:~"
   },
   "devDependencies": {
@@ -69,6 +70,8 @@
     "@averqel/neosis-deepseek-account": "workspace:*",
     "@types/ws": "^8.18.1",
     "@averqel/neosis-client-ui-primitives": "workspace:*",
+    "@averqel/neosis-client-shortcuts": "workspace:*",
+    "@averqel/neosis-atomic-write": "workspace:*",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "@types/react": "~18.3.1",

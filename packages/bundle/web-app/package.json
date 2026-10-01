@@ -56,6 +56,8 @@
     "@averqel/neosis-agent-tool-presentation": "workspace:*",
     "@averqel/neosis-api-job-controller": "workspace:*",
     "@averqel/neosis-api-remotes": "workspace:*",
+    "@averqel/neosis-client-product-analytics": "workspace:*",
+    "@averqel/neosis-host-product-telemetry-otel": "workspace:*",
     "@averqel/neosis-api-session-controller": "workspace:*",
     "@averqel/neosis-api-settings-controller": "workspace:*",
     "@averqel/neosis-api-terminal-controller": "workspace:*",
@@ -66,6 +68,8 @@
     "@averqel/neosis-client-file-upload": "workspace:*",
     "@averqel/neosis-client-hmr": "workspace:*",
     "@averqel/neosis-client-locale": "workspace:*",
+    "@averqel/neosis-client-shortcuts": "workspace:*",
+    "@averqel/neosis-client-ui-shortcuts": "workspace:*",
     "@averqel/neosis-client-modules": "workspace:*",
     "@averqel/neosis-client-resources": "workspace:*",
     "@averqel/neosis-client-ui-agent-preset": "workspace:*",
@@ -191,6 +195,7 @@
     "@averqel/neosis-session-projection": "workspace:*",
     "@averqel/neosis-shell-env": "workspace:*",
     "@averqel/neosis-system-prompt": "workspace:*",
+    "@averqel/neosis-otel": "workspace:*",
     "@averqel/neosis-typert-registry": "workspace:*"
   }
 }

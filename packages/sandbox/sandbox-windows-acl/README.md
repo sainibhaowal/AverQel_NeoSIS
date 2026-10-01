@@ -75,6 +75,10 @@ Temp isolation is per live session/workspace pair: sessions sharing a workspace 
 
 `init()` throws on any Win32 failure — the child is never spawned unrestricted. A runner that fails before executing the command prints `windows-acl-run: <detail>` to stderr and exits 127, which the seam's runner-failure rules classify as a broken sandbox rather than a denial. Cleanup is best-effort by design: `dispose()` attempts every temp revocation and aggregates failures into an `AggregateError`.
 
+### Diagnosing unexpected denials
+
+When the Windows backend is active, `neosis-sandbox-local` registers the bundled `diagnose-windows-sandbox-acl` skill when a skill registry is available. The skill extracts its PowerShell resources to a private temporary directory, so it also works from packaged ASAR/SEA resources. It performs one bounded diagnosis-and-repair run, writes recovery artifacts, verifies every change, and removes its extracted resources when the provider is disposed. Expected confinement denials remain explanations rather than repair requests.
+
 -----
 
 <a id="understand-the-implementation"></a>

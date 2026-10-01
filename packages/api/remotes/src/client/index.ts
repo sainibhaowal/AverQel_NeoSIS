@@ -1,7 +1,11 @@
 /** Platform-neutral assembly of generated Host Remote contributions. */
 
 import type { Context } from '@averqel/cordis'
+import productAnalyticsRemote from '@averqel/neosis-client-product-analytics/remote'
+export type {} from '@averqel/neosis-client-product-analytics/remote'
 import agentPresetsRemote from '@averqel/neosis-agent-preset-registry/remote'
+import userQuestionsRemote from '@averqel/neosis-user-questions/remote'
+import scheduleRemote from '@averqel/neosis-schedule/remote'
 import commandsRemote from '@averqel/neosis-commands/remote'
 import accountRemote from '@averqel/neosis-api-account-controller/remote'
 import settingsControllerRemote from '@averqel/neosis-api-settings-controller/remote'
@@ -27,14 +31,18 @@ import type { ClientRemote } from '@averqel/neosis-api-gateway/client'
 
 export type { ClientRemote } from '@averqel/neosis-api-gateway/client'
 export type {
-  BundleInfo, BundleRowInfo, ChangeResult, InspectOptions, InstallBundleOptions, InstallSpecKind, ManagementError, PackageResult,
+  BundleInfo, BundleRowInfo, ChangeResult, IncompatiblePlugin, InspectOptions, InstallBundleOptions,
+  InstallSpecKind, ManagementError, PackageResult,
   PluginChange, PluginEntryId, PluginInfo, PluginInspectProblem, PluginInstallCancellation, PluginInstallFailureKind,
-  PluginInstallLogChunk, PluginInstallProgress, PluginInstallRequestId, PluginRegistries, PluginSpecInspection, ReadOnlyReason, Registry,
+  PluginInstallLogChunk, PluginInstallProgress, PluginInstallRequestId, PluginRegistries, PluginSpecInspection,
+  ReadOnlyReason, Registry,
 } from '@averqel/neosis-plugin-manager/types'
 export type {} from '@averqel/neosis-plugin-manager/remote'
 export type {} from '@averqel/neosis-client-ui-plugin-manager/remote'
 export type { PluginInventorySnapshot } from '@averqel/neosis-host-plugin-inventory/types'
 export type {} from '@averqel/neosis-agent-preset-registry/remote'
+export type {} from '@averqel/neosis-user-questions/remote'
+export type {} from '@averqel/neosis-schedule/remote'
 export type {} from '@averqel/neosis-commands/remote'
 export type {} from '@averqel/neosis-api-settings-controller/remote'
 export type {} from '@averqel/neosis-api-account-controller/remote'
@@ -176,7 +184,7 @@ export async function apply(ctx: Context): Promise<() => Promise<void>> {
       pluginInventoryRemote, pluginManagerRemote, pluginRegistryProbeRemote, messageFeedbackRemote, sessionFeedbackRemote,
       fileUploadsRemote, sessionReferencesRemote,
       permissionPresetsRemote, subagentsRemote, sessionRemote, jobRemote, workspaceRemote, workspaceFilesRemote, terminalRemote,
-      officeToPdfRemote,
+      officeToPdfRemote, userQuestionsRemote, productAnalyticsRemote, scheduleRemote,
     ]) {
       disposers.push(await ctx.remote.$mount(contribution))
     }

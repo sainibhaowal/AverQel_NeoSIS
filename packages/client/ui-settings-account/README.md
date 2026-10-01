@@ -9,7 +9,7 @@ English
 
 ## Summary
 
-Desktop Account settings display AverQel login state and offer browser authorization and cancellation; the sidebar account menu provides Platform sign-out.
+Account settings display AverQel login state and offer browser authorization and cancellation; the sidebar account menu provides Platform sign-out.
 
 ## Table of Contents
 
@@ -20,7 +20,7 @@ Desktop Account settings display AverQel login state and offer browser authoriza
 <a id="use-this-package"></a>
 ## Use this package
 
-The client activates only inside Desktop, identified by its preload bridge. Plain Web clients keep the standard Settings launcher and API-key onboarding without account login, account settings, or an account-state subscription.
+The client activates in Web and Desktop. Both clients use the account Remote API and account-state subscription. Desktop additionally exposes the native Platform view and the Desktop-only API-key onboarding controller; Web keeps API-key onboarding in the normal Settings flow and opens Platform links in the system browser.
 
 The sidebar and Account settings display the profile avatar as a circular image, with the account icon as fallback when the URL is absent or the image fails to load. The collapsed sidebar centers the avatar in a 36 × 36 px button.
 

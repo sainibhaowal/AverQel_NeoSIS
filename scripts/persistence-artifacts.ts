@@ -20,6 +20,19 @@ export interface PersistenceArtifact {
 }
 
 /**
+ * Render one active English persistence document.
+ *
+ * Historical paired records retain their original files as release evidence,
+ * but active NeoSIS documentation is authored and verified in English.
+ * @param source - repository-relative English document path.
+ * @param content - complete English Markdown.
+ * @returns the generated document without a translation sidecar.
+ */
+export function renderPersistenceDocument(source: string, content: string): PersistenceArtifact[] {
+  return [{ path: source, content }]
+}
+
+/**
  * Check a pair's code, structure and localized links, then render its three files.
  * Link existence remains the Markdown gate's responsibility. Pair hashes are
  * computed in-process; staging the documents stores the corresponding Git blobs.

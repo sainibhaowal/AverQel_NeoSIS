@@ -20,7 +20,15 @@ it('uses account Remote commands without returning additional wire fields', asyn
   const backend = desktopAccountBackend('http://127.0.0.1:1234', (request) => {
     requests.push(request)
     return Promise.resolve({ links: { usageUrl: 'http://localhost/usage', topUpUrl: 'http://localhost/top_up' }, status: 'signed-out', attempt: null, token: 'private' })
-  }, () => Promise.resolve(''))
+  }, () => Promise.resolve(''), '0.2.0-test')
   expect(await backend.start('en')).toEqual({ links: { usageUrl: 'http://localhost/usage', topUpUrl: 'http://localhost/top_up' }, status: 'signed-out', attempt: null })
-  expect(requests).toEqual([{ namespace: 'account', method: 'startSignIn', args: { locale: 'en', callbackOrigin: 'http://127.0.0.1:1234', loginSource: 'desktop' } }])
+  expect(requests[0]).toMatchObject({ method: 'startSignIn', args: {
+    client: { version: '0.2.0-test', locale: 'en', timezoneOffsetSeconds: expect.any(Number) },
+    callbackOrigin: 'http://127.0.0.1:1234', loginSource: 'desktop',
+  } })
+  await backend.signOut()
+  expect(requests[1]).toMatchObject({ method: 'signOut', args: {
+    client: { version: '0.2.0-test', locale: 'en', timezoneOffsetSeconds: expect.any(Number) },
+  } })
+  expect(requests).toHaveLength(2)
 })

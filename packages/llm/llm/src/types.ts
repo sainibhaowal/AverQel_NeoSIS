@@ -6,7 +6,7 @@
 
 import type { Branded } from '@averqel/neosis-brand'
 import type { FileAttachmentRef, ImageAttachmentRef } from '@averqel/neosis-attachment'
-import type { ToolCallId, ProviderRequestId, ReasoningEffortId } from './brand.ts'
+import type { MessageId, ToolCallId, ProviderRequestId, ReasoningEffortId } from './brand.ts'
 import type { Message, UserMessage } from './message.ts'
 
 declare module '@averqel/cordis' {
@@ -132,8 +132,8 @@ export interface ToolRemovalBlock {
 /**
  * Merge-extensible content blocks keyed by `type`. New core blocks must land
  * with adapter, UI, and compaction support. Developer tool-change blocks are
- * reserved for Session V4 persistence; providers and UI reject them until
- * their producers and consumers are implemented together.
+ * providers that support mid-conversation tool updates serialize them as
+ * developer instructions; other providers may reject them explicitly.
  */
 export interface ContentBlockMap {
   'text': TextBlock
@@ -482,6 +482,19 @@ export interface RequestUserInput {
 /** A durable conversation message or a user input used only for one request. */
 export type RequestMessage = Message | RequestUserInput
 
+/** Logged tool declarations and update identities since the last declaration reset. */
+export interface ToolHistory {
+  /** Complete active declarations at the start of this history. */
+  readonly tools: readonly ToolSchema[]
+  /** Ordered developer messages, with additions resolved from their historical headers. */
+  readonly updates: readonly {
+    /** Identity used to locate this update in the derived request history. */
+    readonly messageId: MessageId
+    /** Added definitions resolved from the event's referenced request header. */
+    readonly additions: readonly ToolSchema[]
+  }[]
+}
+
 /** A single model request, fully assembled. */
 export interface GenerateOptions {
   /** Registered provider route selecting the adapter instance. */
@@ -503,6 +516,8 @@ export interface GenerateOptions {
   system?: string
   /** Tool schemas (adapters map to the provider's `tools` field). */
   tools?: ToolSchema[]
+  /** Session-folded tool history used for route projection. */
+  toolHistory?: ToolHistory
   temperature?: number
   maxTokens?: number
   /**

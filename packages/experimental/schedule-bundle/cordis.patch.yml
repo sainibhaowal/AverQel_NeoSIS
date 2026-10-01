@@ -1,0 +1,12 @@
+# Optional Schedule over the shipped Web composition. Schedule and time context
+# are enabled together; the Web row already exists disabled for safe overlays.
+
+- insert:
+    - id: time-context
+      name: '@averqel/neosis-time-context'
+
+    - id: schedule
+      name: '@averqel/neosis-schedule'
+
+- id: ui-schedule
+  disabled: false

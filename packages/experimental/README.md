@@ -30,6 +30,7 @@ The experimental group contains prototype capabilities whose contracts can chang
 | [`client-ui-voice-input`](client-ui-voice-input/README.md) | Microphone capture and guarded draft insertion | — |
 | [`voice-input-bundle`](voice-input-bundle/README.md) | Default-disabled optional voice input composition | — |
 | [`agent-team-profile`](agent-team-profile/README.md) | Agent Teams collaboration, tools, and Web UI bundle | — |
+| [`schedule-bundle`](schedule-bundle/README.md) | Default-disabled Schedule, time context, and Automation tasks bundle | — |
 | [`agent-team`](agent-team/README.md) | Named teammates with durable messages and a shared task board | `ctx.agentTeams` |
 | [`client-ui-agent-team`](client-ui-agent-team/README.md) | Team roster, task board, and teammate navigation for Web | — |
 | [`auto-review`](auto-review/README.md) | Explicit Web layer for same-model review before each native or PTC inner tool call | — |

@@ -75,7 +75,8 @@
     "@averqel/neosis-attachment": "workspace:*",
     "clsx": "^2.0.0",
     "@averqel/neosis-ptc-runtime": "workspace:*",
-    "@averqel/neosis-token-meter": "workspace:*"
+    "@averqel/neosis-token-meter": "workspace:*",
+    "@averqel/neosis-user-questions": "workspace:*"
   },
   "files": [
     "lib/index.js",

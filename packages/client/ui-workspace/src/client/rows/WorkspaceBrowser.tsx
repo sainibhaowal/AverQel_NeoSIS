@@ -218,7 +218,12 @@ type SessionTreeProps = Pick<
   WorkspaceBrowserProps,
   'useSessionStatus' | 'startSession' | 'open'
   | 'insertWorkspaceBefore' | 't' | 'usePanelInfo'
-> & PropsRenderSlots<'sidebar.workspaces.session.menu.item' | 'sidebar.workspaces.session.row.action'> & {
+> & PropsRenderSlots<
+  | 'sidebar.workspaces.session.menu.item'
+  | 'sidebar.workspaces.session.row.action'
+  | 'sidebar.session.row.leading'
+  | 'sidebar.session.row.hover'
+> & {
   /** Always-mounted Session list snapshot. */
   list: SessionListState
   /** Host account home for POSIX hover-path abbreviation. */

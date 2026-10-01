@@ -12,6 +12,9 @@
   ],
   "references": [
     {
+      "path": "../../client/product-analytics/tsconfig.client.json"
+    },
+    {
       "path": "../../../vendor/cordis"
     },
     {
@@ -67,6 +70,9 @@
     },
     {
       "path": "../../interaction/user-questions"
+    },
+    {
+      "path": "../../schedule/schedule"
     },
     {
       "path": "../job-controller/tsconfig.client.json"

@@ -36,6 +36,7 @@
         "@averqel/neosis-client-ui-session",
         "@averqel/neosis-client-ui-settings",
         "@averqel/neosis-client-ui-workspace"
+        ,"@averqel/neosis-client-shortcuts"
       ],
       "platform": "web"
     }
@@ -68,6 +69,7 @@
     "@averqel/neosis-client-ui-session": "workspace:*",
     "@averqel/neosis-client-ui-settings": "workspace:*",
     "@averqel/neosis-client-ui-workspace": "workspace:*",
+    "@averqel/neosis-client-shortcuts": "workspace:*",
     "@averqel/neosis-client-ui-slots": "workspace:*",
     "@averqel/neosis-commands": "workspace:*",
     "@averqel/neosis-goal": "workspace:*",

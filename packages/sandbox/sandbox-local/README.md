@@ -56,6 +56,8 @@ With the provider mounted, a command runs under the mode you resolve per call. E
 
 An unsupported platform or an unusable runner fails closed: `confine()` rejects with `SANDBOX_UNAVAILABLE` and names the runner options for the platform, and the consumer surfaces that error rather than running the command unconfined. A runner that starts but refuses its profile is identified by its fatal stderr signature and exit code, so a broken sandbox is not mistaken for a denied command. The `runnerCommand` override is an operator assertion: it skips functional probes and assumes the configured runner implements the bwrap-compatible profile honestly.
 
+On Windows, the built-in ACL runner also contributes the bundled `diagnose-windows-sandbox-acl` skill when the composition mounts the skill registry. It is available for unexpected workspace permission failures; expected writes outside the workspace and read-only denials do not trigger ACL repair guidance.
+
 -----
 
 <a id="understand-the-implementation"></a>

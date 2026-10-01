@@ -10,7 +10,10 @@ import { mountAgentLoopTestDependencies } from '@averqel/neosis-agent-loop-testk
 import { SessionId } from '@averqel/neosis-session'
 import type { SessionEvent, SessionEventMap } from '@averqel/neosis-session'
 import JsonlSessionPersistence from '@averqel/neosis-session-persistence-jsonl'
-import * as toolSchedule from '@averqel/neosis-schedule'
+import ScheduleService from '@averqel/neosis-schedule'
+import Storage from '@averqel/neosis-storage'
+import * as StorageDomain from '@averqel/neosis-storage-domain'
+import * as StorageJson from '@averqel/neosis-storage-json'
 import * as SubagentSpawn from '@averqel/neosis-subagent-spawn-in-process'
 import * as SubagentFork from '@averqel/neosis-subagent-fork-in-process'
 import type { ContentBlock, GenerateOptions, MessageId, StreamChunk } from '@averqel/neosis-llm'
@@ -76,6 +79,25 @@ afterEach(async () => {
   if (errors.length > 1) throw new AggregateError(errors, 'temp-root cleanup failed')
 })
 
+/** Mount the real Schedule service for root-only tool-registration assertions. */
+async function mountScheduleForOwnership(ctx: Context): Promise<void> {
+  const root = mkdtempSync(join(tmpdir(), 'dsh-subagent-schedule-'))
+  const fibers: Array<{ dispose(): Promise<void> }> = []
+  cleanups.unshift(async () => {
+    for (const fiber of fibers.toReversed()) await fiber.dispose()
+    rmSync(root, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 })
+  })
+  fibers.push(await ctx.plugin(Storage))
+  fibers.push(await ctx.plugin(StorageJson, { root }))
+  fibers.push(await ctx.plugin(StorageDomain, { backend: 'json' }))
+  // This ownership test creates no reminders and invokes no Remote methods.
+  // Unexpected delivery must fail instead of activating an unrelated Session.
+  ctx.provide('sessionController', {
+    resolveAgent: async () => { throw new Error('ownership test must not dispatch reminders') },
+  } as never)
+  fibers.push(await ctx.plugin(ScheduleService))
+}
+
 /** Boot the full continuable stack: loop, persistence, providers, and subagents. */
 async function setupWith(
   adapter: LlmAdapter,
@@ -86,7 +108,7 @@ async function setupWith(
   let disposePersistence: (() => Promise<void>) | undefined
   let root: string | undefined
   if (options.persistence !== false) {
-    root = mkdtempSync(join(tmpdir(), 'neosis-subagent-continuation-'))
+    root = mkdtempSync(join(tmpdir(), 'dsh-subagent-continuation-'))
     const persistedRoot = root
     const persistenceFiber = await ctx.plugin(JsonlSessionPersistence, { root })
     disposePersistence = () => persistenceFiber.dispose()
@@ -96,7 +118,7 @@ async function setupWith(
     })
   }
   await ctx.plugin(AgentLoop, { agents: [] })
-  if (options.schedule) await ctx.plugin(toolSchedule)
+  if (options.schedule) await mountScheduleForOwnership(ctx)
   if (options.sessionQuery !== false) await ctx.plugin(TestSessionQuery)
   subagentConfigs.set(ctx, await liveConfig(ctx, SubagentRuntime,
     options.maxActiveSubagents === undefined ? {} : { maxActiveSubagents: options.maxActiveSubagents }))
@@ -2796,7 +2818,7 @@ describe('continuable settlement delivery', () => {
       { chunks: textResponse('parent ack') },
     ])
     const { ctx, parent } = await setupWith(adapter)
-    // The shipped durability checkpoint (`neosis-session-checkpoint-policy`) is
+    // The shipped durability checkpoint (`dsh-session-checkpoint-policy`) is
     // fail-closed at the step boundary, so a rejected write ends the turn after
     // it claimed its messages and before it entered a step.
     ctx.on('agent/pre-step', async ({ agent: subject, turn }, next) => {
@@ -3559,7 +3581,7 @@ describe('continuable errors', () => {
     const adapter = new GatedAdapter([{ chunks: textResponse('child'), gate: hold.promise }])
     const ctx = new Context()
     await mountAgentLoopTestDependencies(ctx)
-    const root = mkdtempSync(join(tmpdir(), 'neosis-subagent-continuation-'))
+    const root = mkdtempSync(join(tmpdir(), 'dsh-subagent-continuation-'))
     const persistenceFiber = await ctx.plugin(JsonlSessionPersistence, { root })
     cleanups.push(async () => {
       await persistenceFiber.dispose()

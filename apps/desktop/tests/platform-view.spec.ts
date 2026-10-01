@@ -37,7 +37,7 @@ function setup() {
     webContents: new EventEmitter(), contentView: { addChildView: vi.fn(), removeChildView }, isDestroyed: () => false,
   })
   const manager = new DesktopPlatformView('/bundled/preload.cjs', () => 'en_US')
-  manager.setSession({ origin: 'https://platform.deepseek.com', token: 'fixture-secret' })
+  manager.setSession({ origin: 'https://platform.deepseek.com', token: 'fixture-secret', userId: null })
   return { manager, owner, removeChildView }
 }
 function view() {
@@ -71,7 +71,7 @@ it('destroys old documents on sign-out or credential replacement', async () => {
   const { manager, owner } = setup()
   await manager.open(owner, 'usage', bounds)
   const first = view().webContents
-  manager.setSession({ origin: 'https://platform.deepseek.com', token: 'replacement' })
+  manager.setSession({ origin: 'https://platform.deepseek.com', token: 'replacement', userId: null })
   expect(first.close).toHaveBeenCalledOnce()
   expect(() => manager.bootstrap({ sender: first, senderFrame: first.mainFrame })).toThrow()
   await manager.open(owner, 'top-up', bounds)
@@ -149,7 +149,7 @@ it('does not reveal a document closed before its load settles', async () => {
 
 it('injects deployment headers only at the Platform origin and excludes them from bootstrap', async () => {
   const { manager, owner } = setup()
-  manager.setSession({ origin: 'https://platform.deepseek.com', token: 'fixture-secret',
+  manager.setSession({ origin: 'https://platform.deepseek.com', token: 'fixture-secret', userId: null,
     requestHeaders: { cookie: 'route=new; gate=private', 'x-private-gate': 'private', 'x-client-platform': 'desktop-mac' } })
   await manager.open(owner, 'usage', bounds)
   const browserSession = state.sessions.at(-1) as { webRequest: { onBeforeSendHeaders: ReturnType<typeof vi.fn> } }
@@ -178,14 +178,14 @@ it('injects deployment headers only at the Platform origin and excludes them fro
 
 it.each(['usage', 'top-up'] as const)('selects the configured frontend deployment for %s', async (page) => {
   const { manager, owner } = setup()
-  manager.setSession({ origin: 'https://platform.deepseek.com', token: 'fixture-secret', embeddedPageDist: 'feat/test&other=value' })
+  manager.setSession({ origin: 'https://platform.deepseek.com', token: 'fixture-secret', userId: null, embeddedPageDist: 'feat/test&other=value' })
   await manager.open(owner, page, bounds)
   const url = new URL(view().webContents.loadURL.mock.calls[0]![0] as string)
   expect(url.origin).toBe('https://platform.deepseek.com')
   expect(url.pathname).toBe(page === 'usage' ? '/usage' : '/top_up')
   expect([...url.searchParams]).toEqual([['dist', 'feat/test&other=value']])
   const previous = view().webContents
-  manager.setSession({ origin: 'https://platform.deepseek.com', token: 'fixture-secret', embeddedPageDist: 'another' })
+  manager.setSession({ origin: 'https://platform.deepseek.com', token: 'fixture-secret', userId: null, embeddedPageDist: 'another' })
   expect(previous.close).toHaveBeenCalledOnce()
   manager.close()
 })
@@ -243,7 +243,7 @@ it('bootstraps the current language and updates an open view without reloading',
   const { owner } = setup()
   let locale: 'en_US' | 'zh_CN' = 'zh_CN'
   const manager = new DesktopPlatformView('/bundled/preload.cjs', () => locale)
-  manager.setSession({ origin: 'https://platform.deepseek.com', token: 'fixture-secret' })
+  manager.setSession({ origin: 'https://platform.deepseek.com', token: 'fixture-secret', userId: null })
   manager.notifyLocaleChanged()
   await manager.open(owner, 'usage', bounds)
   const sender = view().webContents

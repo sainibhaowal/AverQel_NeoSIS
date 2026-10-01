@@ -11,6 +11,7 @@ import type {} from '@averqel/neosis-client-locale/client'
 import type {} from '@averqel/neosis-client-ui-renderer/client'
 import type {} from '@averqel/neosis-client-ui-session/client'
 import type {} from '@averqel/neosis-client-ui-settings/client'
+import type { ShortcutCommandId, ShortcutFixedCommand } from '@averqel/neosis-client-shortcuts/client'
 import { UiConversation } from './conversation/assembly.ts'
 import type { ViewTab } from './contract/views.ts'
 import type {
@@ -51,7 +52,7 @@ declare module '@averqel/neosis-client-ui-slots' {
 
 /** Services required by the Conversation plugin. */
 export const inject = [
-  'slots', 'sessions', 'fileUpload', 'uiSession', 'uiWorkspace', 'locale', 'configForms',
+  'slots', 'sessions', 'fileUpload', 'uiSession', 'uiWorkspace', 'locale', 'configForms', 'shortcuts',
 ]
 
 /** Conversation runtime configuration. */
@@ -224,6 +225,40 @@ export function apply(ctx: Context, config: Config = Config({})): void {
       disposeViews()
     }
   }, 'ui-conversation: View selection')
+
+  const stop = (sessionId: SessionId): void => {
+    scopedConversation(sessions, sessionId).cancel().catch((_error: unknown) => {
+      // Stop failure is published through Session promptError.
+    })
+  }
+  const stopShortcut = createSnapshotStore<readonly string[]>([])
+  ctx.inject(['shortcuts'], (scope) => {
+    const fixedInputs: readonly ShortcutFixedCommand[] = [
+      { id: 'fixed.send' as ShortcutCommandId, label: () => t('input.send'), keys: ['Enter'],
+        bindings: [{ code: 'Enter', modifiers: [] }], group: 'input' },
+      { id: 'fixed.newline' as ShortcutCommandId, label: () => t('shortcut.newline'),
+        keys: scope.shortcuts.describeBinding({ code: 'Enter', modifiers: ['shift'] }).keys,
+        bindings: [{ code: 'Enter', modifiers: ['shift'] }], group: 'input' },
+      { id: 'fixed.complementary' as ShortcutCommandId, label: () => t('shortcut.complementary'),
+        keys: scope.shortcuts.describeBinding({ code: 'Enter', modifiers: ['primary'] }).keys,
+        bindings: [{ code: 'Enter', modifiers: ['control'] }, { code: 'Enter', modifiers: ['meta'] }], group: 'input' },
+      { id: 'fixed.slash' as ShortcutCommandId, label: () => t('shortcut.slash'), keys: ['/'],
+        bindings: [{ code: 'Slash', modifiers: [] }], group: 'input' },
+      { id: 'fixed.mention' as ShortcutCommandId, label: () => t('shortcut.mention'), keys: ['@'],
+        bindings: [{ code: 'Digit2', modifiers: ['shift'] }], group: 'input' },
+    ]
+    for (const command of fixedInputs) {
+      scope.effect(() => scope.shortcuts.registerFixed(command), `ui-conversation: ${command.id}`)
+    }
+    scope.effect(() => {
+      const command: ShortcutFixedCommand = {
+        id: 'response.stop' as ShortcutCommandId, label: () => t('input.stop'), keys: ['Esc', 'Esc'], bindings: [{ code: 'Escape', modifiers: [] }], group: 'input',
+      }
+      const dispose = scope.shortcuts.registerFixed(command)
+      stopShortcut.set(command.keys)
+      return () => { stopShortcut.set([]); dispose() }
+    }, 'ui-conversation: fixed stop reference')
+  })
 
   const inputHub = new InputHub(ctx, t)
   const composerBlocks = new ComposerBlockRegistry()
@@ -402,6 +437,7 @@ export function apply(ctx: Context, config: Config = Config({})): void {
           toggleCommandMenu: undefined,
           stop: undefined,
           hooks: {
+            stopShortcut,
             busyEnter: submissionPolicy.busyEnter,
             fileUploads: ABSENT_FILE_UPLOADS,
             notices: ABSENT_NOTICES,
@@ -476,11 +512,10 @@ export function apply(ctx: Context, config: Config = Config({})): void {
             })
           },
         stop: () => {
-          scopedConversation(sessions, sessionId).cancel().catch(() => {
-            // Stop failure is published through Session promptError.
-          })
+          stop(sessionId)
         },
         hooks: {
+          stopShortcut,
           busyEnter: submissionPolicy.busyEnter,
           fileUploads: conversation.fileUploads,
           notices: shell.notices,

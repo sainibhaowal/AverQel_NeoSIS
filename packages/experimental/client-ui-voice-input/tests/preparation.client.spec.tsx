@@ -70,6 +70,7 @@ it('starts preparation and offers retry without showing progress for completed o
   expect(b.prepare).toHaveBeenCalledWith(id)
   b.rerender(<PreparationCard {...b.props} provider={{ ...b.props.provider,
     preparation: { phase: 'failed', message: 'network unavailable', steps: [{ kind: 'model', status: 'failed' }] } }} />)
+  await waitFor(() => { expect(screen.getByRole<HTMLButtonElement>('button', { name: zh.retryPrepare }).disabled).toBe(false) })
   b.prepare.mockRejectedValueOnce(new Error('offline'))
   fireEvent.click(screen.getByRole('button', { name: zh.retryPrepare }))
   await screen.findByText('语音识别失败：offline')

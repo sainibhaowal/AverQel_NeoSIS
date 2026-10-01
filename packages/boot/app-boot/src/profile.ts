@@ -188,6 +188,7 @@ export const DEFAULT_PROFILE_BUNDLES: readonly string[] = ['@averqel/neosis-base
 export const OPTIONAL_BUNDLES: readonly string[] = [
   '@averqel/neosis-experimental-voice-input-bundle',
   '@averqel/neosis-experimental-agent-team-profile',
+  '@averqel/neosis-experimental-schedule-bundle',
 ]
 
 const PROFILE_PATCH_TEMPLATE = `# Your patch layer for this neosis profile, applied after every bundle layer:

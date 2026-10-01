@@ -35,7 +35,8 @@
         "@averqel/neosis-client-locale",
         "@averqel/neosis-client-connection",
         "@averqel/neosis-api-remotes",
-        "@averqel/neosis-client-ui-sidebar"
+        "@averqel/neosis-client-ui-sidebar",
+        "@averqel/neosis-client-shortcuts"
       ],
       "platform": "web"
     }
@@ -63,11 +64,14 @@
     "@averqel/neosis-client-ui-session": "workspace:*",
     "@averqel/neosis-client-ui-settings": "workspace:*",
     "@averqel/neosis-client-ui-sidebar": "workspace:*",
+    "@averqel/neosis-client-shortcuts": "workspace:*",
     "@averqel/neosis-client-ui-slots": "workspace:*",
     "@averqel/neosis-remote-mock": "workspace:*",
     "@types/react": "~18.3.1",
+    "@types/react-dom": "~18.3.0",
     "clsx": "^2.0.0",
     "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "@averqel/neosis-settings": "workspace:*"
   },
   "files": [

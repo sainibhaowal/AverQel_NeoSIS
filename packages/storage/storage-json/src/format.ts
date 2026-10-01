@@ -69,7 +69,7 @@ export function parse(text: string, descriptor: KvUnitDescriptor): UnitState {
       `unit '${descriptor.name}': stored version ${version} != expected ${descriptor.version}`,
     )
   }
-  if (typeof tables !== 'object' || tables === null) {
+  if (typeof tables !== 'object' || tables === null || Array.isArray(tables)) {
     throw new StorageError('malformed-medium', `unit '${descriptor.name}': tables is not an object`)
   }
   const state: UnitState = { version, global: globalValue ?? null, tables: new Map() }

@@ -36,6 +36,10 @@ export interface PackageOperationOptions {
   onOutput?: (text: string, stream: 'stdout' | 'stderr') => void
   activateNewBundles?: boolean
   lockWaitMs?: number
+  /** Terminate a captured run after this much output silence. */
+  idleTimeoutMs?: number
+  /** Bound registry lookups made before an installation. */
+  lookupTimeoutMs?: number
 }
 
 /** Resolve relative package specs against the caller's directory.
@@ -119,13 +123,26 @@ export async function runProfilePnpm(
     cwd: dir, env: { ...(options.execution === 'cli' ? process.env : scrubbedParentEnv()), ...options.env }, extendEnv: false, reject: false,
     stdout: options.execution === 'cli' ? 'inherit' : 'pipe',
     stderr: options.execution === 'cli' ? 'inherit' : 'pipe',
-    buffer: false, stdin: options.execution === 'cli' ? 'inherit' : 'ignore', cancelSignal: options.signal === undefined
+    buffer: false, killDescendants: options.execution === 'service',
+    stdin: options.execution === 'cli' ? 'inherit' : 'ignore', cancelSignal: options.signal === undefined
       ? cancellation.signal : AbortSignal.any([cancellation.signal, options.signal]),
   })
+  let timedOut = false
+  let idleTimer: NodeJS.Timeout | undefined
+  const armIdleTimer = (): void => {
+    if (options.execution === 'cli' || options.idleTimeoutMs === undefined) return
+    clearTimeout(idleTimer)
+    idleTimer = setTimeout(() => {
+      timedOut = true
+      child.kill()
+    }, options.idleTimeoutMs)
+  }
+  armIdleTimer()
   let writes = Promise.resolve()
   const collect = async (stream: AsyncIterable<Buffer | string>, kind: 'stdout' | 'stderr') => {
     try {
       for await (const chunk of stream) {
+        armIdleTimer()
         const bytes = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk)
         writes = writes.then(async () => { await log.write(bytes) })
         await writes
@@ -159,9 +176,13 @@ export async function runProfilePnpm(
     }
     if (exitCode === 0 && options.activateNewBundles !== false) await reconcile(before, dir, context.installAnchor, options)
   } finally {
+    clearTimeout(idleTimer)
     await log.close()
   }
-  return { exitCode, output: output.toString('utf8'), truncated, logPath }
+  return {
+    exitCode, output: output.toString('utf8'), truncated, logPath,
+    ...(timedOut ? { timedOut: true } : {}),
+  }
 }
 
 /** Initialize and run the neosis plugin command with the same write lock as the service.

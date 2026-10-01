@@ -9,6 +9,7 @@ import type { Volatile } from '@averqel/cordis'
 import type { Context } from '@averqel/cordis'
 import z from '@averqel/schemastery'
 import type {} from '@averqel/neosis-agent'
+import type {} from '@averqel/neosis-deepseek-account'
 import { credentialRef } from '@averqel/neosis-credentials'
 import { launchEnvironmentOf } from '@averqel/neosis-launch-environment'
 import type {} from '@averqel/neosis-session'
@@ -99,6 +100,7 @@ function resolveOptions(
     : undefined
   return {
     ...literalApiKey === undefined ? {} : { apiKey: literalApiKey },
+    resolveAccountToken: endpoint => ctx.get('deepseekAccount')?.resolveToken(endpoint) ?? Promise.resolve(undefined),
     resolveApiKey: async () => {
       const credentials = ctx.get('credentials')
       if (credentials !== undefined) return (await credentials.resolve(apiKeyEnv))?.value

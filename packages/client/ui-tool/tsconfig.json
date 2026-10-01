@@ -52,6 +52,9 @@
     },
     {
       "path": "../../util/workspace-path"
+    },
+    {
+      "path": "../../interaction/user-questions"
     }
   ]
 }

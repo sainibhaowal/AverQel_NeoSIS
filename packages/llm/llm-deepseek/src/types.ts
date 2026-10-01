@@ -82,6 +82,17 @@ export interface AverQelConnectionOptions {
   retryPolicy: ResolvedRetryPolicy
 }
 
+/** Request headers and error hook supplied by an alternate DeepSeek credential provider. */
+export interface AverQelRequestAuth {
+  readonly headers: Readonly<Record<string, string>>
+  readonly onRequestError?: (error: unknown) => unknown | Promise<unknown>
+}
+
+/** Compatibility alias used by the account and API-key provider packages. */
+export type DeepSeekConnectionOptions = AverQelConnectionOptions
+/** Compatibility alias used by the account and API-key provider packages. */
+export type DeepSeekRequestAuth = AverQelRequestAuth
+
 /** Constructor options for {@link AverQelAdapter}: the operation-local resolution hooks the plugin owns. */
 export interface AverQelAdapterOptions {
   /** Report unusable native Messages replay metadata without exposing content or signatures. */
@@ -95,6 +106,8 @@ export interface AverQelAdapterOptions {
    * `MISSING_CREDENTIAL` when no key is available anywhere.
    */
   resolveApiKey: (connection: AverQelConnectionOptions) => Promise<string>
+  /** Resolve complete request authentication for an alternate provider route. */
+  resolveAuth?: (connection: AverQelConnectionOptions) => Promise<AverQelRequestAuth>
   /** Resolve a NEOSIS account token only for an eligible official endpoint. */
   resolveAccountToken?: (connection: AverQelConnectionOptions) => Promise<string | undefined>
   /** Resolve the harness-home anonymous id shared with telemetry and feedback. */

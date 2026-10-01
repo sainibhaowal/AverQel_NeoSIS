@@ -66,8 +66,9 @@ Speech calls never activate or submit to an Agent.
 /**
  * Start or join one Host-owned preparation task.
  * @param providerId - selected recognizer.
+ * @param options - optional preparation settings.
  */
-@Remote prepare(providerId: SpeechProviderId): void
+@Remote prepare(providerId: SpeechProviderId, options?: SpeechPreparationOptions): void
 
 /**
  * Explicitly cancel resource preparation.
@@ -130,8 +131,9 @@ async configure(patch: SpeechSelectionPatch): Promise<void>
 /**
  * Start or join provider-owned preparation.
  * @param id - exact registered provider identity.
+ * @param options - optional preparation settings.
  */
-prepare(id: SpeechProviderId): void
+prepare(id: SpeechProviderId, options?: SpeechPreparationOptions): void
 
 /**
  * Explicitly cancel provider preparation without tying it to a browser connection.

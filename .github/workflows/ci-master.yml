@@ -203,6 +203,9 @@ jobs:
       - name: Install (immutable)
         run: pnpm install --frozen-lockfile
 
+      - name: Install Playwright Chromium
+        run: pnpm exec playwright install chromium
+
       - name: Run complete unsharded primary Node CI serially
         env:
           NEOSIS_COVERAGE_MAX_WORKERS: '1'

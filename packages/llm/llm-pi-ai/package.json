@@ -41,7 +41,7 @@
     "@averqel/neosis-brand": "workspace:*",
     "@averqel/neosis-util-values": "workspace:*",
     "@averqel/schemastery": "workspace:~",
-    "@earendil-works/pi-ai": "^0.85.1"
+    "@earendil-works/pi-ai": "^0.87.1"
   },
   "devDependencies": {
     "@averqel/cordis": "workspace:~",

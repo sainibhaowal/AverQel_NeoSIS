@@ -13,7 +13,7 @@ import { Config, plainOptions, resolveAdapterOptions } from './config.ts'
 import type { ResolvedAverQelOptions } from './config.ts'
 
 export { Config, plainOptions, resolveAdapterOptions, PUBLIC_BASE_URL } from './config.ts'
-export type { Options, ResolvedAverQelOptions } from './config.ts'
+export type { Options, ResolvedAverQelOptions, ResolvedAverQelOptions as ResolvedDeepSeekOptions } from './config.ts'
 export {
   DEFAULT_CONTEXT_WINDOW,
   DEFAULT_FILE_EXPIRY_SECONDS,
@@ -29,6 +29,7 @@ export {
 } from './defaults.ts'
 export { AverQelAdapter } from './adapter.ts'
 export type { AverQelAdapterOptions, AverQelCatalogModel, AverQelConnectionOptions } from './types.ts'
+export type { AverQelRequestAuth, DeepSeekConnectionOptions, DeepSeekRequestAuth } from './types.ts'
 export {
   DEFAULT_LOW_DETAIL_IMAGE_PIXEL_BUDGET,
   DEFAULT_MAX_IMAGES_PER_REQUEST,
@@ -49,6 +50,8 @@ export type { AverQelFileId as AverQelFileIdType } from './file-id.ts'
 export { AverQelUploadIndex, deepSeekFileScope } from './upload-index.ts'
 export type { AverQelUploadRecord } from './upload-index.ts'
 export type { RequestDefaults } from './types.ts'
+export { catalogModelInfo } from './model-info.ts'
+export { registerDeepSeekProvider } from './host.ts'
 
 export const name = 'llm-deepseek'
 export const inject = ['llm']

@@ -2,9 +2,16 @@
 
 import type { IpcMainInvokeEvent } from 'electron'
 import type { DesktopBrowserBridge } from '@averqel/neosis-client-ui-sidebar-browser/types'
+import type { DesktopKeyboardApi, DesktopShortcutsApi } from '@averqel/neosis-client-shortcuts/protocol'
 
 /** IPC channel names kept private to the desktop application bundle. */
 export const DESKTOP_IPC = {
+  shortcutsInput: 'neosis-desktop:shortcuts-input',
+  shortcutsCloseWindow: 'neosis-desktop:shortcuts-close-window',
+  shortcutsGet: 'neosis-desktop:shortcuts-get',
+  shortcutsEdit: 'neosis-desktop:shortcuts-edit',
+  shortcutsChanged: 'neosis-desktop:shortcuts-changed',
+  shortcutsRecording: 'neosis-desktop:shortcuts-recording',
   boot: 'neosis-desktop:boot',
   enterWorkspace: 'neosis-desktop:enter-workspace',
   bootFailed: 'neosis-desktop:boot-failed',
@@ -62,6 +69,8 @@ export interface DesktopUpdatePresentation {
 export interface NeosisDesktopProductApi {
   readonly protocolVersion: 1
   readonly browser: DesktopBrowserBridge
+  readonly keyboard: DesktopKeyboardApi
+  readonly shortcuts: DesktopShortcutsApi
   readonly updates: {
     status(): Promise<DesktopUpdatePresentation>
     open(): Promise<void>

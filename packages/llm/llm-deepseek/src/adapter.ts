@@ -7,7 +7,7 @@ import { idleWatchdog, timeoutOf } from '@averqel/neosis-timeout'
 import { catalogModelInfo, modelInfo } from './model-info.ts'
 import type { AverQelAdapterOptions, AverQelConnectionOptions as Connection } from './types.ts'
 import { AverQelFileStore } from './file-store.ts'
-import { MESSAGES_FILES_BETA, messagesApiRoot } from './messages-api.ts'
+import { MESSAGES_FILES_BETA, MESSAGES_TOOL_CHANGES_BETA, messagesApiRoot } from './messages-api.ts'
 import { FileResolutionFailure, RequestFiles } from './request-files.ts'
 import { prepareRequestExtensions } from './request-extensions.ts'
 import { imagePricing, inlineImages, prepareFileIds, prepareImages } from './images.ts'
@@ -80,8 +80,9 @@ export class AverQelAdapter extends LlmAdapter {
     const { messages, versions } = await prepareImages(
       options.messages, connection, options.model, this.dependencies.resolveAttachments?.(), this.imageAccess, signal,
     )
-    const accountToken = await this.dependencies.resolveAccountToken?.(connection)
-    const key = accountToken ?? await this.dependencies.resolveApiKey(connection)
+    const auth = await this.dependencies.resolveAuth?.(connection)
+    const accountToken = auth?.headers['x-neosis-auth-token'] ?? await this.dependencies.resolveAccountToken?.(connection)
+    const key = accountToken ?? auth?.headers['x-api-key'] ?? await this.dependencies.resolveApiKey(connection)
     const files = new RequestFiles(this.files, {
       baseURL: connection.baseURL, apiKey: key, accountCredential: accountToken !== undefined,
     },
@@ -110,14 +111,21 @@ export class AverQelAdapter extends LlmAdapter {
         ...options.purpose === undefined ? {} : { purpose: options.purpose },
       }, this.dependencies.prepareExtensions)
       signal.throwIfAborted()
+      const betas = [
+        ...fileIds === undefined || fileIds.size === 0 ? [] : [MESSAGES_FILES_BETA],
+        ...body.messages.some(message => message.content.some(block => block.type === 'tool_addition' || block.type === 'tool_removal'))
+          ? [MESSAGES_TOOL_CHANGES_BETA]
+          : [],
+      ]
       const response = await fetch(`${messagesApiRoot(connection.baseURL)}/messages`, {
         method: 'POST', signal, body: extensions.payload, redirect: 'error',
         headers: {
           ...attributionHeaders(),
           'content-type': 'application/json', 'accept': 'text/event-stream',
-          ...accountToken === undefined ? { 'x-api-key': key } : { 'x-neosis-auth-token': accountToken },
+          ...auth?.headers ?? {},
+          ...accountToken === undefined && auth?.headers['x-api-key'] === undefined ? { 'x-api-key': key } : {},
           'anthropic-version': '2023-06-01',
-          ...fileIds === undefined || fileIds.size === 0 ? {} : { 'anthropic-beta': MESSAGES_FILES_BETA },
+          ...betas.length === 0 ? {} : { 'anthropic-beta': betas.join(',') },
           'x-averqel-neosis-user-id': this.dependencies.resolveUserId(),
           ...options.sessionId === undefined ? {} : { 'x-averqel-neosis-session-id': String(options.sessionId) },
           ...options.purpose === 'compaction' ? { 'x-averqel-neosis-compact': '1' } : {},
@@ -133,7 +141,9 @@ export class AverQelAdapter extends LlmAdapter {
         if (await files.retry(detail)) continue
         const failure = providerError(raw, response.status, response.headers)
         const message = files.errorMessage(response.status, failure.message, detail)
-        throw new LlmError(message, failure.code, { ...failure.failure, cause: new Error(text) })
+        const requestError = new LlmError(message, failure.code, { ...failure.failure, cause: new Error(text) })
+        const handled = await auth?.onRequestError?.(requestError)
+        throw handled instanceof Error ? handled : requestError
       }
       await extensions.accept()
       if (response.body === null) throw new LlmError('AverQel Messages returned no response body', 'EMPTY_RESPONSE')

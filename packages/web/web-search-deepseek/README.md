@@ -9,7 +9,7 @@ English
 
 ## Summary
 
-With `neosis-web-search-deepseek`, the harness searches the web through AverQel's native search using an existing `DEEPSEEK_API_KEY`. Choose it when a deployment wants AverQel native search and accepts that one search costs a full model turn in latency and tokens, because AverQel exposes no dedicated search endpoint. Results come from the structured search blocks AverQel returns, never from scraping text out of a reply. A missing credential fails the call with a structured error; a response without a search-result block fails loudly rather than degrading. The model-facing `web_search` tool lives in `neosis-tool-web`.
+With `neosis-web-search-deepseek`, the harness searches the web through AverQel's native search using the signed-in DeepSeek account when available, or an existing `DEEPSEEK_API_KEY`. Choose it when a deployment wants AverQel native search and accepts that one search costs a full model turn in latency and tokens, because AverQel exposes no dedicated search endpoint. Results come from the structured search blocks AverQel returns, never from scraping text out of a reply. A missing credential fails the call with a structured error; a response without a search-result block fails loudly rather than degrading. The model-facing `web_search` tool lives in `neosis-tool-web`.
 
 ## Table of Contents
 
@@ -33,7 +33,7 @@ Choose this backend when a deployment wants AverQel's native server-side web sea
 
 ### Minimal configuration
 
-Load the web service and the provider; the key resolves from `ctx.credentials` when that service is mounted, otherwise from the process environment. The auxiliary search call has its own endpoint setting and uses the Anthropic-compatible base `https://api.deepseek.com/anthropic/v1`, with `/messages` appended. It reads `$DEEPSEEK_SEARCH_BASE_URL`, independently of the conversation adapter’s `$DEEPSEEK_BASE_URL`.
+Load the web service and the provider; a signed-in account token is attempted for the selected endpoint before the key resolves from `ctx.credentials` or the process environment. The auxiliary search call has its own endpoint setting and uses the Anthropic-compatible base `https://api.deepseek.com/anthropic/v1`, with `/messages` appended. It reads `$DEEPSEEK_SEARCH_BASE_URL`, independently of the conversation adapter’s `$DEEPSEEK_BASE_URL`.
 
 ```yaml
 - name: '@averqel/neosis-web'
@@ -82,7 +82,7 @@ This section explains the design decisions behind the provider; the observable b
 The provider is built on two commitments:
 
 - **Structured blocks only.** AverQel runs the search server-side and returns structured `web_search_tool_result` blocks; the provider parses those blocks and never scrapes URLs out of model prose. In strict mode, a response with no such block throws `WEB_PROVIDER_ERROR` instead of degrading.
-- **One credential, resolved per search.** The provider reuses the `DEEPSEEK_API_KEY` reference (no new secret) but keeps its auxiliary request endpoint independent through `$DEEPSEEK_SEARCH_BASE_URL`. A mounted credentials service is authoritative; without one the provider falls back to the launching process environment. Resolving per call means a key stored or rotated in the Web Models page reaches the next search without a restart.
+- **Account first, API key fallback.** The provider attempts the signed-in account token for the exact endpoint and uses the `DEEPSEEK_API_KEY` reference only when no account token is available. The auxiliary request endpoint remains independent through `$DEEPSEEK_SEARCH_BASE_URL`; key resolution is per search so credential rotation reaches the next request without a restart.
 
 ### Source map
 

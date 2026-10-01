@@ -30,7 +30,7 @@ function fixture(recording?: Recording) {
   const transcribe = vi.fn<(request: unknown, signal: AbortSignal) => Promise<RemoteResult<Transcript>>>(
     async () => ({ ok: true, value: transcript }))
   const props: VoiceInputProps = { sessionId: 'one' as SessionId, inputActions, transcribe, locked: false, onActiveChange: vi.fn(),
-    prepare: vi.fn(async () => {}), cancelPreparation: vi.fn(async () => {}), configure: vi.fn(async () => {}),
+    openSettings: vi.fn(), prepare: vi.fn(async () => {}), cancelPreparation: vi.fn(async () => {}), configure: vi.fn(async () => {}),
     useSpeechReadiness: bindSnapshotSelector(readiness), createRecording: () => recording ?? capture,
     t: makeTranslate(zh, commonZh) }
   const view = render(<VoiceInput {...props} />)
@@ -172,16 +172,18 @@ it('bounds recordings, indicates idle wake-up, and cancels an in-flight transcri
   expect(b.inputActions.insertText).not.toHaveBeenCalled()
 })
 
-it('rejects excessive audio and disables unavailable or locked recognition', async () => {
+it('rejects excessive audio and keeps unavailable or locked guidance actionable', async () => {
   const b = fixture(); b.capture.stop.mockResolvedValueOnce(new Uint8Array(101))
   await start(); stop(); await screen.findByText(zh.tooLarge)
   expect(b.transcribe).not.toHaveBeenCalled()
   fireEvent.click(screen.getByRole('button', { name: zh.cancel }))
   act(() => { b.readiness.set({ catalog: null, connected: false, error: null }) })
-  expect(screen.getByRole<HTMLButtonElement>('button', { name: zh.start }).disabled).toBe(true)
+  expect(screen.getByRole<HTMLButtonElement>('button', { name: zh['setupPrompt.trigger'] }).disabled).toBe(false)
   b.view.rerender(<VoiceInput {...b.props} locked />)
-  fireEvent.click(screen.getByRole('button', { name: zh.start }))
-  expect(b.capture.start).toHaveBeenCalledOnce()
+  const locked = screen.getByRole<HTMLButtonElement>('button', { name: zh['setupPrompt.trigger'] })
+  expect(locked.disabled).toBe(true)
+  fireEvent.click(locked)
+  expect(screen.queryByRole('dialog')).toBeNull()
 })
 
 it('releases expansion and contains cleanup failures on unmount', async () => {
@@ -291,13 +293,19 @@ it.each(['escape', 'hidden', 'session'])('discards pending permission after %s',
   expect(b.transcribe).not.toHaveBeenCalled()
 })
 
-it('explains preparation on hover even when the microphone is disabled', () => {
+it('offers installation on click without starting a recording', () => {
   const b = fixture(), state = b.readiness.getSnapshot()
   act(() => { b.readiness.set({ ...state, catalog: { ...state.catalog!, providers: [
     { ...state.catalog!.providers[0]!, preparation: { phase: 'unprepared' } },
   ] } }) })
-  const mic = screen.getByRole<HTMLButtonElement>('button', { name: zh.start })
-  expect(mic.disabled).toBe(true)
-  fireEvent.mouseEnter(mic.parentElement!)
-  expect(screen.getByRole('tooltip').textContent).toBe(zh.prepareRequired)
+  const mic = screen.getByRole<HTMLButtonElement>('button', { name: zh['setupPrompt.trigger'] })
+  expect(mic.disabled).toBe(false)
+  expect(mic.getAttribute('aria-haspopup')).toBe('dialog')
+  fireEvent.click(mic)
+  expect(screen.getByRole('dialog').textContent).toContain(zh['setupPrompt.body'])
+  expect(b.capture.start).not.toHaveBeenCalled()
+  expect(b.props.prepare).not.toHaveBeenCalled()
+  fireEvent.click(screen.getByRole('button', { name: zh['setupPrompt.open'] }))
+  expect(b.props.openSettings).toHaveBeenCalledOnce()
+  expect(screen.queryByRole('dialog')).toBeNull()
 })

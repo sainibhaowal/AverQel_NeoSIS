@@ -85,6 +85,8 @@ declare module '@averqel/neosis-session/types' {
 
 /** Resolved provider options (the plugin's `apply` supplies credential and constant defaults). */
 export interface AverQelSearchProviderOptions {
+  /** Resolve an account token for the exact search endpoint, when the account route is active. */
+  resolveAccountToken?: (endpoint: string) => Promise<string | undefined>
   /** Literal AverQel API key; when present it wins over {@link resolveApiKey}. */
   apiKey?: string
   /** Resolve the current AverQel API key for one search operation. */
@@ -190,7 +192,7 @@ export class AverQelSearchProvider implements WebSearchProvider {
 
   available(): boolean {
     const options = this.resolveOptions()
-    return ((options.apiKey?.length ?? 0) > 0 || options.resolveApiKey !== undefined)
+    return ((options.apiKey?.length ?? 0) > 0 || options.resolveApiKey !== undefined || options.resolveAccountToken !== undefined)
       && URL.canParse(options.baseURL)
       && isPositiveInteger(options.maxTokens)
       && isPositiveInteger(options.maxUses)
@@ -201,9 +203,9 @@ export class AverQelSearchProvider implements WebSearchProvider {
     // settings write landing inside that await must not send the key resolved
     // from the old section to the endpoint named by the new one.
     const options = this.resolveOptions()
-    const apiKey = await this.apiKey(options, signal)
-    throwIfSearchAborted(signal)
     const endpoint = `${options.baseURL}/messages`
+    const auth = await this.authHeaders(options, endpoint, signal)
+    throwIfSearchAborted(signal)
     const body: AverQelSearchLlmRequest['body'] = {
       model: options.model,
       max_tokens: options.maxTokens,
@@ -225,10 +227,7 @@ export class AverQelSearchProvider implements WebSearchProvider {
         method: 'POST',
         redirect: 'error',
         headers: {
-          // Official AverQel expects `x-api-key`; an Anthropic-compatible proxy
-          // may expect `Authorization: Bearer` — send both so either resolves.
-          'x-api-key': apiKey,
-          'authorization': `Bearer ${apiKey}`,
+          ...auth.headers,
           'anthropic-version': options.apiVersion,
           'content-type': 'application/json',
           'accept': 'application/json',
@@ -275,6 +274,19 @@ export class AverQelSearchProvider implements WebSearchProvider {
         : `AverQel returned an unprocessable response body: ${String(error)}`
       throw searchEndpointError(endpoint, message, error)
     }
+  }
+
+  /** Resolve account authentication first and fall back to the configured API-key credential. */
+  private async authHeaders(
+    options: AverQelSearchProviderOptions, endpoint: string, signal?: AbortSignal,
+  ): Promise<{ readonly headers: Readonly<Record<string, string>>; readonly account: boolean }> {
+    throwIfSearchAborted(signal)
+    const token = options.resolveAccountToken === undefined
+      ? undefined
+      : await abortable(options.resolveAccountToken(endpoint), signal)
+    if (token !== undefined && token.length > 0) return { account: true, headers: { 'x-neosis-auth-token': token } }
+    const apiKey = await this.apiKey(options, signal)
+    return { account: false, headers: { 'x-api-key': apiKey, 'authorization': `Bearer ${apiKey}` } }
   }
 
   /**

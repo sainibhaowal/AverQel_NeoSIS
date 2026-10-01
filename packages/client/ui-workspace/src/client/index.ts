@@ -54,7 +54,7 @@ export type {
   DirectoryFlowOwnerProps, DirectoryFlowSlotName, DirectoryPickingHooks, DirectoryPickingInjected,
   MenuOpenState, RowToast, SessionRenameTarget, SessionRowOwnerProps, UseMenuOpenState, WorkspaceBrowserInjected,
   WorkspaceBrowserProps,
-  WorkspacePickerInjected, WorkspacePickerProps,
+  SessionRowScheduleOwnerProps, WorkspacePickerInjected, WorkspacePickerProps,
 } from './contract/slots.ts'
 export type { WorkspaceKey } from './locales.ts'
 
@@ -256,6 +256,8 @@ export function apply(ctx: Context): void {
           kind: 'list', scope: 'root', inject: { hooks: { menuOpenState: menuOpenStateFactory } },
         },
         'sidebar.workspaces.session.row.action': { kind: 'list', scope: 'root' },
+        'sidebar.session.row.leading': { kind: 'list', scope: 'root' },
+        'sidebar.session.row.hover': { kind: 'list', scope: 'root' },
       },
       store: viewStore,
       inject: browserInjected,

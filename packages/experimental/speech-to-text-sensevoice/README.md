@@ -25,7 +25,9 @@ This provider recognizes speech with SenseVoiceSmall ONNX and Silero VAD on the 
 <a id="use-this-package"></a>
 ## Use this package
 
-The [bundle](../voice-input-bundle/README.md) supplies an absolute `dataRoot` under the NEOSIS home. Preparation downloads revision-pinned model files, verifies their sizes and SHA-256 hashes, then loads them. `precision` defaults to `int8`; `fp32` selects the larger reference weights. `modelDirectory` supplies an existing absolute directory containing the selected ONNX file and `tokens.txt`; `vadModelPath` selects an existing Silero ONNX file. `modelOrigin` selects a Hugging Face-compatible download origin while preserving pinned paths and checksums. Verified completed files remain reusable after cancellation or failure.
+The [bundle](../voice-input-bundle/README.md) supplies an absolute `dataRoot` under the NEOSIS home. Preparation downloads revision-pinned model files, verifies their sizes and SHA-256 hashes, then loads them. `precision` defaults to `int8`; `fp32` selects the larger reference weights. `modelDirectory` supplies an existing absolute directory containing the selected ONNX file and `tokens.txt`; `vadModelPath` selects an existing Silero ONNX file. `modelOrigins` defaults to Hugging Face and HF-Mirror; the Host compares the configured origins before each missing asset and retries classified download failures in the selected order. `modelOrigin` pins a deployment to one origin without probing or public fallback. Verified completed files remain reusable after cancellation or failure.
+
+The voice UI exposes advertised origins before preparation or retry. Automatic selection preserves the Host comparison and fallback policy; a manual source applies only to that task and disables fallback. The Host rejects unadvertised sources, refuses to change the source of an active task, and advertises no choices for fully offline deployments.
 
 Download failures identify the asset and source origin, with a classified cause and HTTP status or diagnostic code when available. The public state omits URL credentials, query strings and raw cause messages. Retry reuses verified files; partial downloads restart.
 

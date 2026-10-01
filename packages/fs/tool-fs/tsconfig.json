@@ -40,6 +40,9 @@
       "path": "../../interaction/user-approval"
     },
     {
+      "path": "../../util/code-language"
+    },
+    {
       "path": "../../attachment/attachment"
     }
   ]

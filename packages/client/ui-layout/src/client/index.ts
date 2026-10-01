@@ -13,11 +13,13 @@ import type {} from '@averqel/neosis-client-ui-renderer/client'
 import type {} from '@averqel/neosis-client-ui-session/client'
 import type {} from '@averqel/neosis-client-ui-theme/client'
 import type { HostObservable, SnapshotSelectorHook } from '@averqel/neosis-client-ui-slots'
+import type { ShortcutCommandId } from '@averqel/neosis-client-shortcuts/client'
 import type { PanelInfo } from './service.ts'
 import { AppFrame } from './AppFrame.tsx'
 import { createLayoutStore } from './stores.ts'
 import { LayoutController } from './service.ts'
 import { ThemePresenter } from './theme-presenter.ts'
+import { en, zh } from './shortcut-locales.ts'
 
 // Contract exports only (export-convergence rule: cross-package consumers
 // keep a symbol exported; test-only/package-internal symbols live off /src).
@@ -38,6 +40,11 @@ declare module '@averqel/cordis' {
 }
 
 declare module '@averqel/neosis-client-ui-slots' {
+  interface LocaleNamespaceMap {
+    /** Layout keyboard command labels. */
+    'shortcuts.layout': keyof typeof zh
+  }
+
   interface GlobalStandardProps {
     /** Subscribe to the selected main panel independently of parent renders. */
     usePanelInfo: UsePanelInfo
@@ -133,7 +140,7 @@ export interface RightbarOwnerProps {
 }
 
 /** Required services (cordis fiber inject — the loader passes all module exports as an object plugin). */
-export const inject = ['slots', 'theme', 'locale']
+export const inject = ['slots', 'theme', 'locale', 'shortcuts']
 
 /**
  * Client plugin body: provide ctx.layout, then one register() call — AppFrame
@@ -142,21 +149,24 @@ export const inject = ['slots', 'theme', 'locale']
  * @param ctx - client root context.
  */
 export function apply(ctx: ClientContext): void {
+  ctx.effect(() => ctx.locale.register('shortcuts.layout', { zh, en }), 'layout: command labels')
+  const t = ctx.locale.bind('shortcuts.layout')
+
   ctx.effect(() => {
     const handle = createLayoutStore()
     const instance = handle.create()
     const store: typeof handle = { ...handle, create: () => instance }
-    const layout = new LayoutController(instance.actions, id =>
-      ctx.slots.entries('main').some(entry => entry.options.key === id))
-    const retainMainPanels = (): void => {
-      instance.actions.retainMainPanels(ctx.slots.entries('main').flatMap(entry =>
-        entry.options.key === undefined ? [] : [entry.options.key]))
-    }
     const panelInfo: HostObservable<PanelInfo> = {
       getSnapshot: () => instance.getSnapshot().panelInfo,
       subscribe: listener => instance.subscribe(listener),
     }
-    const disposePanelInfo = ctx.slots.provideRoot({ hooks: { panelInfo } })
+    const layout = new LayoutController(instance.actions, id =>
+      ctx.slots.entries('main').some(entry => entry.options.key === id), panelInfo)
+    const retainMainPanels = (): void => {
+      instance.actions.retainMainPanels(ctx.slots.entries('main').flatMap(entry =>
+        entry.options.key === undefined ? [] : [entry.options.key]))
+    }
+    const disposePanelInfo = ctx.slots.provideRoot({ hooks: { panelInfo: layout.panelInfo } })
     const disposeService = ctx.reflect.provide('layout', layout)
     const disposeRegistration = ctx.slots.register({
       name: 'root',
@@ -170,9 +180,22 @@ export function apply(ctx: ClientContext): void {
       },
       store,
     }, AppFrame)
+    const disposeShortcut = ctx.shortcuts.register({
+      id: 'sidebar.left.toggle' as ShortcutCommandId, label: () => t('toggle'), aliases: ['sidebar', 'toggle left sidebar'],
+      defaults: {
+        'desktop:macos': { code: 'KeyB', modifiers: ['primary'] },
+        'desktop:windows': { code: 'KeyB', modifiers: ['primary'] },
+        'desktop:linux': { code: 'KeyB', modifiers: ['primary'] },
+        'web:macos': { code: 'KeyB', modifiers: ['primary', 'alt'] },
+        'web:windows': { code: 'KeyB', modifiers: ['primary', 'alt'] },
+      },
+      regions: ['page', 'editable'], modals: [],
+      resolve: () => ({ status: 'handled', run: () => { layout.toggleSidebar() } }),
+    })
     const disposePanels = ctx.slots.subscribe('main', retainMainPanels)
     retainMainPanels()
     return () => {
+      disposeShortcut()
       layout.dispose()
       disposePanels()
       disposeRegistration()

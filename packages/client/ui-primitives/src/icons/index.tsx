@@ -655,6 +655,25 @@ export const IconUserOutlineMedium = (props: IconProps) => (
   <IconUserOutlineArtwork {...props} strokeWidth={ICON_MEDIUM_STROKE} />
 )
 
+const IconUsersOutlineArtwork = ({ size = 16, className, strokeWidth }: WeightedIconProps) => (
+  <svg width={size} height={size} className={className} viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" strokeWidth={strokeWidth}>
+    <path d="M6 8.25C7.51878 8.25 8.75 7.01878 8.75 5.5C8.75 3.98122 7.51878 2.75 6 2.75C4.48122 2.75 3.25 3.98122 3.25 5.5C3.25 7.01878 4.48122 8.25 6 8.25Z" stroke="currentColor" />
+    <path d="M1 14.5C1 11.5 3.5 10.25 6 10.25C8.5 10.25 11 11.5 11 14.5" stroke="currentColor" />
+    <path d="M10.5 2.9C11.65 3.35 12.45 4.35 12.45 5.5C12.45 6.65 11.65 7.65 10.5 8.1" stroke="currentColor" />
+    <path d="M12.4 10.6C13.9 11.3 15 12.6 15 14.5" stroke="currentColor" />
+  </svg>
+)
+
+/** Regular one-pixel users outline artwork. */
+export const IconUsersOutlineRegular = (props: IconProps) => (
+  <IconUsersOutlineArtwork {...props} strokeWidth={ICON_REGULAR_STROKE} />
+)
+
+/** Medium users outline artwork. */
+export const IconUsersOutlineMedium = (props: IconProps) => (
+  <IconUsersOutlineArtwork {...props} strokeWidth={ICON_MEDIUM_STROKE} />
+)
+
 const IconPaperPlaneOutlineArtwork = ({ size = 14, className, strokeWidth }: WeightedIconProps) => (
   <svg width={size} height={size} className={className} viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" strokeWidth={strokeWidth}>
     <path d="M4.74024 9.11029L1.82882 7.79865C1.75022 7.76323 1.75026 7.65161 1.82889 7.61626L12.9665 2.60943C13.0354 2.57846 13.1125 2.63213 13.1073 2.70749L12.3914 13.1388C12.3864 13.2117 12.3073 13.2548 12.2433 13.2194L6.12677 9.83657" stroke="currentColor" />

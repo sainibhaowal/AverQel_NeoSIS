@@ -1069,9 +1069,9 @@ describe('compat switches', () => {
   it('refuses a valueless compat key on a model entry too', () => {
     expect(() => resolveProfiles({
       deepseek: {
-        modelOverrides: { 'deepseek-v4-flash': { compat: { requiresReasoningContentOnAssistantMessages: null } } as never },
+        modelOverrides: { 'deepseek-flash': { compat: { requiresReasoningContentOnAssistantMessages: null } } as never },
       },
-    })).toThrow(/model "deepseek-v4-flash" sets compat "requiresReasoningContentOnAssistantMessages" with no value/)
+    })).toThrow(/model "deepseek-flash" sets compat "requiresReasoningContentOnAssistantMessages" with no value/)
   })
 
   it('serves the Responses compat type on every protocol pi-ai gives it to', () => {

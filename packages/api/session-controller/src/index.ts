@@ -6,7 +6,7 @@ import type { Agent } from '@averqel/neosis-agent'
 import type {} from '@averqel/neosis-fs'
 import { Context } from '@averqel/cordis'
 import z from '@averqel/schemastery'
-import { errorChain } from '@averqel/neosis-llm'
+import { errorChain, ReasoningEffortId } from '@averqel/neosis-llm'
 import type {} from '@averqel/neosis-client-file-upload'
 import { canOpenNativePath, nativeFileManager, nativeFileApplications, openNativeFileApplication, openNativeAssociatedPath, revealNativePath } from '@averqel/neosis-native-command'
 import type { SessionId } from '@averqel/neosis-session'
@@ -23,7 +23,7 @@ import { SessionControlController } from './control.ts'
 import { SessionHistoryController } from './history.ts'
 import { SessionFileReferences } from './file-references.ts'
 import { ApiSessionList } from './list.ts'
-import { buildModelCatalog } from './catalog.ts'
+import { buildModelCatalog, hasProviderApiKey } from './catalog.ts'
 import { installModelSelectionProjection } from './model-selection-projection.ts'
 import { SessionSkillCatalog } from './skill-catalog.ts'
 import { SessionMediaReferences } from './media-references.ts'
@@ -275,13 +275,31 @@ export class SessionController extends TypertRemoteService {
   }
 
   /**
-   * Select one Session-local model after explicitly resuming the Session.
+   * Select one Session-local model after explicitly resuming the Session; save the default in the background.
    * @param request - Session identity and requested model selection.
-   * @returns the normalized selection installed for the Session.
+   * @returns the normalized selection installed for the Session, without waiting for default persistence.
    */
   @Remote('selectModel')
   selectModel(request: SessionSelectModelRequest): Promise<SessionSelectModelValue> {
     return this.commands.selectModel(request)
+  }
+
+  /**
+   * Select the first available account model after login when no provider API key is configured.
+   * @returns after saving the first available model or retaining the existing default.
+   */
+  @Remote
+  async initializeDefaultModel(): Promise<void> {
+    const provider = 'deepseek-account'
+    if (await hasProviderApiKey(this.ctx)) return
+    const catalog = await buildModelCatalog(this.ctx)
+    const model = catalog.groups.find(group => group.id === provider)?.models[0]
+    if (model === undefined) throw new RemoteError('session/provider-models-unavailable',
+      `provider "${provider}" has no available models`, { provider })
+    const selection = { provider, model: model.id,
+      ...model.reasoning?.defaultEffort === undefined ? {} : { reasoningEffort: ReasoningEffortId(model.reasoning.defaultEffort) },
+    }
+    await this.ctx.agentDefaultModel.saveSelection(selection)
   }
 
   /**

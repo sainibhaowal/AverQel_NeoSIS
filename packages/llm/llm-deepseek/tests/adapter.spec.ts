@@ -17,7 +17,7 @@ import SessionProjectionRegistry from '@averqel/neosis-session-projection'
 import { AttachmentId } from '@averqel/neosis-attachment'
 import Loader from '@averqel/cordis-plugin-loader'
 import Include from '@averqel/cordis-plugin-include'
-import LlmRuntime, { createAssistantMessage, createSystemMessage, createToolResultMessage, createUserMessage, ToolCallId } from '@averqel/neosis-llm'
+import LlmRuntime, { createAssistantMessage, createDeveloperMessage, createSystemMessage, createToolResultMessage, createUserMessage, ToolCallId } from '@averqel/neosis-llm'
 import type { Message } from '@averqel/neosis-llm'
 import { credentialRef } from '@averqel/neosis-credentials'
 import LocalCredentials from '@averqel/neosis-credentials-local'
@@ -63,6 +63,17 @@ declare module '@averqel/neosis-llm' {
 }
 
 describe('direct Messages HTTP', () => {
+  it('opts into mid-conversation tool changes when replay history contains them', async () => {
+    const http = await endpoint()
+    const history = createDeveloperMessage({ source: { kind: 'tool-registry' }, content: [
+      { type: 'tool-addition', toolName: 'new_tool' },
+    ] })
+
+    await assemble(adapter({ baseURL: http.url }).stream(options({ messages: [history, user()] })))
+
+    expect(http.requests[0]?.headers['anthropic-beta']).toBe('mid-conversation-tool-changes-2026-07-01')
+  })
+
   it('continues through Messages with assistant blocks in saved user history', async () => {
     const http = await endpoint()
     const notice = createUserMessage({ source: { kind: 'saved-notice' }, content: [

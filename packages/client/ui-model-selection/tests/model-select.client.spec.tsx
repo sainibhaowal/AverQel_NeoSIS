@@ -55,6 +55,46 @@ function state(overrides: Partial<ModelDirectoryState> = {}): ModelDirectoryStat
 afterEach(cleanup)
 
 describe('ModelSelect reasoning effort', () => {
+  it('searches larger model catalogs by fuzzy name and accepts the highlighted result', async () => {
+    const directory = createSnapshotStore<ModelDirectoryState>(state({
+      groups: [{
+        id: 'provider',
+        name: 'Provider',
+        models: ['Alpha', 'Beta Vision', 'Code Runner', 'Delta', 'Gamma'].map((name, index) => ({
+          id: `model-${index}`,
+          name,
+        })),
+      }],
+      current: { provider: 'provider', model: 'model-0' },
+    }))
+    const select = vi.fn(async (selection: ModelSelection) => {
+      directory.set(state({
+        current: selection,
+        groups: directory.getSnapshot().groups,
+      }))
+      return { ok: true as const, value: undefined }
+    })
+    render(<ModelSelect
+      locked={false}
+      available
+      directory={directory}
+      load={vi.fn()}
+      select={select}
+      t={t}
+    />)
+
+    fireEvent.click(screen.getByRole('button', { name: /选择模型/ }))
+    fireEvent.click(screen.getByRole('menuitem', { name: /模型/ }))
+    const search = screen.getByRole('searchbox')
+    fireEvent.change(search, { target: { value: 'crr' } })
+    expect(screen.getAllByRole('menuitemradio').map(row => row.textContent)).toEqual(['Code Runner'])
+    fireEvent.keyDown(search, { key: 'Enter' })
+    await waitFor(() => {
+      expect(select).toHaveBeenCalledWith({ provider: 'provider', model: 'model-2' })
+      expect(screen.queryByRole('menu')).toBeNull()
+    })
+  })
+
   it('renders effort names without descriptions and submits the effort as part of the session selection', async () => {
     const directory = createSnapshotStore<ModelDirectoryState>(state())
     const select = vi.fn(async (selection: ModelSelection) => {

@@ -26,7 +26,7 @@ import clsx from 'clsx'
 import type { ModelReasoningEffort, ModelSelection } from '@averqel/neosis-api-remotes/client'
 import {
   IconCheckOutlineRegular, IconChevronDownOutlineRegular, IconChevronRightOutlineRegular,
-  IconDataOutlineRegular, IconWarningOutlineRegular, Toast,
+  IconCloseFillRegular, IconDataOutlineRegular, IconWarningOutlineRegular, rankByName, Toast,
 } from '@averqel/neosis-client-ui-primitives'
 import type { PropsLocale } from '@averqel/neosis-client-ui-slots'
 import type { ModelSelectInjected } from './slots.ts'
@@ -61,6 +61,8 @@ export function ModelSelect(
   )
   const [open, setOpen] = useState(false)
   const [pane, setPane] = useState<Pane>('root')
+  const [query, setQuery] = useState('')
+  const [highlightedIndex, setHighlightedIndex] = useState(0)
   // The in-menu error strip serves catalog loads (its Retry re-runs the
   // load); a rejected SELECTION announces through the transient toast
   // instead, so the strip renders only while the latest failure-capable
@@ -71,6 +73,7 @@ export function ModelSelect(
   const rootRef = useRef<HTMLDivElement | null>(null)
   const triggerRef = useRef<HTMLButtonElement | null>(null)
   const menuRef = useRef<HTMLDivElement | null>(null)
+  const searchRef = useRef<HTMLInputElement | null>(null)
   const [menuPos, setMenuPos] = useState<CSSProperties | null>(null)
   const itemRefs = useRef<(HTMLButtonElement | null)[]>([])
   const id = useId()
@@ -87,6 +90,15 @@ export function ModelSelect(
           : { reasoningEffort: model.reasoning.defaultEffort },
       } satisfies ModelSelection,
     }))), [state.groups])
+  const showSearch = choices.length > 4
+  const filteredGroups = useMemo(() => state.groups.map(group => ({
+    ...group,
+    models: rankByName(group.models, showSearch ? query.trim() : ''),
+  })).filter(group => group.models.length > 0), [state.groups, query, showSearch])
+  const visibleModels = useMemo(() => filteredGroups.flatMap(group => group.models.map(model => ({
+    provider: group.id, model: model.id,
+  }))), [filteredGroups])
+  const activeModelIndex = Math.min(highlightedIndex, Math.max(0, visibleModels.length - 1))
   const selectedIndex = state.current === null
     ? -1
     : choices.findIndex(c => c.selection.provider === state.current?.provider && c.selection.model === state.current.model)
@@ -140,6 +152,10 @@ export function ModelSelect(
     paneFocus.current = null
     if (!open || intent === null) return
     if (intent === 'drill') {
+      if (pane === 'model' && showSearch) {
+        searchRef.current?.focus()
+        return
+      }
       // The checked row is the value in use; a pane without one opens on its
       // first row.
       const checked = menuRef.current?.querySelector<HTMLElement>('[role="menuitemradio"][aria-checked="true"]:not([disabled])')
@@ -151,7 +167,7 @@ export function ModelSelect(
     }
     const cell = itemRefs.current[intent === 'effort' ? 1 : 0]
     ;(cell !== null && cell !== undefined && !cell.disabled ? cell : triggerRef.current)?.focus()
-  }, [open, pane])
+  }, [open, pane, showSearch])
 
   // Portaled placement (the Menu primitive's portal rules: fixed from the
   // anchor rect, measured before paint, clamped inside the viewport): above
@@ -184,13 +200,15 @@ export function ModelSelect(
       window.removeEventListener('scroll', place, true)
       window.removeEventListener('resize', place)
     }
-  }, [open, pane, state])
+  }, [open, pane, state, query])
   /* jscpd:ignore-end */
 
   if (!available) return null
 
   const show = (): void => {
     setPane('root')
+    setQuery('')
+    setHighlightedIndex(0)
     setOpen(true)
     reload()
   }
@@ -202,6 +220,8 @@ export function ModelSelect(
   }
 
   const drill = (next: Pane): void => {
+    setQuery('')
+    setHighlightedIndex(0)
     paneFocus.current = 'drill'
     setPane(next)
   }
@@ -226,6 +246,21 @@ export function ModelSelect(
   }
 
   const onRootKeyDown = (event: KeyboardEvent<HTMLDivElement>): void => {
+    if (pane === 'model' && showSearch && (event.key === 'ArrowDown' || event.key === 'ArrowUp')) {
+      event.preventDefault()
+      if (visibleModels.length > 0) {
+        const direction = event.key === 'ArrowDown' ? 1 : -1
+        setHighlightedIndex((activeModelIndex + direction + visibleModels.length) % visibleModels.length)
+        searchRef.current?.focus()
+      }
+      return
+    }
+    if (pane === 'model' && showSearch && event.target === searchRef.current && event.key === 'Enter') {
+      event.preventDefault()
+      const selected = visibleModels[activeModelIndex]
+      if (selected !== undefined && !busy) choose(selected)
+      return
+    }
     if (event.key === 'Escape' && open) {
       event.preventDefault()
       // Escape backs out of a drilled pane first, then closes.
@@ -393,6 +428,30 @@ export function ModelSelect(
 
           {pane === 'model' && (
             <>
+              {showSearch && <div className={css.searchRow}>
+                <input
+                  ref={searchRef}
+                  className={css.search}
+                  type="search"
+                  role="searchbox"
+                  aria-label={t('search.placeholder')}
+                  aria-controls={`${id}-models`}
+                  aria-activedescendant={visibleModels.length === 0 ? undefined : `${id}-model-${activeModelIndex}`}
+                  placeholder={t('search.placeholder')}
+                  value={query}
+                  disabled={busy}
+                  onChange={(event) => { setQuery(event.target.value); setHighlightedIndex(0) }}
+                />
+                {query !== '' && <button
+                  type="button"
+                  className={css.searchClear}
+                  aria-label={t('search.clear')}
+                  disabled={busy}
+                  onClick={() => { setQuery(''); setHighlightedIndex(0); searchRef.current?.focus() }}
+                >
+                  <IconCloseFillRegular />
+                </button>}
+              </div>}
               {state.status === 'loading' && (
                 <div className={css.status}>{t('status.loading')}</div>
               )}
@@ -408,20 +467,24 @@ export function ModelSelect(
                   <button type="button" className={css.retry} onClick={reload}>{t('retry')}</button>
                 </div>
               ))}
-              <div className={clsx(css.groups, 'scrollable')}>
-                {state.groups.map((group) => {
+              <div id={`${id}-models`} className={clsx(css.groups, 'scrollable')}>
+                {filteredGroups.map((group) => {
                   const headingId = `${id}-${group.id}`
                   return (
                     <section role="group" aria-labelledby={headingId} className={css.group} key={group.id}>
                       <div className={css.groupTitle} id={headingId}>{group.name}</div>
                       {group.models.map((model) => {
                         const selected = state.current?.provider === group.id && state.current.model === model.id
+                        const visibleIndex = visibleModels.findIndex(item => item.provider === group.id && item.model === model.id)
                         return (
                           <button
                             ref={itemRef()}
                             type="button"
                             role="menuitemradio"
                             aria-checked={selected}
+                            id={`${id}-model-${visibleIndex}`}
+                            tabIndex={showSearch ? -1 : 0}
+                            data-highlighted={showSearch && visibleIndex === activeModelIndex ? '' : undefined}
                             className={clsx(css.option, selected && css.selected)}
                             key={model.id}
                             title={model.name}
@@ -441,8 +504,8 @@ export function ModelSelect(
                   )
                 })}
               </div>
-              {state.status === 'ready' && choices.length === 0 && (
-                <div className={css.empty}>{t('empty.models')}</div>
+              {state.status === 'ready' && filteredGroups.length === 0 && (
+                <div className={css.empty}>{t(choices.length === 0 ? 'empty.models' : 'search.empty')}</div>
               )}
             </>
           )}

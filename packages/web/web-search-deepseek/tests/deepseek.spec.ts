@@ -214,6 +214,22 @@ describe('AverQelSearchProvider request mapping', () => {
     const [, init] = fetchMock.mock.calls[0] as unknown as [string, RequestInit]
     expect(init.signal).toBe(controller.signal)
   })
+
+  it('uses the signed-in account token before falling back to an API key', async () => {
+    const fetchMock = vi.fn(async () => jsonResponse(searchResponse()))
+    vi.stubGlobal('fetch', fetchMock)
+    await searchProvider({
+      ...options,
+      apiKey: '',
+      resolveAccountToken: async endpoint => endpoint === `${options.baseURL}/messages` ? 'account-token' : undefined,
+      resolveApiKey: () => Promise.reject(new Error('API key should not be resolved')),
+    }).search({ query: 'account search' })
+    const [, init] = fetchMock.mock.calls[0] as unknown as [string, RequestInit]
+    const headers = init.headers as Record<string, string>
+    expect(headers['x-neosis-auth-token']).toBe('account-token')
+    expect(headers['x-api-key']).toBeUndefined()
+    expect(headers['authorization']).toBeUndefined()
+  })
 })
 
 describe('AverQelSearchProvider settings changes mid-search', () => {

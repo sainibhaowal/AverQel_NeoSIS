@@ -58,6 +58,7 @@ import type {
 import type { AttachmentStore, ImageAttachmentRef } from '@averqel/neosis-attachment'
 import { idleWatchdog, timeoutOf } from '@averqel/neosis-timeout'
 import type { ResolvedPiAiProviderProfile } from './config.ts'
+import { catalogModelId } from './catalog.ts'
 import { toPiContext } from './context.ts'
 import { createModels, getSupportedThinkingLevels } from './models.ts'
 import { toStreamChunks } from './stream.ts'
@@ -255,11 +256,12 @@ export class PiAiAdapter extends LlmAdapter {
     const failure = profile.modelErrors.get(model)
       ?? (profile.piProvider === undefined ? profile.catalogError : undefined)
     if (failure !== undefined) throw new LlmError(failure, 'INVALID_CONFIG')
-    const resolved = snapshot.models.getModel(provider, model)
+    const catalogId = catalogModelId(provider, model)
+    const resolved = snapshot.models.getModel(provider, model) ?? snapshot.models.getModel(provider, catalogId)
     if (resolved === undefined) {
       throw new LlmError(`pi-ai provider "${provider}" has no configured model "${model}"`, 'UNKNOWN_MODEL')
     }
-    return resolved
+    return resolved.id === model ? resolved : { ...resolved, id: model }
   }
 
   override providerInfo(provider: string): LlmProviderInfo {

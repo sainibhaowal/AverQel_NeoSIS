@@ -63,7 +63,9 @@ export async function openWelcomeWindow(locale: DesktopLocale, operations: Welco
   const disposeHandlers = (): void => {
     if (!active) return
     active = false
-    for (const channel of [WELCOME_IPC.saveApiKey, WELCOME_IPC.skip, WELCOME_IPC.start, WELCOME_IPC.cancel, WELCOME_IPC.copyLink]) {
+    const channels = [WELCOME_IPC.saveApiKey, WELCOME_IPC.analytics, WELCOME_IPC.analyticsEnabled,
+      WELCOME_IPC.skip, WELCOME_IPC.start, WELCOME_IPC.cancel, WELCOME_IPC.copyLink]
+    for (const channel of channels) {
       ipcMain.removeHandler(channel)
     }
     disposeActiveHandlers = undefined
@@ -78,6 +80,20 @@ export async function openWelcomeWindow(locale: DesktopLocale, operations: Welco
     assertSender(event)
     if (typeof value !== 'string' || !/^[\x21-\x7e]+$/.test(value)) return { ok: false }
     return operations.saveApiKey(value)
+  })
+  ipcMain.handle(WELCOME_IPC.analyticsEnabled, async (event) => {
+    assertSender(event)
+    return operations.analyticsEnabled()
+  })
+  ipcMain.handle(WELCOME_IPC.analytics, async (event, eventName: unknown, attributes: unknown) => {
+    assertSender(event)
+    if (typeof attributes !== 'object' || attributes === null || Array.isArray(attributes)) throw new Error('desktop welcome: invalid analytics attributes')
+    if (eventName === 'auth_page_click' && 'button_name' in attributes && Object.keys(attributes).length === 1
+      && (attributes.button_name === 'sign_in' || attributes.button_name === 'api-key')) {
+      await operations.analytics?.(eventName, { button_name: attributes.button_name })
+    } else if ((eventName === 'auth_page_view' || eventName === 'api_key_save_click') && Object.keys(attributes).length === 0) {
+      await operations.analytics?.(eventName, {})
+    } else throw new Error('desktop welcome: invalid analytics event')
   })
   ipcMain.handle(WELCOME_IPC.skip, async (event) => {
     assertSender(event)
@@ -104,7 +120,6 @@ export async function openWelcomeWindow(locale: DesktopLocale, operations: Welco
     if (!window.isDestroyed()) window.destroy()
     throw error
   }
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- Another window can replace ownership during loadFile.
   if (active && !window.isDestroyed()) window.show()
   return window
 }
