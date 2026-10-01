@@ -38,7 +38,7 @@ describe('CI workflow', () => {
     expect(steps[preparation]).not.toHaveProperty('continue-on-error', true)
   })
 
-  it.each(['ci.yml', 'ci-master.yml', 'e2e.yml', 'release.yml', 'release-vendor.yml'])(
+  it.each(['ci.yml', 'ci-master.yml', 'release.yml', 'release-vendor.yml'])(
     '%s cancels superseded validation runs without crossing workflow or ref boundaries', (name) => {
       const workflow = loadWorkflow(workflowPath(name))
       expect(workflow.concurrency).toEqual({
@@ -199,7 +199,6 @@ describe('CI workflow', () => {
       expect(job['runs-on'], `${jobName} runs-on must not use the Linux failover switch`).not.toContain('NEOSIS_CI_FAILOVER_LINUX')
       expect(job['runs-on']).toContain('self-hosted')
       expect(job['runs-on']).toContain('neosis-win-ci')
-      expect(job['runs-on']).toContain('neosis-windows-2025-16core')
       const cores = jobName === 'windows-native-tests' ? 2 : 16
       expect(evaluateRunsOn(job['runs-on'], { vars: { NEOSIS_CI_FAILOVER_WINDOWS: 'blacksmith' } }))
         .toBe(`blacksmith-${cores}vcpu-windows-2025`)
@@ -296,12 +295,11 @@ describe('CI workflow', () => {
     expect(report?.run).toContain('::warning::')
     expect(report?.run).toContain('Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Encoding utf8 -Append')
 
-    // serial-windows: post-merge standby, self-hosted, non-blocking, lives in ci-master.
+    // serial-windows: post-merge standby, hosted, non-blocking, lives in ci-master.
     expect(serialWindows.if).toBe("github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')")
-    expect(serialWindows['runs-on']).toEqual(['self-hosted', 'neosis-win-ci', 'windows'])
-    expect(serialWindows.name).toBe('serial / windows (self-hosted standby)')
-    // Its store must share the ReFS workspace volume for clone; the install
-    // must carry the same filesystem branch as the PR jobs.
+    expect(serialWindows['runs-on']).toBe('windows-latest')
+    expect(serialWindows.name).toBe('serial / windows (hosted)')
+    // Its store keeps the hosted runner's persistent filesystem path.
     const serialSteps = serialWindows.steps as unknown[]
     const serialStore = serialSteps.find((step): step is Record<string, unknown> & { run: string } => (
       isRecord(step) && step.name === 'Configure persistent pnpm store' && typeof step.run === 'string'
@@ -313,7 +311,6 @@ describe('CI workflow', () => {
       isRecord(step) && step.name === 'Install (immutable)' && typeof step.run === 'string'
     ))
     expect(serialInstall).toBeDefined()
-    expect(serialInstall!.run).toContain("$fs -eq 'ReFS'")
     expect(serialInstall!.run).toContain('--package-import-method=clone')
     expect(serialInstall!.run).toContain('corepack pnpm install')
     // Distinct else-branch line, as for the PR jobs: the corepack clone line
@@ -386,9 +383,9 @@ describe('CI workflow', () => {
       })
     }
     for (const [name, selector, variable, pool, hosted] of [
-      ['linux gates', selectors.linux, 'NEOSIS_CI_FAILOVER_LINUX', ['self-hosted', 'linux', 'x64', 'vm-backup'], 'neosis-ubuntu-24-04-16core'],
+      ['linux gates', selectors.linux, 'NEOSIS_CI_FAILOVER_LINUX', ['self-hosted', 'linux', 'x64', 'vm-backup'], 'ubuntu-24.04'],
       ['linux aggregate', selectors.linuxAggregate, 'NEOSIS_CI_FAILOVER_LINUX', ['self-hosted', 'linux', 'x64', 'vm-backup'], 'ubuntu-latest'],
-      ['windows lanes', selectors.windows, 'NEOSIS_CI_FAILOVER_WINDOWS', ['self-hosted', 'neosis-win-ci', 'windows'], 'neosis-windows-2025-16core'],
+      ['windows lanes', selectors.windows, 'NEOSIS_CI_FAILOVER_WINDOWS', ['self-hosted', 'neosis-win-ci', 'windows'], 'windows-latest'],
     ] as const) {
       expect(evaluate(selector, { [variable]: 'blacksmith' }), `${name} blacksmith value`).toMatch(/^blacksmith-/)
       expect(evaluate(selector, { [variable]: 'selfhosted' }), `${name} selfhosted value`).toEqual(pool)
@@ -613,9 +610,6 @@ describe('CI workflow', () => {
         targets: 'node24-linux-x64,node24-win-x64',
         ci: true,
       },
-      secrets: {
-        DEEPSEEK_API_KEY_EXTERNAL: '${{ secrets.DEEPSEEK_API_KEY_EXTERNAL }}',
-      },
     })
     expect(aggregate.needs).toContain('python-runtime')
   })
@@ -628,15 +622,7 @@ describe('CI workflow', () => {
   })
 })
 
-describe('Runtime and LLM e2e Blacksmith routing', () => {
-  it('routes AverQel e2e only through the Linux Blacksmith switch', () => {
-    const job = workflowJob(loadWorkflow('.github/workflows/e2e.yml'), 'e2e')
-    for (const mode of ['', 'selfhosted', 'unexpected', 'blacksmith']) {
-      expect(evaluateRunsOn(job['runs-on'], { vars: { NEOSIS_CI_FAILOVER_LINUX: mode, NEOSIS_CI_FAILOVER_WINDOWS: 'blacksmith' } }))
-        .toBe(mode === 'blacksmith' ? 'blacksmith-4vcpu-ubuntu-2404' : 'ubuntu-latest')
-    }
-  })
-
+describe('Runtime builder routing', () => {
   it('keeps native release and dispatch builders hosted while routing x64 CI by platform', () => {
     const workflow = loadWorkflow('.github/workflows/build-exe-for-python-sdk.yml')
     const build = workflowJob(workflow, 'build')
@@ -682,29 +668,6 @@ describe('bubblewrap preparation script', () => {
     )
     // Ubuntu removes superseded versions from its live package pool.
     expect(script).not.toMatch(/https?:\/\/[^/'"\s]+\/ubuntu(?:-ports)?\/pool\//u)
-  })
-})
-
-describe('AverQel e2e workflow', () => {
-  it('prepares bubblewrap from the pinned payload without a package transaction', () => {
-    const workflow = loadWorkflow('.github/workflows/e2e.yml')
-    const e2e = workflowJob(workflow, 'e2e')
-    if (!Array.isArray(e2e.steps)) throw new TypeError('AverQel e2e workflow must define steps')
-
-    const steps = e2e.steps.filter(isRecord)
-    expect(steps.find(step => step.name === 'Prepare bubblewrap (unrestrict userns)')).toMatchObject({
-      run: 'bash scripts/prepare-ci-bubblewrap.sh',
-    })
-    expect(steps.find(step => step.name === 'Prepare bubblewrap (unrestrict userns)')?.run).not.toContain('apt-get')
-  })
-
-  it('bounds profile subprocess fan-out to the tested e2e default', () => {
-    const workflow = loadWorkflow('.github/workflows/e2e.yml')
-    const e2e = workflowJob(workflow, 'e2e')
-    if (!Array.isArray(e2e.steps)) throw new TypeError('AverQel e2e workflow must define steps')
-
-    const step = e2e.steps.filter(isRecord).find(candidate => candidate.name === 'E2E tests (real DeepSeek API)')
-    expect(step).toMatchObject({ env: { NEOSIS_E2E_MAX_WORKERS: 1 } })
   })
 })
 
@@ -795,7 +758,7 @@ describe('Python release workflows', () => {
     const call = workflowEvent(workflow, 'workflow_call')
     const plan = workflowJob(workflow, 'plan')
     const build = workflowJob(workflow, 'build')
-    if (!isRecord(call.inputs) || !isRecord(call.secrets) || !Array.isArray(plan.steps) || !Array.isArray(build.steps)) {
+    if (!isRecord(call.inputs) || !Array.isArray(plan.steps) || !Array.isArray(build.steps)) {
       throw new TypeError('Python wheel builder must define workflow_call inputs and plan steps')
     }
 
@@ -807,24 +770,15 @@ describe('Python release workflows', () => {
     const cleanVenvWindows = buildSteps.find(step => isRecord(step) && step.name === 'Install local SDK and runtime wheels into a clean venv (Windows)')
     const installedKeylessPosix = buildSteps.find(step => isRecord(step) && step.name === 'Run installed-wheel keyless black-box tests (POSIX)')
     const installedKeylessWindows = buildSteps.find(step => isRecord(step) && step.name === 'Run installed-wheel keyless black-box tests (Windows)')
-    const realApiPreflightPosix = buildSteps.find(step => isRecord(step) && step.name === 'Preflight installed-wheel real API test (POSIX)')
-    const realApiPreflightWindows = buildSteps.find(step => isRecord(step) && step.name === 'Preflight installed-wheel real API test (Windows)')
-    const installedRealApiPosix = buildSteps.find(step => isRecord(step) && step.name === 'Run installed-wheel real API black-box test (POSIX)')
-    const installedRealApiWindows = buildSteps.find(step => isRecord(step) && step.name === 'Run installed-wheel real API black-box test (Windows)')
     if (!isRecord(macosCheck) || typeof macosCheck.run !== 'string'
       || !isRecord(cleanVenvPosix) || !isRecord(cleanVenvWindows)
-      || !isRecord(installedKeylessPosix) || !isRecord(installedKeylessWindows)
-      || !isRecord(realApiPreflightPosix) || !isRecord(realApiPreflightWindows)
-      || !isRecord(installedRealApiPosix) || !isRecord(installedRealApiWindows)) {
+      || !isRecord(installedKeylessPosix) || !isRecord(installedKeylessWindows)) {
       throw new TypeError('Python wheel builder must define native POSIX and Windows installed-wheel steps')
     }
     expect(call.inputs).toHaveProperty('targets')
     expect(call.inputs).toMatchObject({
       ci: { type: 'boolean', default: false },
       release: { type: 'boolean', default: false },
-    })
-    expect(call.secrets).toMatchObject({
-      DEEPSEEK_API_KEY_EXTERNAL: { required: false },
     })
     expect(workflow.concurrency).toMatchObject({
       group: 'build-single-exe-${{ github.workflow }}-${{ github.ref }}',
@@ -867,25 +821,6 @@ describe('Python release workflows', () => {
     expect(installedKeylessWindows).toMatchObject({ if: "runner.os == 'Windows'", shell: 'pwsh' })
     expect(cleanVenvWindows).toMatchObject({ if: "runner.os == 'Windows'", shell: 'pwsh' })
     expect(JSON.stringify(cleanVenvWindows)).toContain('Scripts\\\\python.exe')
-    expect(realApiPreflightPosix).toMatchObject({
-      env: { DEEPSEEK_API_KEY: '${{ secrets.DEEPSEEK_API_KEY_EXTERNAL }}' },
-    })
-    expect(String(realApiPreflightPosix.if)).toContain('inputs.ci')
-    expect(String(realApiPreflightPosix.if)).toContain('head.repo.fork')
-    expect(String(realApiPreflightPosix.if)).toContain('dependabot[bot]')
-    expect(realApiPreflightWindows).toMatchObject({ shell: 'pwsh' })
-    for (const step of [installedRealApiPosix, installedRealApiWindows]) {
-      expect(step).toMatchObject({
-        env: {
-          DEEPSEEK_API_KEY: '${{ secrets.DEEPSEEK_API_KEY_EXTERNAL }}',
-          DEEPSEEK_BASE_URL: 'https://api.deepseek.com/anthropic',
-        },
-      })
-    }
-    expect(JSON.stringify(installedRealApiPosix)).toContain('--scenario sdk-live')
-    expect(JSON.stringify(installedRealApiPosix)).toContain('-u NEOSIS_RUNTIME_MODE')
-    expect(installedRealApiWindows).toMatchObject({ shell: 'pwsh' })
-    expect(JSON.stringify(installedRealApiWindows)).toContain('--scenario sdk-live --installed-wheel')
     expect(manylinuxSmoke).toMatchObject({ if: "runner.os == 'Linux'" })
     expect(JSON.stringify(manylinuxSmoke)).toContain('-e NEOSIS_TELEMETRY_DISABLED')
   })

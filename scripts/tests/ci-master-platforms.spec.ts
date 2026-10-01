@@ -94,7 +94,7 @@ describe('master-only platform scheduling', () => {
     }))
   })
 
-  it('runs all three deferred carriers on master pushes with optional live API credentials', () => {
+  it('runs all three deferred carriers on master pushes without live API credentials', () => {
     const master = workflow('ci-master.yml')
     expect(master.on.push).toEqual({ branches: ['main', 'master'] })
     expect(Object.keys(master.on).sort()).toEqual(['push', 'workflow_dispatch'])
@@ -103,7 +103,6 @@ describe('master-only platform scheduling', () => {
       if: primaryBranchPush,
       uses: runtimeBuilder,
       with: { ci: true, targets: 'node24-linux-arm64,node24-macos-arm64,node24-macos-x64' },
-      secrets: { DEEPSEEK_API_KEY_EXTERNAL: '${{ secrets.DEEPSEEK_API_KEY_EXTERNAL }}' },
     })
     expect(runtime.needs).toBeUndefined()
     expect(runtime['continue-on-error']).toBeUndefined()
@@ -111,14 +110,10 @@ describe('master-only platform scheduling', () => {
     expect(builder.concurrency?.['cancel-in-progress']).toBe(
       '${{ !inputs.release }}',
     )
-    const build = builder.jobs.build!
-    const preflight = build.steps!.find(step => step.name === 'Preflight installed-wheel real API test (POSIX)')!
-    expect(preflight.if).toContain('inputs.ci')
-    expect(preflight.if).toContain("github.event_name != 'pull_request'")
-    expect(preflight.if).toContain('github.event.pull_request.head.repo.fork')
-    expect(preflight.if).toContain("github.event.pull_request.user.login == 'dependabot[bot]'")
-    expect(preflight.run).toContain('DEEPSEEK_API_KEY_EXTERNAL is not configured')
-    expect(preflight.run).not.toContain('exit 1')
+    expect(builder.jobs.build!.steps).toEqual(expect.arrayContaining([
+      expect.objectContaining({ name: 'Run installed-wheel keyless black-box tests (POSIX)' }),
+      expect.objectContaining({ name: 'Run installed-wheel keyless black-box tests (Windows)' }),
+    ]))
   })
 
   it('runs Wine once on hosted master CI and seeds its own apt cache', () => {
