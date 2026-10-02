@@ -151,7 +151,6 @@ jobs:
   # Windows-only ACL proofs. Linux and macOS cannot validate NT security
   # descriptors, restricted tokens, or icacls-visible ACE materialization.
   windows-acl-e2e:
-    if: ${{ inputs.only_acl || github.event_name != 'workflow_dispatch' }}
     name: Windows ACL e2e (windows-2025)
     runs-on: windows-2025
     timeout-minutes: 45

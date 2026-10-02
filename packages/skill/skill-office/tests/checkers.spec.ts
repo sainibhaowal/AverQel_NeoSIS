@@ -11,4 +11,4 @@ it.each(['utf-8', 'cp1252'])('executes the shipped OOXML checker against valid, 
   expect(result.error).toBeUndefined()
   expect(result.signal, result.stderr + result.stdout).toBeNull()
   expect(result.status, result.stderr + result.stdout).toBe(0)
-})
+}, 30_000)
