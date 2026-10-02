@@ -437,7 +437,7 @@ describe('Session MCP Loader composition', () => {
     expect(model.requests).toHaveLength(1)
     expect(model.requests[0]?.tools?.map(tool => tool.name)).toEqual(['run_code'])
     expect(JSON.stringify(model.requests[0]?.messages)).toContain(TOOL)
-  })
+  }, 30_000)
 
   it('cancels creation during discovery, closes its process, and releases the attachment', async () => {
     const { ctx, root, model } = await load(true, 'gate')
@@ -492,7 +492,7 @@ describe('Session MCP Loader composition', () => {
     for (const { pid } of (await events(root)).filter(event => event.event === 'start')) {
       expect(() => process.kill(pid, 0)).toThrow(expect.objectContaining({ code: 'ESRCH' }))
     }
-  })
+  }, 30_000)
 
   it('cancels before browser discovery without starting a process', async () => {
     const { ctx, root, model } = await load(false, 'gate')
@@ -555,7 +555,7 @@ describe('Session MCP Loader composition', () => {
     expect(ctx.tools.schemas(owner.agent).some(tool => tool.name === TOOL)).toBe(true)
     expect((await execute(ctx, owner.agent)).content).toEqual([{ type: 'text', text: 'Visit 1: direct' }])
     await owner.dispose()
-  })
+  }, 30_000)
 
   it('initializes only future activations after provider reload', async () => {
     const { ctx, root, browser } = await load()

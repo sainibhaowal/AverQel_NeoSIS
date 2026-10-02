@@ -1,7 +1,8 @@
 /** Private stdio browser fixture; each process owns independent state. */
-import { appendFileSync, existsSync, watch } from 'node:fs'
+import { appendFileSync, existsSync } from 'node:fs'
 import { join } from 'node:path'
 import { createInterface } from 'node:readline'
+import { setTimeout } from 'node:timers/promises'
 
 const [root, mode] = process.argv.slice(2)
 const record = (event, values = {}) => appendFileSync(join(root, 'events.ndjson'), JSON.stringify({ event, pid: process.pid, ...values }) + '\n')
@@ -11,7 +12,7 @@ record('start')
 process.once('exit', () => record('exit'))
 const lines = createInterface({ input: process.stdin })
 lines.once('close', () => process.exit(0))
-lines.on('line', line => {
+lines.on('line', async line => {
   const request = JSON.parse(line)
   if (request.id === undefined) return
   switch (request.method) {
@@ -21,14 +22,10 @@ lines.on('line', line => {
       if (mode === 'hold') return
       {
         const respond = () => process.stdout.write(JSON.stringify({ jsonrpc: '2.0', id: request.id, error: { code: -32601, message: 'Legacy browser fixture' } }) + '\n')
-        if (mode === 'gate' && !existsSync(join(root, 'release'))) {
-          const watcher = watch(root, () => {
-            if (!existsSync(join(root, 'release'))) return
-            watcher.close()
-            respond()
-          })
-          if (existsSync(join(root, 'release'))) { watcher.close(); respond() }
-        } else respond()
+        if (mode === 'gate') {
+          while (!existsSync(join(root, 'release'))) await setTimeout(10)
+        }
+        respond()
       }
       break
     case 'initialize':
