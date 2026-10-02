@@ -113,11 +113,10 @@ describe('plugin locale display metadata', () => {
     const loader = ModuleLoader.fromInternal()!
     const resolveSync = vi.fn((specifier: string) => {
       if (specifier === 'localized/locale/en.json') {
-        const error = new Error('Cannot assign to read only property \'stack\' of object \'Error\'')
-        Object.defineProperty(error, 'stack', {
-          configurable: true,
-          value: `${error.name}: ${error.message}\n\n/localized/locale/en.json is not defined by "exports"`,
-        })
+        const error = {
+          message: 'Cannot assign to read only property \'stack\' of object \'Error\'',
+          stack: 'Error: Package subpath \'./locale/en.json\' is not defined by "exports"',
+        }
         throw error
       }
       return { url: pathToFileURL(join(dir, 'package.json')).href }

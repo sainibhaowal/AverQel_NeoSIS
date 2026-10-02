@@ -64,8 +64,11 @@ function missingResource(error: unknown): boolean {
   // Cordis may rethrow a Node resolution error while composing its stack. On
   // some Node versions the original error's stack is read-only, so the wrapper
   // loses the original error code but retains the export diagnostic in text.
-  if (!(error instanceof Error)) return false
-  return `${error.message}\n${error.stack ?? ''}`.includes('is not defined by "exports"')
+  if (typeof error !== 'object' || error === null) return false
+  const detail = error as { message?: unknown; stack?: unknown }
+  const message = typeof detail.message === 'string' ? detail.message : ''
+  const stack = typeof detail.stack === 'string' ? detail.stack : ''
+  return `${message}\n${stack}`.includes('is not defined by "exports"')
 }
 
 function optionalResourcePath(specifier: string, parentURL: string): string | undefined {
