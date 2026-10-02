@@ -26,6 +26,10 @@ const fixture = fileURLToPath(new URL('./mcp-fixture.mjs', import.meta.url))
 const roots: string[] = []
 const contexts: Context[] = []
 const TOOL = 'mcp__browser-fixture__visit'
+// Discovery waits on a real MCP stdio spawn plus its first probe write; the
+// full unit lane shares one host across forked workers, so the default 1s
+// waitFor budget expires under contention before the child reports readiness.
+const discoveryWait = { timeout: 15_000, interval: 50 }
 
 afterEach(async () => {
   await Promise.all(contexts.splice(0).map(ctx => ctx.fiber.dispose()))
@@ -125,7 +129,16 @@ function registerIndependentTool(ctx: Context) {
 }
 
 async function events(root: string) {
-  return (await readFile(join(root, 'events.ndjson'), 'utf8')).trim().split('\n').map(line => JSON.parse(line) as { event: string; pid: number; name?: string })
+  let text: string
+  try {
+    text = await readFile(join(root, 'events.ndjson'), 'utf8')
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === 'ENOENT') return []
+    throw error
+  }
+  const trimmed = text.trim()
+  if (trimmed === '') return []
+  return trimmed.split('\n').map(line => JSON.parse(line) as { event: string; pid: number; name?: string })
 }
 
 it('requires a browser mode and validates launch and attachment settings', () => {
@@ -249,7 +262,7 @@ describe('Session MCP Loader composition', () => {
     const { ctx, root, model, browser } = await load(true, 'hold')
     const first = ctx.agents.create({ sessionId: SessionId('first') })
     const rejected = expect(first).rejects.toThrow()
-    await vi.waitFor(async () => { expect((await events(root)).some(event => event.event === 'probe')).toBe(true) })
+    await vi.waitFor(async () => { expect((await events(root)).some(event => event.event === 'probe')).toBe(true) }, discoveryWait)
     const second = await ctx.agents.create({ sessionId: SessionId('second'), agentOptions: { provider: 'fixture', model: 'fixture' } })
     second.agent.followup(createUserMessage({ content: [{ type: 'text', text: 'Answer without using the browser.' }], source: { kind: 'user' } }))
     await second.agent.whenIdle()
@@ -260,7 +273,7 @@ describe('Session MCP Loader composition', () => {
     await rejected
     expect(ctx.agents.get(SessionId('first'))).toBeUndefined()
     expect(ctx.sessions.get(SessionId('first'))).toBeUndefined()
-  })
+  }, 30_000)
 
   it('rolls back failed discovery and stops a child when unload interrupts discovery', async () => {
     const failed = await load(false, 'fail', undefined, [TOOL, '<unlisted-tools>'])
@@ -287,14 +300,14 @@ describe('Session MCP Loader composition', () => {
     const held = await load(false, 'hold')
     const pendingOwner = held.ctx.agents.create({ sessionId: SessionId('pending') })
     const interrupted = expect(pendingOwner).rejects.toThrow()
-    await vi.waitFor(async () => { expect((await events(held.root)).some(event => event.event === 'probe')).toBe(true) })
+    await vi.waitFor(async () => { expect((await events(held.root)).some(event => event.event === 'probe')).toBe(true) }, discoveryWait)
     await held.browser.dispose()
     await interrupted
     expect(held.ctx.agents.get(SessionId('pending'))).toBeUndefined()
     for (const { pid } of (await events(held.root)).filter(event => event.event === 'start')) {
       expect(() => process.kill(pid, 0)).toThrow(expect.objectContaining({ code: 'ESRCH' }))
     }
-  })
+  }, 30_000)
 
   it('does not reconnect and silently replace browser state after a process exits', async () => {
     const { ctx, root } = await load()
@@ -427,7 +440,7 @@ describe('Session MCP Loader composition', () => {
       created = true
       return handle
     })
-    await vi.waitFor(async () => { expect((await events(root)).some(event => event.event === 'probe')).toBe(true) })
+    await vi.waitFor(async () => { expect((await events(root)).some(event => event.event === 'probe')).toBe(true) }, discoveryWait)
     expect(created).toBe(false)
     expect(model.requests).toEqual([])
     expect((await execute(ctx, initializing)).isError).toBe(true)
@@ -454,7 +467,7 @@ describe('Session MCP Loader composition', () => {
       },
     })
     const rejected = expect(creation).rejects.toThrow('cancel browser startup')
-    await vi.waitFor(async () => { expect((await events(root)).some(event => event.event === 'probe')).toBe(true) })
+    await vi.waitFor(async () => { expect((await events(root)).some(event => event.event === 'probe')).toBe(true) }, discoveryWait)
     controller.abort(new Error('cancel browser startup'))
     await rejected
     expect(model.requests).toEqual([])
@@ -468,7 +481,7 @@ describe('Session MCP Loader composition', () => {
     await writeFile(join(root, 'release'), '')
     const successor = await ctx.agents.create({ sessionId: initializing.id })
     expect((await execute(ctx, successor.agent)).isError).toBe(false)
-  })
+  }, 30_000)
 
   it('closes the discovered client when a later creation listener rejects', async () => {
     const { ctx, root, model } = await load(false, undefined, undefined, [TOOL, '<unlisted-tools>'])
@@ -532,7 +545,7 @@ describe('Session MCP Loader composition', () => {
       },
     })
     const rejected = expect(canceledResume).rejects.toThrow('cancel browser resume')
-    await vi.waitFor(async () => { expect((await events(root)).filter(event => event.event === 'probe')).toHaveLength(2) })
+    await vi.waitFor(async () => { expect((await events(root)).filter(event => event.event === 'probe')).toHaveLength(2) }, discoveryWait)
     expect(model.requests).toHaveLength(2)
     controller.abort(new Error('cancel browser resume'))
     await rejected
@@ -547,7 +560,7 @@ describe('Session MCP Loader composition', () => {
       resumed = true
       return handle
     })
-    await vi.waitFor(async () => { expect((await events(root)).filter(event => event.event === 'probe')).toHaveLength(3) })
+    await vi.waitFor(async () => { expect((await events(root)).filter(event => event.event === 'probe')).toHaveLength(3) }, discoveryWait)
     expect(resumed).toBe(false)
     expect(model.requests).toHaveLength(2)
     await writeFile(join(root, 'release'), '')
