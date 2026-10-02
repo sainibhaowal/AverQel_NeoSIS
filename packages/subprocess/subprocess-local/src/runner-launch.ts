@@ -5,7 +5,7 @@ import { accessSync, constants as fsConstants, lstatSync, statSync } from 'node:
 import { createRequire } from 'node:module'
 import { extname, isAbsolute } from 'node:path'
 import { inspect } from 'node:util'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 import type { SubprocessSpawnSpec } from '@averqel/neosis-subprocess'
 import { childEnv } from './spawn.ts'
 import { controlEnvironment } from './control-spawn.ts'
@@ -35,10 +35,13 @@ export function spawnRunnerInvocation(): RunnerInvocation {
   if (extname(fileURLToPath(import.meta.url)) !== '.ts') {
     return [process.execPath, resolvePackage('@averqel/neosis-subprocess-local/runner')]
   }
+  const tsxEntry = process.platform === 'win32'
+    ? pathToFileURL(resolvePackage('tsx/esm')).href
+    : resolvePackage('tsx/esm')
   return [
     process.execPath,
     '--import',
-    resolvePackage('tsx/esm'),
+    tsxEntry,
     fileURLToPath(new URL('./bin.ts', import.meta.url)),
   ]
 }

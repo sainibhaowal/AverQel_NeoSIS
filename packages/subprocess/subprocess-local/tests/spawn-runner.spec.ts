@@ -14,6 +14,7 @@ import {
 import { createRequire } from 'node:module'
 import { tmpdir } from 'node:os'
 import { join, posix, resolve } from 'node:path'
+import { pathToFileURL } from 'node:url'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { Win32Error } from '@averqel/neosis-win32-process'
 import type {
@@ -343,7 +344,10 @@ describe('runner launch inputs', () => {
   it('resolves the source runner entry and checks concrete paths without executing it', () => {
     const invocation = spawnRunnerInvocation()
     expect(invocation[0]).toBe(process.execPath)
-    expect(invocation).toContain(resolvePackage('tsx/esm'))
+    const expectedTsx = process.platform === 'win32'
+      ? pathToFileURL(resolvePackage('tsx/esm')).href
+      : resolvePackage('tsx/esm')
+    expect(invocation).toContain(expectedTsx)
     expect(runnerInvocationAvailable(invocation)).toBe(true)
     expect(runnerInvocationAvailable(['/definitely/missing-neosis-runner'])).toBe(false)
     expect(runnerInvocationAvailable(['node'])).toBe(true)
