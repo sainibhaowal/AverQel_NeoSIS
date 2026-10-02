@@ -24,7 +24,7 @@ export async function convertXlsx(bytes: Uint8Array<ArrayBuffer>, limits: ExcelL
   let unsupportedFeatures: Set<ExcelUnsupportedFeature>
   try {
     const archive = new XlsxPreviewArchive(bytes)
-    const preview = archive.withoutDrawings()
+    const preview = archive.excelJsInput()
     const input = preview.byteOffset === 0 && preview.byteLength === preview.buffer.byteLength
       ? preview.buffer : preview.buffer.slice(preview.byteOffset, preview.byteOffset + preview.byteLength)
     await workbook.xlsx.load(input, { ignoreNodes: ['drawing'] })
