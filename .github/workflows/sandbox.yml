@@ -12,6 +12,12 @@ on:
   push:
     branches: [main, master]
   workflow_dispatch:
+    inputs:
+      only_acl:
+        description: Run only the Windows ACL job
+        required: false
+        default: false
+        type: boolean
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -41,6 +47,7 @@ jobs:
   # sandbox-exec) would otherwise pass as a false green. Each leg therefore asserts BOTH
   # its platform files actually ran: `Test Files  2 passed (2)`, no skips.
   sandbox-e2e:
+    if: ${{ !inputs.only_acl }}
     strategy:
       fail-fast: false
       matrix:
@@ -144,6 +151,7 @@ jobs:
   # Windows-only ACL proofs. Linux and macOS cannot validate NT security
   # descriptors, restricted tokens, or icacls-visible ACE materialization.
   windows-acl-e2e:
+    if: ${{ inputs.only_acl || github.event_name != 'workflow_dispatch' }}
     name: Windows ACL e2e (windows-2025)
     runs-on: windows-2025
     timeout-minutes: 45
@@ -172,6 +180,6 @@ jobs:
           $status = $LASTEXITCODE
           $out
           if ($status -ne 0) { exit $status }
-          if ($out -notmatch 'Test Files\s+4 passed \(4\)') {
+          if (($out -join "`n") -notmatch 'Test Files\s+4 passed \(4\)') {
             throw 'Windows ACL suites did not all execute; a skipped platform test is not a valid proof.'
           }
