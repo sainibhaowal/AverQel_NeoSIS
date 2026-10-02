@@ -1,7 +1,7 @@
 {
   "name": "@averqel/neosis-sdk-client",
   "description": "TypeScript client SDK for driving a AverQel NeoSIS runtime subprocess over stdio JSON-RPC: the AverQelHarness high-level turns API and the lower-level HarnessClient",
-  "version": "0.1.7-alpha.2",
+  "version": "0.2.0-rc.2",
   "publishConfig": {
     "access": "public"
   },

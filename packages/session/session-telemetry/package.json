@@ -1,7 +1,7 @@
 {
   "name": "@averqel/neosis-session-telemetry",
   "description": "SessionTelemetryBackend seam for the AverQel NeoSIS: session-event capture, projection, redaction, and handoff to a reporting backend",
-  "version": "0.1.7-alpha.2",
+  "version": "0.2.0-rc.2",
   "publishConfig": {
     "access": "public"
   },

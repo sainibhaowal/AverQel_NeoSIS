@@ -1,7 +1,7 @@
 {
   "name": "@averqel/neosis-subprocess",
   "description": "Subprocess seam (ctx.subprocess) for the AverQel NeoSIS — managed process groups, bounded spill-backed output, and escalated kills behind one abstract service",
-  "version": "0.1.7-alpha.2",
+  "version": "0.2.0-rc.2",
   "publishConfig": {
     "access": "public"
   },

@@ -1,7 +1,7 @@
 {
   "name": "@averqel/neosis-web-search-deepseek",
   "description": "AverQel-backed search provider (native web_search via the Anthropic-compatible API) for the AverQel NeoSIS web capability seam (ctx.web)",
-  "version": "0.1.7-alpha.2",
+  "version": "0.2.0-rc.2",
   "publishConfig": {
     "access": "public"
   },

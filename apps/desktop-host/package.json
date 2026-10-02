@@ -1,7 +1,7 @@
 {
   "name": "@averqel/neosis-desktop-host",
   "description": "Private Node-mode host process for the Electron desktop application",
-  "version": "0.1.7-alpha.2",
+  "version": "0.2.0-rc.2",
   "private": true,
   "license": "Apache-2.0",
   "type": "module",

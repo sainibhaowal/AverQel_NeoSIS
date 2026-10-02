@@ -1,7 +1,7 @@
 {
   "name": "@averqel/neosis-client-ui-brand-official",
   "description": "Official AverQel NeoSIS brand occupants for the Web client's sidebar slots",
-  "version": "0.1.7-alpha.2",
+  "version": "0.2.0-rc.2",
   "publishConfig": {
     "access": "public"
   },

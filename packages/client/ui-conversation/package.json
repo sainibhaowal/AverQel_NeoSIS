@@ -1,7 +1,7 @@
 {
   "name": "@averqel/neosis-client-ui-conversation",
   "description": "Target-neutral Conversation assembly, shell, composer, queue, and view navigation",
-  "version": "0.1.7-alpha.2",
+  "version": "0.2.0-rc.2",
   "publishConfig": {
     "access": "public"
   },
@@ -35,8 +35,8 @@
         "@averqel/neosis-client-ui-renderer",
         "@averqel/neosis-client-ui-session",
         "@averqel/neosis-client-ui-settings",
-        "@averqel/neosis-client-ui-workspace"
-        ,"@averqel/neosis-client-shortcuts"
+        "@averqel/neosis-client-ui-workspace",
+        "@averqel/neosis-client-shortcuts"
       ],
       "platform": "web"
     }
@@ -97,7 +97,8 @@
     "@lexical/plain-text": "^0.49.0",
     "@lexical/history": "^0.49.0",
     "@averqel/neosis-agent": "workspace:*",
-    "@averqel/neosis-settings": "workspace:*"
+    "@averqel/neosis-settings": "workspace:*",
+    "@averqel/neosis-client-product-analytics": "workspace:*"
   },
   "files": [
     "lib/index.js",

@@ -1,7 +1,7 @@
 {
   "name": "@averqel/neosis-agent-preset-registry",
   "description": "Declarative Agent preset registry and profile-backed editing",
-  "version": "0.1.7-alpha.2",
+  "version": "0.2.0-rc.2",
   "publishConfig": {
     "access": "public"
   },

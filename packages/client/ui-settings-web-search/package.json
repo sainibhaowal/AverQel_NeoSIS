@@ -1,7 +1,7 @@
 {
   "name": "@averqel/neosis-client-ui-settings-web-search",
   "description": "Settings page of the AverQel web-search provider on the neosis web client's Plugins page: its API key, endpoint, and per-request search budget",
-  "version": "0.1.7-alpha.2",
+  "version": "0.2.0-rc.2",
   "publishConfig": {
     "access": "public"
   },

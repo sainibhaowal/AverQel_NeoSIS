@@ -1,7 +1,7 @@
 {
   "name": "@averqel/neosis-tool-present",
   "description": "Explicit workspace file delivery declarations for the AverQel NeoSIS",
-  "version": "0.1.7-alpha.2",
+  "version": "0.2.0-rc.2",
   "publishConfig": {
     "access": "public"
   },

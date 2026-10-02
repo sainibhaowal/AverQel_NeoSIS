@@ -1,7 +1,7 @@
 {
   "name": "@averqel/neosis-acp-app",
   "description": "The neosis ACP profile bundle: automation-only JSON-RPC stdio and process lifecycle over neosis-base",
-  "version": "0.1.7-alpha.2",
+  "version": "0.2.0-rc.2",
   "publishConfig": {
     "access": "public"
   },

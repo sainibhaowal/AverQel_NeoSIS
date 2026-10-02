@@ -1,7 +1,7 @@
 {
   "name": "@averqel/neosis-experimental-ptc-runtime-python",
   "description": "CPython subprocess implementation of the AverQel NeoSIS PTC execution seam",
-  "version": "0.1.7-alpha.2",
+  "version": "0.2.0-rc.2",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sainibhaowal/AverQel_Neosis.git",

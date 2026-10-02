@@ -1,7 +1,7 @@
 {
   "name": "@averqel/neosis-api-remotes",
   "description": "Remote BFF assembly for application-selected Host capabilities",
-  "version": "0.1.7-alpha.2",
+  "version": "0.2.0-rc.2",
   "publishConfig": {
     "access": "public"
   },
@@ -87,12 +87,6 @@
     "@averqel/neosis-typert-protocol": "workspace:*",
     "@averqel/neosis-user-approval": "workspace:*",
     "@averqel/neosis-user-questions": "workspace:*",
-    "@averqel/neosis-schedule": "workspace:*",
-    "@averqel/neosis-client-connection": "workspace:*",
-    "@averqel/neosis-client-file-upload": "workspace:*",
-    "@averqel/neosis-typert-protocol": "workspace:*",
-    "@averqel/neosis-scope": "workspace:*",
-    "@averqel/neosis-api-session-controller": "workspace:*",
     "@averqel/neosis-api-workspace-files": "workspace:*",
     "zod": "^4.4.3",
     "@averqel/neosis-command-feedback": "workspace:*",
@@ -100,6 +94,7 @@
     "@averqel/neosis-plugin-manager": "workspace:*",
     "@averqel/neosis-client-ui-plugin-manager": "workspace:*",
     "@averqel/neosis-office-to-pdf": "workspace:*",
-    "@averqel/neosis-api-account-controller": "workspace:*"
+    "@averqel/neosis-api-account-controller": "workspace:*",
+    "@averqel/neosis-deepseek-account": "workspace:*"
   }
 }

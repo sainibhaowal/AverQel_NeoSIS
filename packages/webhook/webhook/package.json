@@ -1,7 +1,7 @@
 {
   "name": "@averqel/neosis-webhook",
   "description": "Fire-and-forget webhook rule runtime that creates Workspace-backed AverQel NeoSIS Sessions",
-  "version": "0.1.7-alpha.2",
+  "version": "0.2.0-rc.2",
   "publishConfig": {
     "access": "public"
   },

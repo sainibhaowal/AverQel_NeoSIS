@@ -1,7 +1,7 @@
 {
   "name": "@averqel/neosis-client-ui-settings-account",
   "description": "Manage AverQel login and open Platform billing pages",
-  "version": "0.1.7-alpha.2",
+  "version": "0.2.0-rc.2",
   "publishConfig": {
     "access": "public"
   },
@@ -63,7 +63,11 @@
     "@averqel/neosis-client-ui-settings-models": "workspace:*",
     "@types/react-dom": "~18.3.0",
     "@averqel/neosis-host-webserver": "workspace:*",
-    "big.js": "^7.0.1"
+    "big.js": "^7.0.1",
+    "@averqel/neosis-client-ui-layout": "workspace:*",
+    "@averqel/neosis-client-ui-chat": "workspace:*",
+    "@averqel/neosis-client-product-analytics": "workspace:*",
+    "@averqel/neosis-client-store": "workspace:*"
   },
   "files": [
     "lib/index.js",

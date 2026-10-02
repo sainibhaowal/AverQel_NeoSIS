@@ -1,7 +1,7 @@
 {
   "name": "@averqel/neosis-cmdline",
   "description": "Immutable command-line handoff from a neosis launcher to any app plugin that injects cmdlineArgs",
-  "version": "0.1.7-alpha.2",
+  "version": "0.2.0-rc.2",
   "publishConfig": {
     "access": "public"
   },

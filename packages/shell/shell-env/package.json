@@ -1,7 +1,7 @@
 {
   "name": "@averqel/neosis-shell-env",
   "description": "Tool-independent managed NEOSIS_* shell environment registry",
-  "version": "0.1.7-alpha.2",
+  "version": "0.2.0-rc.2",
   "publishConfig": {
     "access": "public"
   },

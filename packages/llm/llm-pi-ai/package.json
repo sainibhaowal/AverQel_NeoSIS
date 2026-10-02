@@ -1,7 +1,7 @@
 {
   "name": "@averqel/neosis-llm-pi-ai",
   "description": "pi-ai-backed AverQel adapter for the AverQel NeoSIS LLM seam (design-verification twin of neosis-llm-deepseek)",
-  "version": "0.1.7-alpha.2",
+  "version": "0.2.0-rc.2",
   "publishConfig": {
     "access": "public"
   },

@@ -1,7 +1,7 @@
 {
   "name": "@averqel/neosis-plugin-manager",
   "description": "Current-profile plugin and bundle management shared by neosis CLI, Web and agent tools",
-  "version": "0.1.7-alpha.2",
+  "version": "0.2.0-rc.2",
   "publishConfig": {
     "access": "public"
   },

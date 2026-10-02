@@ -208,12 +208,12 @@ importers:
       '@averqel/neosis-agent-tool-presentation':
         specifier: workspace:*
         version: link:../../packages/core/agent-tool-presentation
-      '@averqel/neosis-app-boot':
-        specifier: workspace:*
-        version: link:../../packages/boot/app-boot
       '@averqel/neosis-api-session-controller':
         specifier: workspace:*
         version: link:../../packages/api/session-controller
+      '@averqel/neosis-app-boot':
+        specifier: workspace:*
+        version: link:../../packages/boot/app-boot
       '@averqel/neosis-atomic-write':
         specifier: workspace:*
         version: link:../../packages/util/atomic-write
@@ -1180,6 +1180,9 @@ importers:
       '@averqel/neosis-credentials':
         specifier: workspace:*
         version: link:../../credentials/credentials
+      '@averqel/neosis-deepseek-account':
+        specifier: workspace:*
+        version: link:../../credentials/deepseek-account
       '@averqel/neosis-file-reference':
         specifier: workspace:*
         version: link:../../context/file-reference
@@ -3430,6 +3433,9 @@ importers:
       '@averqel/neosis-client-locale':
         specifier: workspace:*
         version: link:../locale
+      '@averqel/neosis-client-product-analytics':
+        specifier: workspace:*
+        version: link:../product-analytics
       '@averqel/neosis-client-shortcuts':
         specifier: workspace:*
         version: link:../shortcuts
@@ -4281,6 +4287,9 @@ importers:
       '@averqel/neosis-client-locale':
         specifier: workspace:*
         version: link:../locale
+      '@averqel/neosis-client-product-analytics':
+        specifier: workspace:*
+        version: link:../product-analytics
       '@averqel/neosis-client-store':
         specifier: workspace:*
         version: link:../store
@@ -4667,9 +4676,21 @@ importers:
       '@averqel/neosis-client-locale':
         specifier: workspace:*
         version: link:../locale
+      '@averqel/neosis-client-product-analytics':
+        specifier: workspace:*
+        version: link:../product-analytics
+      '@averqel/neosis-client-store':
+        specifier: workspace:*
+        version: link:../store
       '@averqel/neosis-client-test-runtime':
         specifier: workspace:*
         version: link:../../test-support/client-runtime
+      '@averqel/neosis-client-ui-chat':
+        specifier: workspace:*
+        version: link:../ui-chat
+      '@averqel/neosis-client-ui-layout':
+        specifier: workspace:*
+        version: link:../ui-layout
       '@averqel/neosis-client-ui-primitives':
         specifier: workspace:*
         version: link:../ui-primitives
@@ -5450,12 +5471,18 @@ importers:
       '@averqel/neosis-api-session-controller':
         specifier: workspace:*
         version: link:../../api/session-controller
+      '@averqel/neosis-brand':
+        specifier: workspace:*
+        version: link:../../util/brand
       '@averqel/neosis-client-locale':
         specifier: workspace:*
         version: link:../locale
       '@averqel/neosis-client-resources':
         specifier: workspace:*
         version: link:../resources
+      '@averqel/neosis-client-shortcuts':
+        specifier: workspace:*
+        version: link:../shortcuts
       '@averqel/neosis-client-store':
         specifier: workspace:*
         version: link:../store
@@ -6105,6 +6132,9 @@ importers:
       '@averqel/neosis-client-locale':
         specifier: workspace:*
         version: link:../locale
+      '@averqel/neosis-client-shortcuts':
+        specifier: workspace:*
+        version: link:../shortcuts
       '@averqel/neosis-client-store':
         specifier: workspace:*
         version: link:../store

@@ -1,7 +1,7 @@
 {
   "name": "@averqel/neosis-host-directory-picker",
   "description": "Abstract workspace-directory picking seam (ctx.directoryPicker) for the AverQel NeoSIS web GUI host",
-  "version": "0.1.7-alpha.2",
+  "version": "0.2.0-rc.2",
   "publishConfig": {
     "access": "public"
   },

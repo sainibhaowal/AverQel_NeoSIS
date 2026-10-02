@@ -1,7 +1,7 @@
 {
   "name": "@averqel/neosis-web-app",
   "description": "The neosis browser-surface bundle: the web patch layer over neosis-base plus the runtime glue plugin (frontend dist serving, web-surface prompt, bash runtime variables, URL line)",
-  "version": "0.1.7-alpha.2",
+  "version": "0.2.0-rc.2",
   "publishConfig": {
     "access": "public"
   },

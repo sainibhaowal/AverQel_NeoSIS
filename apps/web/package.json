@@ -1,7 +1,7 @@
 {
   "name": "@averqel/neosis-web-frontend",
   "description": "Web application entry: vite build over the @averqel/neosis-client-web shell library; dist/ served by apps/cli's neosis web",
-  "version": "0.1.7-alpha.2",
+  "version": "0.2.0-rc.2",
   "publishConfig": {
     "access": "public"
   },

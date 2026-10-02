@@ -1,7 +1,7 @@
 {
   "name": "@averqel/neosis-launch-environment",
   "description": "Immutable AverQel NeoSIS launch environment that records which layer supplied each value",
-  "version": "0.1.7-alpha.2",
+  "version": "0.2.0-rc.2",
   "publishConfig": {
     "access": "public"
   },

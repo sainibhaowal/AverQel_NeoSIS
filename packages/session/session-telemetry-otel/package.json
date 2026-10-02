@@ -1,7 +1,7 @@
 {
   "name": "@averqel/neosis-session-telemetry-otel",
   "description": "OpenTelemetry backend for the AverQel NeoSIS telemetry seam: hands captured session records to the OTel JS SDK's log pipeline",
-  "version": "0.1.7-alpha.2",
+  "version": "0.2.0-rc.2",
   "publishConfig": {
     "access": "public"
   },

@@ -1,7 +1,7 @@
 {
   "name": "@averqel/neosis-sdk-jsonrpc-server",
   "description": "Stdio JSON-RPC server plugin for out-of-process AverQel NeoSIS SDK clients",
-  "version": "0.1.7-alpha.2",
+  "version": "0.2.0-rc.2",
   "publishConfig": {
     "access": "public"
   },
