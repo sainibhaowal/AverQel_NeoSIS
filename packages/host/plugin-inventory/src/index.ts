@@ -85,6 +85,9 @@ export async function readPluginInventory(ctx: Context): Promise<PluginInventory
   for (const entry of ctx.loader.entries()) {
     if (entry.options.group) continue
     const base = entry.parent.tree.ctx.baseUrl
+    const packageManifest = base === undefined ? undefined : packages?.packageOf(entry.options.name, base)?.manifest
+    const neosis = packageManifest?.neosis
+    if (typeof neosis === 'object' && neosis !== null && (neosis as { internal?: unknown }).internal === true) continue
     const meta = base === undefined ? undefined : packages?.metaOf(entry.options.name, base)
     entries.push({
       entryId: pluginEntryId(entry.id),

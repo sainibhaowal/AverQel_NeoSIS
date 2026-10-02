@@ -211,6 +211,9 @@ importers:
       '@averqel/neosis-app-boot':
         specifier: workspace:*
         version: link:../../packages/boot/app-boot
+      '@averqel/neosis-api-session-controller':
+        specifier: workspace:*
+        version: link:../../packages/api/session-controller
       '@averqel/neosis-atomic-write':
         specifier: workspace:*
         version: link:../../packages/util/atomic-write
@@ -1286,6 +1289,9 @@ importers:
       '@averqel/neosis-commands':
         specifier: workspace:*
         version: link:../../interaction/commands
+      '@averqel/neosis-credentials':
+        specifier: workspace:*
+        version: link:../../credentials/credentials
       '@averqel/neosis-file-reference':
         specifier: workspace:*
         version: link:../../context/file-reference

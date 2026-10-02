@@ -30,6 +30,8 @@ export interface NeosisPackageManifest {
 export interface NeosisManifest {
   /** Manifest format version, independent of the npm package and Session format versions. */
   manifestVersion?: 1
+  /** Keep infrastructure packages out of user-facing plugin inventory while they remain loadable. */
+  internal?: boolean
   /** Bundle metadata consumed by the profile launcher. */
   bundle?: NeosisBundleManifest
   /** Profile metadata consumed by the profile launcher. */

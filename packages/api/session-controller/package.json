@@ -42,6 +42,7 @@
     "./package.json": "./package.json"
   },
   "neosis": {
+    "internal": true,
     "client": {
       "external": [
         "@averqel/neosis-api-gateway/client"
@@ -85,6 +86,7 @@
     "@averqel/neosis-client-connection": "workspace:*",
     "@averqel/neosis-client-file-upload": "workspace:*",
     "@averqel/neosis-commands": "workspace:*",
+    "@averqel/neosis-credentials": "workspace:*",
     "@averqel/neosis-file-reference": "workspace:*",
     "@averqel/neosis-fs": "workspace:*",
     "@averqel/neosis-llm": "workspace:*",
@@ -127,6 +129,7 @@
     "@averqel/neosis-client-store": "workspace:*",
     "@averqel/neosis-client-test-runtime": "workspace:*",
     "@averqel/neosis-commands": "workspace:*",
+    "@averqel/neosis-credentials": "workspace:*",
     "@averqel/neosis-file-reference": "workspace:*",
     "@averqel/neosis-fs": "workspace:*",
     "@averqel/neosis-fs-local": "workspace:*",

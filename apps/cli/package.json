@@ -29,6 +29,7 @@
     "@averqel/neosis-agent-instructions": "workspace:*",
     "@averqel/neosis-agent-tool-presentation": "workspace:*",
     "@averqel/neosis-app-boot": "workspace:*",
+    "@averqel/neosis-api-session-controller": "workspace:*",
     "@averqel/neosis-base": "workspace:*",
     "@averqel/neosis-client-ui-agent-preset": "workspace:*",
     "@averqel/neosis-client-ui-cordis": "workspace:*",

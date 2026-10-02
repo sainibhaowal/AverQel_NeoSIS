@@ -66,6 +66,18 @@ function metadataFixture(mode: 'native' | 'runtime') {
 }
 
 describe('PluginInventoryGateway', () => {
+  it('keeps internal services mounted but excludes them from user-facing inventory', async () => {
+    const { dir, baseUrl } = metadataFixture('native')
+    mkdirSync(dir, { recursive: true })
+    writeFileSync(join(dir, 'package.json'), JSON.stringify({ name: 'local-plugin', neosis: { internal: true } }))
+    const { ctx, inventory } = await harness(baseUrl)
+    await ctx.plugin(PluginPackages)
+    await ctx.loader.create({ name: 'local-plugin', disabled: false })
+
+    expect(Array.from(ctx.loader.entries()).some(entry => entry.options.name === 'local-plugin')).toBe(true)
+    expect((await inventory.list()).entries).toEqual([])
+  })
+
   it.each(['native', 'runtime'] as const)('reads local metadata while the package entry remains disabled with %s resolution', async (mode) => {
     const { dir, baseUrl, resolution, expectUnlinked } = metadataFixture(mode)
     mkdirSync(join(dir, 'locale'), { recursive: true })

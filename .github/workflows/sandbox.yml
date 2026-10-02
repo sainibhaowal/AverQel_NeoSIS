@@ -8,6 +8,7 @@
 name: AverQel NeoSIS Sandbox
 
 on:
+  pull_request:
   push:
     branches: [main, master]
   workflow_dispatch:
@@ -139,3 +140,38 @@ jobs:
           echo "$out"
           [ "$status" -eq 0 ]
           echo "$out" | grep -qE 'Test Files[[:space:]]+1 passed \(1\)'
+
+  # Windows-only ACL proofs. Linux and macOS cannot validate NT security
+  # descriptors, restricted tokens, or icacls-visible ACE materialization.
+  windows-acl-e2e:
+    name: Windows ACL e2e (windows-2025)
+    runs-on: windows-2025
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
+      - name: Install (immutable)
+        run: pnpm install --frozen-lockfile
+
+      - name: Windows ACL repair and restriction e2e
+        shell: pwsh
+        env:
+          NO_COLOR: '1'
+        run: |
+          $out = pnpm exec vitest run `
+            packages/sandbox/sandbox-windows-acl/tests/grant.spec.ts `
+            packages/sandbox/sandbox-windows-acl/tests/probe.spec.ts `
+            packages/sandbox/sandbox-windows-acl/tests/runner.spec.ts `
+            packages/sandbox/sandbox-windows-acl/tests/control.spec.ts 2>&1
+          $status = $LASTEXITCODE
+          $out
+          if ($status -ne 0) { exit $status }
+          if ($out -notmatch 'Test Files\s+4 passed \(4\)') {
+            throw 'Windows ACL suites did not all execute; a skipped platform test is not a valid proof.'
+          }
