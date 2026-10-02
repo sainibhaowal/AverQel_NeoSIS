@@ -992,4 +992,16 @@ describe('Windows Job runner protocol owner', () => {
     await reportSpawnRunnerFailure(undefined, new Error('no selector'), hostArgument(noSelection))
     expect(noSelection.exitCode).toBe(127)
   })
+
+  it('absorbs or reports host error events across lifecycle transitions', async () => {
+    const errorHost = new FakeRunnerHost()
+    const errorRun = runSpawnRunner(WINDOWS_RUNNER_SELECTION, ['--', 'tool.exe'], hostArgument(errorHost), internals())
+    errorHost.emit('error', new Error('ipc failure'))
+    await errorRun
+    expect(errorHost.exitCode).toBe(127)
+    expect(errorHost.sent).toMatchObject([{ type: 'error' }])
+
+    // Late error after runner settlement is absorbed without uncaught crash.
+    expect(() => { errorHost.emit('error', new Error('late disconnect error')) }).not.toThrow()
+  })
 })

@@ -246,8 +246,14 @@ class WindowsJobRunner {
       return this.completion.promise
     }
     this.host.on('message', this.onMessage)
+    this.host.on('error', this.onError)
     this.host.once('disconnect', this.onDisconnect)
     return this.completion.promise
+  }
+
+  private readonly onError = (error: unknown): void => {
+    if (this.finished) return
+    void this.runnerFailure(error)
   }
 
   private readonly onMessage = (value: unknown): void => {

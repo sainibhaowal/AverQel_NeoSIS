@@ -18,8 +18,9 @@ export async function runSelectedSubprocessRunner(selection: string): Promise<vo
 if (import.meta.main) {
   const selection = consumeRunnerSelection()
   if (selection === undefined) {
-    process.exitCode = 127
+    process.exit(127)
   } else {
-    void runSelectedSubprocessRunner(selection)
+    await runSelectedSubprocessRunner(selection)
+    process.exit(process.exitCode ?? 0)
   }
 }
