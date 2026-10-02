@@ -470,6 +470,26 @@ describe('Windows parent runner contract', () => {
     await expect(handle.waitForExit()).resolves.toBe(true)
   })
 
+  it('accepts clean range settlement when a target result races synchronous termination throw', async () => {
+    const child = new FakeChild()
+    child.throwOnSendCall = 2
+    child.sendThrown = new Error('ERR_IPC_CHANNEL_CLOSED')
+    const launched = launch(child)
+    const handle = bindManagedProcess(spec, launched.result)
+    await Promise.resolve()
+    child.emit('message', { type: 'target-exit', exitCode: 7 })
+    child.targetStdout.end()
+    child.targetStderr.end()
+    await expect(handle.done).resolves.toEqual({ exitCode: 7, signal: null })
+
+    launched.result.owner.signal('SIGTERM')
+    expect(child.killed).toEqual([])
+    child.connected = false
+    child.exit( 0, null)
+    await expect(handle.done).resolves.toEqual({ exitCode: 7, signal: null })
+    await expect(handle.waitForExit()).resolves.toBe(true)
+  })
+
   it('uses synchronous runner termination for host exit and isolates repeated control', () => {
     const { child, result } = launch()
     result.owner.signal('SIGTERM', new Error('first'))

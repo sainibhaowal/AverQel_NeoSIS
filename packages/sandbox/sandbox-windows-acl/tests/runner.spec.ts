@@ -536,11 +536,11 @@ describe.skipIf(!isWin32 || !pwshAvailable())('windows-acl runner', () => {
     const granted = join(scratchRoot, 'fullcontrol-root')
     const child = join(granted, 'child')
     mkdirSync(granted)
+    const grant = AclWriteGrant.create(workspaceWriteSid(granted))
+    grant.add(granted, true)
     mkdirSync(child)
     writeFileSync(join(granted, 'file.txt'), 'x')
     writeFileSync(join(child, 'deep.txt'), 'x')
-    const grant = AclWriteGrant.create(workspaceWriteSid(granted))
-    grant.add(granted, true)
     try {
       const probe = `
 $ErrorActionPreference='SilentlyContinue'

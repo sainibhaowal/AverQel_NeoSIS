@@ -95,6 +95,7 @@ class WindowsJobOwner implements BoundProcessOwner {
         this.terminateForHostExit()
       })
     } catch (error) {
+      if (this.directResultType() !== undefined) return
       this.failInfrastructure(error)
       this.terminateForHostExit()
     }
