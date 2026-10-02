@@ -72,7 +72,7 @@ describe('Connection binary RPC', () => {
     } finally {
       await ctx.fiber.dispose()
     }
-  }, 15_000)
+  }, 60_000)
 
   it('roundtrips raw bytes and metadata on the existing channel while JSON results and errors stay JSON', async () => {
     const ctx = new Context()

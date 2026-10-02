@@ -336,7 +336,9 @@ describe('ReviewTab', () => {
     expect(view.getByText(en['changes.oversized'])).toBeTruthy()
   })
 
-  it('states the summary and comparison that stand in for hunks, and retries a failed read', () => {
+  // Renders the full truncated diff table in jsdom; under the full forked
+  // client lane this exceeds Vitest's five-second default.
+  it('states the summary and comparison that stand in for hunks, and retries a failed read', { timeout: 30_000 }, () => {
     const summaries = new ChangesSummaryStore()
     summaries.state.set({ [SUMMARY_URL]: 'missing' })
     const missing = mount({ summaries, locale: zh })

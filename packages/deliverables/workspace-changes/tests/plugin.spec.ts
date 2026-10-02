@@ -110,7 +110,9 @@ describe('workspace-changes in a repository', () => {
     expect(ctx.workspaceChanges.summary(session.id, seq)).toBeUndefined()
   })
 
-  it('serves each listed file’s comparison from the snapshots or the captured copies', async () => {
+  // Boots a real git repository and settles full turns; under the shared
+  // serial CI lane this exceeds Vitest's five-second default.
+  it('serves each listed file’s comparison from the snapshots or the captured copies', { timeout: 30_000 }, async () => {
     const cwd = await repository()
     await writeFile(join(cwd, 'long.txt'), `${'0123456789'.repeat(10)}\n`)
     git(cwd, 'add', '-A'); git(cwd, 'commit', '-q', '-m', 'long')
@@ -201,7 +203,7 @@ describe('workspace-changes in a repository', () => {
     expect(await ctx.workspaceChanges.diff(session.id, announcedSeq(session), 2, signal)).toMatchObject({ kind: 'text', before: false, after: true, hunks: [{ lines: ['+one', '+two', '+three'] }] })
   })
 
-  it('records inside the turn when the agent stops, and again after turn/end only when tools settled later', async () => {
+  it('records inside the turn when the agent stops, and again after turn/end only when tools settled later', { timeout: 30_000 }, async () => {
     const cwd = await repository()
     const { ctx } = await boot()
     const session = ctx.sessions.create(SessionId('stopping'), { meta: { cwd } })

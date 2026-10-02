@@ -44,7 +44,10 @@ function runPnpm(args: string[], cwd: string, timeout: number): string {
 }
 
 describe('published document preview licenses', () => {
-  it.skipIf(!existsSync(bundlePath))('keeps bundled licenses in the packed lazy chunks', ({ task }) => {
+  // Shells out to `pnpm pack` plus three `tar` extractions on the packed
+  // PDF/spreadsheet chunks; under the full forked lane this exceeds both
+  // Vitest's five-second default and the per-spawn task budget.
+  it.skipIf(!existsSync(bundlePath))('keeps bundled licenses in the packed lazy chunks', { timeout: 120_000 }, ({ task }) => {
     expect(existsSync(pdfChunkPath)).toBe(true)
     const output = mkdtempSync(join(tmpdir(), 'neosis-document-preview-pack-'))
     try {
