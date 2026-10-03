@@ -201,8 +201,9 @@ jobs:
       - name: Install (immutable)
         run: pnpm install --frozen-lockfile
 
-      - name: Install Playwright Chromium
-        run: pnpm exec playwright install chromium
+      - name: Install Playwright Chromium (with deps)
+        run: |
+          pnpm --filter @averqel/neosis-web-frontend exec playwright install --with-deps chromium
 
       - name: Run complete unsharded primary Node CI serially (unsigned build)
         env:
@@ -267,6 +268,10 @@ jobs:
           } else {
             pnpm install --frozen-lockfile
           }
+
+      - name: Install Playwright Chromium
+        shell: pwsh
+        run: pnpm --filter @averqel/neosis-web-frontend exec playwright install chromium
 
       - name: Run complete unsharded Windows gate inventory serially (unsigned build)
         shell: pwsh
