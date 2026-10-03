@@ -172,14 +172,11 @@ jobs:
       - name: Run the complete primary Node CI gate
         env:
           NEOSIS_ARCHIVE_BASE_REF: ${{ github.event.before }}
-          # Four weighted partitions run as concurrent Vitest invocations, one
-          # worker each, so all four runner cores stay busy while every partition
-          # still executes its files in a fixed serial order. A single
-          # `--maxWorkers=1` invocation leaves three cores idle and stretches this
-          # gate past 70 minutes, which is longer than the interval between
-          # pushes and lets each run be superseded mid-flight.
-          NEOSIS_COVERAGE_PARTITIONS: '4'
-          NEOSIS_COVERAGE_MAX_WORKERS: '1'
+          # All four runner cores run tests. The previous `--maxWorkers=1`
+          # invocation left three cores idle and stretched this gate past 70
+          # minutes, which is longer than the interval between pushes and let
+          # each run be superseded mid-flight.
+          NEOSIS_COVERAGE_MAX_WORKERS: '4'
           NEOSIS_GATE_CONCURRENCY: '4'
           NEOSIS_E2E_MAX_WORKERS: '4'
           NEOSIS_OXLINT_THREADS: '4'
@@ -295,8 +292,7 @@ jobs:
         shell: pwsh
         env:
           NEOSIS_DESKTOP_UNSIGNED: '1'
-          NEOSIS_COVERAGE_PARTITIONS: '4'
-          NEOSIS_COVERAGE_MAX_WORKERS: '1'
+          NEOSIS_COVERAGE_MAX_WORKERS: '4'
           NEOSIS_COVERAGE_TEST_TIMEOUT_MS: '90000'
           NEOSIS_GATE_CONCURRENCY: '4'
           NEOSIS_PUBLINT_CONCURRENCY: '4'
