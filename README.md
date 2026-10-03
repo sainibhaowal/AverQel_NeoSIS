@@ -16,6 +16,8 @@ Review the [safety notice](SAFETY.md) before running the project.
 
 ## Run
 
+### Run from source
+
 Run from a repository checkout (no published npm package exists yet):
 
 ```sh

@@ -12,7 +12,7 @@ The default gate ([.github/workflows/ci.yml](../../../../.github/workflows/ci.ym
 
 ## Decision
 
-A dedicated workflow, [.github/workflows/e2e.yml](../../../../.github/workflows/e2e.yml), separate from ci.yml, runs only `pnpm run test:e2e` against the external API using a repo secret, on trusted events, with a preflight that converts a missing secret into a loud failure instead of a false green. The keyless workflow remains separate so forkable quality gates and secret-consuming real-API gates keep different trigger and credential policies.
+A dedicated workflow ran only `pnpm run test:e2e` against the external API using a repo secret, on trusted events, with a preflight that converts a missing secret into a loud failure instead of a false green. That workflow has since been removed; the keyless suites it gated now run from [vitest.e2e.config.ts](../../../../vitest.e2e.config.ts), and `DEEPSEEK_API_KEY` remains the switch for the with-key suites. The keyless workflow remains separate so forkable quality gates and secret-consuming real-API gates keep different trigger and credential policies.
 
 ### A separate workflow, not a job in ci.yml
 

@@ -293,8 +293,8 @@ describe('CI workflow', () => {
     expect(report?.run).toContain('::warning::')
     expect(report?.run).toContain('Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Encoding utf8 -Append')
 
-    // serial-windows: post-merge standby, hosted, non-blocking, lives in ci-master.
-    expect(serialWindows.if).toBe("github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')")
+    // serial-windows: on-demand standby, hosted, non-blocking, lives in ci-master.
+    expect(serialWindows.if).toBe("github.event_name == 'workflow_dispatch' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')")
     expect(serialWindows['runs-on']).toBe('windows-latest')
     expect(serialWindows.name).toBe('serial / windows (hosted, unsigned)')
     // Its store keeps the hosted runner's persistent filesystem path.
@@ -522,8 +522,11 @@ describe('CI workflow', () => {
       const job = workflow.jobs[name]
       if (!isRecord(job)) throw new TypeError(`${name} must be defined`)
       expect(job.concurrency).toBeUndefined()
-      // Standby drills remain post-merge work, but share run cancellation.
-      expect(job.if).toBe("github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')")
+      // The Linux gate stays post-merge; the Windows inventory is on-demand
+      // because it measured 92.7 minutes and outran the push interval.
+      expect(job.if).toBe(name === 'serial-windows'
+        ? "github.event_name == 'workflow_dispatch' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')"
+        : "github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')")
     }
 
     // Pin the post-merge runtime, Wine, and standby inventory. macOS minutes
@@ -544,7 +547,7 @@ describe('CI workflow', () => {
       })
       .map(([name]) => name)
       .sort()
-    expect(pushReachable).toEqual(['python-runtime', 'serial-linux-selfhosted', 'serial-windows', 'windows'])
+    expect(pushReachable).toEqual(['python-runtime', 'serial-linux-selfhosted', 'windows'])
 
     // The on-demand macOS lane runs the same primary gate. It builds and signs
     // nothing, so it must not carry the Windows-only unsigned-packaging switch.

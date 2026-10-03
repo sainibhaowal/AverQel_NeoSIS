@@ -102,7 +102,7 @@ describe('master-only platform scheduling', () => {
     expect(runtime).toMatchObject({
       if: primaryBranchPush,
       uses: runtimeBuilder,
-      with: { ci: true, targets: 'node24-linux-arm64,node24-macos-arm64,node24-macos-x64' },
+      with: { ci: true, targets: 'node24-linux-arm64,node24-macos-arm64' },
     })
     expect(runtime.needs).toBeUndefined()
     expect(runtime['continue-on-error']).toBeUndefined()

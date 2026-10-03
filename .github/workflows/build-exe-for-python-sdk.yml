@@ -32,7 +32,10 @@ on:
         description: >-
           Comma-separated pkg targets to build. Any subset of:
           node24-linux-x64, node24-linux-arm64, node24-macos-arm64,
-          node24-macos-x64, node24-win-x64. Empty builds all five.
+          node24-win-x64, node24-macos-x64. Empty builds the four targets
+          continuous integration covers; node24-macos-x64 stays selectable for
+          a deliberate release because no LibreOffice build exists for Intel
+          macOS, so its Office scenarios cannot run in CI.
         type: string
         required: false
         default: ''
@@ -88,7 +91,7 @@ jobs:
         id: plan
         env:
           # Blank dispatch inputs build all targets.
-          TARGETS: ${{ inputs.targets || 'node24-linux-x64,node24-linux-arm64,node24-macos-arm64,node24-macos-x64,node24-win-x64' }}
+          TARGETS: ${{ inputs.targets || 'node24-linux-x64,node24-linux-arm64,node24-macos-arm64,node24-win-x64' }}
         run: |
           set -euo pipefail
           matrix='[]'

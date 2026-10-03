@@ -185,6 +185,16 @@ export default defineConfig({
           // MaybeLocal in cjs_lexer::Parse) from worker threads on macOS,
           // Linux, and Windows. Forked workers avoid that shared thread path.
           pool: 'forks',
+          // Vitest sizes the fork pool from the CPU count, but this workload is
+          // memory-bound: each forked worker holds its own module graph and V8
+          // heap, and the heaviest specs build whole-repo TypeScript programs,
+          // git subprocess trees, inflated wheels, and SQLite handles. On a
+          // many-core host with modest RAM the oversubscribed pool starves those
+          // specs past their own declared budgets, which surfaces as a rotating
+          // handful of timeout failures per run with no failing assertion. Capping
+          // the pool keeps the memory headroom those specs need; the full unit
+          // lane still completes in minutes.
+          maxWorkers: 8,
           setupFiles: ['./scripts/test-proxy-environment.ts', './scripts/test-invariants.ts', './scripts/test-dom-environment.ts'],
           include: testIncludes,
           exclude: [
@@ -204,6 +214,9 @@ export default defineConfig({
           name: 'process-bound',
           execArgv: vitestExecArgv,
           pool: 'forks',
+          // Matches the thread-safe project: Vitest rejects sibling projects that
+          // share a sequence group with different maxWorkers values.
+          maxWorkers: 8,
           setupFiles: ['./scripts/test-proxy-environment.ts', './scripts/test-invariants.ts', './scripts/test-dom-environment.ts'],
           include: processBoundTests,
           exclude: [

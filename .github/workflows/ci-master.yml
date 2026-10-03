@@ -36,7 +36,7 @@ jobs:
     name: python runtime / macOS and Linux ARM64
     uses: ./.github/workflows/build-exe-for-python-sdk.yml
     with:
-      targets: node24-linux-arm64,node24-macos-arm64,node24-macos-x64
+      targets: node24-linux-arm64,node24-macos-arm64
       ci: true
 
   # Wine runs once here, independently of the native serial standby aggregates.
@@ -169,15 +169,22 @@ jobs:
       - name: Prepare bubblewrap (unrestrict userns)
         run: bash scripts/prepare-ci-bubblewrap.sh
 
-      - name: Run complete unsharded primary Node CI serially
+      - name: Run the complete primary Node CI gate
         env:
           NEOSIS_ARCHIVE_BASE_REF: ${{ github.event.before }}
+          # Four weighted partitions run as concurrent Vitest invocations, one
+          # worker each, so all four runner cores stay busy while every partition
+          # still executes its files in a fixed serial order. A single
+          # `--maxWorkers=1` invocation leaves three cores idle and stretches this
+          # gate past 70 minutes, which is longer than the interval between
+          # pushes and lets each run be superseded mid-flight.
+          NEOSIS_COVERAGE_PARTITIONS: '4'
           NEOSIS_COVERAGE_MAX_WORKERS: '1'
-          NEOSIS_E2E_MAX_WORKERS: '1'
-          NEOSIS_GATE_CONCURRENCY: '1'
-          NEOSIS_OXLINT_THREADS: '1'
-          NEOSIS_PUBLINT_CONCURRENCY: '1'
-          NEOSIS_SNAPSHOT_MAX_CONCURRENCY: '1'
+          NEOSIS_GATE_CONCURRENCY: '4'
+          NEOSIS_E2E_MAX_WORKERS: '4'
+          NEOSIS_OXLINT_THREADS: '4'
+          NEOSIS_PUBLINT_CONCURRENCY: '4'
+          NEOSIS_SNAPSHOT_MAX_CONCURRENCY: '4'
         run: pnpm run check:ci:linux-primary
 
   # Run the complete unsharded macOS gate on every main/master push. The
@@ -232,7 +239,13 @@ jobs:
   # (and saving here would poison the hosted cache namespace with self-hosted
   # paths).
   serial-windows:
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+    # On-demand only. This lane re-runs the complete Windows inventory serially
+    # and measured 92.7 minutes, which made it the whole critical path and got
+    # every push-triggered run superseded before it finished. Per-push Windows
+    # coverage comes from the windows-build, windows-coverage, windows-native,
+    # wine, and ACL e2e jobs in ci.yml. Dispatch this workflow on main to re-prove
+    # the full Windows inventory after a Windows-specific change.
+    if: github.event_name == 'workflow_dispatch' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
     name: serial / windows (hosted, unsigned)
     runs-on: windows-latest
     timeout-minutes: 120
@@ -282,10 +295,11 @@ jobs:
         shell: pwsh
         env:
           NEOSIS_DESKTOP_UNSIGNED: '1'
+          NEOSIS_COVERAGE_PARTITIONS: '4'
           NEOSIS_COVERAGE_MAX_WORKERS: '1'
           NEOSIS_COVERAGE_TEST_TIMEOUT_MS: '90000'
-          NEOSIS_GATE_CONCURRENCY: '1'
-          NEOSIS_PUBLINT_CONCURRENCY: '1'
+          NEOSIS_GATE_CONCURRENCY: '4'
+          NEOSIS_PUBLINT_CONCURRENCY: '4'
         run: pnpm run check:ci:windows-complete
 
   # Manual, bounded comparison of the actual critical Linux and Windows lanes.
