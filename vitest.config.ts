@@ -169,6 +169,7 @@ export default defineConfig({
     // .tsx: client component specs (jsdom via per-file @vitest-environment pragma).
     include: testIncludes,
     exclude: platformUnsupportedTests,
+    testTimeout: 30000,
     // One coverage invocation aggregates both projects. Every suite forks for
     // Node stability; process-bound suites stay separate for inventory control.
     projects: [
@@ -181,6 +182,7 @@ export default defineConfig({
         test: {
           name: 'thread-safe',
           execArgv: vitestExecArgv,
+          testTimeout: 120_000,
           // Node 24 has aborted in its CJS lexer (v8::ToLocalChecked Empty
           // MaybeLocal in cjs_lexer::Parse) from worker threads on macOS,
           // Linux, and Windows. Forked workers avoid that shared thread path.
@@ -194,7 +196,7 @@ export default defineConfig({
           // handful of timeout failures per run with no failing assertion. Capping
           // the pool keeps the memory headroom those specs need; the full unit
           // lane still completes in minutes.
-          maxWorkers: 8,
+          maxWorkers: 4,
           setupFiles: ['./scripts/test-proxy-environment.ts', './scripts/test-invariants.ts', './scripts/test-dom-environment.ts'],
           include: testIncludes,
           exclude: [
@@ -216,7 +218,8 @@ export default defineConfig({
           pool: 'forks',
           // Matches the thread-safe project: Vitest rejects sibling projects that
           // share a sequence group with different maxWorkers values.
-          maxWorkers: 8,
+          testTimeout: 120_000,
+          maxWorkers: 4,
           setupFiles: ['./scripts/test-proxy-environment.ts', './scripts/test-invariants.ts', './scripts/test-dom-environment.ts'],
           include: processBoundTests,
           exclude: [
