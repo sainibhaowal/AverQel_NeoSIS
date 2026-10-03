@@ -24,7 +24,7 @@ const sandboxUsable = await (async () => {
 })()
 
 async function setup(config: Config = {}, mode: 'read-only' | 'workspace-write' | 'danger-full-access' = 'danger-full-access') {
-  const root = await mkdtemp(join(homedir(), '.neosis-node-runtime-test-'))
+  const root = await mkdtemp(join(homedir(), `.neosis-node-runtime-test-${process.pid}-${Math.random().toString(36).slice(2)}-`))
   const cwd = join(root, 'workspace')
   await mkdir(cwd)
   const ctx = new Context()

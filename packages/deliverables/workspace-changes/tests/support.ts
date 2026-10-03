@@ -20,7 +20,9 @@ export function git(cwd: string, ...args: string[]): string {
 
 /** A temporary directory removed by the returned cleanup. */
 export async function scratchDir(prefix: string, cleanups: Array<() => Promise<unknown>>): Promise<string> {
-  const dir = await mkdtemp(join(tmpdir(), prefix))
+  // Include process ID and random suffix to avoid collisions in parallel test runs
+  const uniquePrefix = `${prefix}${process.pid}-${Math.random().toString(36).slice(2)}-`
+  const dir = await mkdtemp(join(tmpdir(), uniquePrefix))
   cleanups.push(() => rm(dir, { recursive: true, force: true }))
   return dir
 }
