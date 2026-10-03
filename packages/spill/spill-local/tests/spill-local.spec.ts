@@ -255,7 +255,7 @@ function active(path: string): SweepRoot {
   return { path, pruneWhenEmpty: false }
 }
 
-describe.skip('startup cleanup sweep', () => {
+describe('startup cleanup sweep', () => {
   it('deletes files older than the cutoff and keeps fresh ones', async () => {
     const dir = sessionDir(root, 'sess-1')
     mkdirSync(dir, { recursive: true })
@@ -501,7 +501,7 @@ describe.skip('startup cleanup sweep', () => {
     expect(warn).toHaveBeenCalledWith(expect.stringContaining('skipped unsafe root'))
   })
 
-  it.skip('does not block activation but is awaited on disposal (quiescence)', async () => {
+  it('does not block activation but is awaited on disposal (quiescence)', async () => {
     const dir = sessionDir(root, 'sess-1')
     mkdirSync(dir, { recursive: true })
     const old = join(dir, 'old.txt'); writeAged(old, 'x', 40)

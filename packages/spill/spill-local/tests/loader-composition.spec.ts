@@ -26,7 +26,7 @@ afterEach(async () => {
   root = undefined
 })
 
-describe.skip('spill-local real Loader composition through cordis.yml', () => {
+describe('spill-local real Loader composition through cordis.yml', () => {
   it('loads cleanupPeriodDays and prunes only expired session contents', async () => {
     root = await mkdtemp(join(tmpdir(), `neosis-spill-loader-${process.pid}-${Math.random().toString(36).slice(2)}-`))
     const oldDir = sessionDir(root, 'old-session')
