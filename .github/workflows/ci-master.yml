@@ -183,9 +183,15 @@ jobs:
   # Run the complete unsharded macOS gate on every main/master push. The
   # native runtime matrix above verifies packaged carriers; this lane verifies
   # the complete primary Node gate on a hosted macOS runner.
+  # The complete primary Node gate on macOS. Hosted macOS minutes cost about
+  # ten times a Linux minute, so this lane is on-demand: dispatch the workflow
+  # on main to re-prove the full gate after a platform-sensitive change. The
+  # per-push macOS signal stays in sandbox.yml, which runs the Seatbelt e2e
+  # there. No installer is built or notarized here, so this lane needs no Apple
+  # signing identity.
   serial-macos:
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
-    name: serial / macos (unsigned)
+    if: github.event_name == 'workflow_dispatch' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+    name: serial / macos
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v6
@@ -205,9 +211,8 @@ jobs:
         run: |
           pnpm --filter @averqel/neosis-web-frontend exec playwright install --with-deps chromium
 
-      - name: Run complete unsharded primary Node CI serially (unsigned build)
+      - name: Run complete unsharded primary Node CI serially
         env:
-          NEOSIS_DESKTOP_UNSIGNED: '1'
           NEOSIS_COVERAGE_MAX_WORKERS: '1'
           NEOSIS_E2E_MAX_WORKERS: '1'
           NEOSIS_GATE_CONCURRENCY: '1'

@@ -32,7 +32,7 @@ const neosisBuildWorkflows = [
   'release-publish.yml',
   'sandbox.yml',
 ]
-const disabledWorkflowNames = new Set(['release-publish.yml', 'release.yml'])
+const disabledWorkflowNames = new Set<string>()
 
 function workflowPath(name: string): string {
   return `.github/${disabledWorkflowNames.has(name) ? 'workflows-disabled' : 'workflows'}/${name}`

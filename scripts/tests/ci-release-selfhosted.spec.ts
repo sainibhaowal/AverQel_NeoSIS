@@ -12,10 +12,8 @@ const hosted = 'ubuntu-24.04'
 const disabledWorkflowNames = new Set([
   'node-addon-system-release.yml',
   'python-release.yml',
-  'release-publish.yml',
   'release-vendor-publish.yml',
   'release-vendor.yml',
-  'release.yml',
 ])
 
 interface Step {

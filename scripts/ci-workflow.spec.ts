@@ -296,7 +296,7 @@ describe('CI workflow', () => {
     // serial-windows: post-merge standby, hosted, non-blocking, lives in ci-master.
     expect(serialWindows.if).toBe("github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')")
     expect(serialWindows['runs-on']).toBe('windows-latest')
-    expect(serialWindows.name).toBe('serial / windows (hosted)')
+    expect(serialWindows.name).toBe('serial / windows (hosted, unsigned)')
     // Its store keeps the hosted runner's persistent filesystem path.
     const serialSteps = serialWindows.steps as unknown[]
     const serialStore = serialSteps.find((step): step is Record<string, unknown> & { run: string } => (
@@ -320,7 +320,7 @@ describe('CI workflow', () => {
     // per-test budget the PR coverage lane grants; the default 5000ms times
     // out load-sensitive store scans (e.g. gen-third-party-notices).
     const serialGate = serialSteps.find((step): step is Record<string, unknown> & { env?: Record<string, unknown> } => (
-      isRecord(step) && step.name === 'Run complete unsharded Windows gate inventory serially'
+      isRecord(step) && step.name === 'Run complete unsharded Windows gate inventory serially (unsigned build)'
     ))
     expect(serialGate).toBeDefined()
     expect(serialGate!.env).toMatchObject({ NEOSIS_COVERAGE_TEST_TIMEOUT_MS: '90000' })
@@ -526,10 +526,13 @@ describe('CI workflow', () => {
       expect(job.if).toBe("github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')")
     }
 
-    // Pin the post-merge runtime, Wine, and standby inventory.
+    // Pin the post-merge runtime, Wine, and standby inventory. macOS minutes
+    // cost about ten times a Linux minute, so the full macOS gate is on-demand;
+    // sandbox.yml keeps the per-push Seatbelt e2e there.
     const NOT_PUSH_REACHABLE = new Set([
       "github.event_name == 'workflow_dispatch' && inputs.suite == 'larger-runner-benchmark'",
       "github.event_name == 'workflow_dispatch' && inputs.suite == 'consolidated-runner-benchmark'",
+      "github.event_name == 'workflow_dispatch' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')",
     ])
     const pushReachable = Object.entries(workflow.jobs)
       .filter(([, job]) => {
@@ -541,7 +544,24 @@ describe('CI workflow', () => {
       })
       .map(([name]) => name)
       .sort()
-    expect(pushReachable).toEqual(['python-runtime', 'serial-linux-selfhosted', 'serial-macos', 'serial-windows', 'windows'])
+    expect(pushReachable).toEqual(['python-runtime', 'serial-linux-selfhosted', 'serial-windows', 'windows'])
+
+    // The on-demand macOS lane runs the same primary gate. It builds and signs
+    // nothing, so it must not carry the Windows-only unsigned-packaging switch.
+    const macosJob = workflow.jobs['serial-macos']
+    if (!isRecord(macosJob) || !Array.isArray(macosJob.steps)) {
+      throw new TypeError('serial-macos must define steps')
+    }
+    const macosSteps = macosJob.steps.filter(isRecord)
+    const macosGate = macosSteps.find(step => step.run === 'pnpm run check:ci')
+    if (macosGate === undefined || !isRecord(macosGate.env)) {
+      throw new TypeError('serial-macos must run the primary gate with its environment')
+    }
+    expect(macosGate.env).not.toHaveProperty('NEOSIS_DESKTOP_UNSIGNED')
+    const macosPlaywright = macosSteps.find((step): step is Record<string, unknown> & { run: string } => (
+      typeof step.run === 'string' && step.run.includes('playwright install')
+    ))
+    expect(macosPlaywright?.run).toContain('playwright install --with-deps chromium')
 
     // Manual benchmarks retain their bounded fan-out.
     for (const name of ['larger-runner-benchmark', 'consolidated-runner-benchmark']) {
