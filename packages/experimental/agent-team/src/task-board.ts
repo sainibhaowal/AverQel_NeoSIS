@@ -16,11 +16,7 @@ import type {
   UpdateTeamTaskRequest,
 } from './types.ts'
 import { requiredText, writeScope } from './validation.ts'
-
-/** Whether two normalized file or directory prefixes overlap on path components. */
-function scopesOverlap(left: string, right: string): boolean {
-  return left === right || left.startsWith(`${right}/`) || right.startsWith(`${left}/`)
-}
+import { projectTaskView } from './task-view.ts'
 
 const TASK_GRAPH_ERROR_CODES: Record<TeamTaskGraphViolation, string> = {
   missing: 'TEAM_TASK_NOT_FOUND',
@@ -68,7 +64,7 @@ export class TeamTaskBoard {
       }
       this.assertTaskGraph(state, task)
       await this.journal.appendAndFlush(root, 'team/task', { version: 2, teamId: TeamId(root.id), task })
-      return this.taskView(root, state, task)
+      return projectTaskView(state, task)
     })
   }
 
@@ -83,7 +79,7 @@ export class TeamTaskBoard {
     const state = this.journal.state(root)
     const task = state.tasks.find(candidate => candidate.id === id)
     if (task === undefined) throw new TeamError(`team task "${id}" not found`, 'TEAM_TASK_NOT_FOUND')
-    return this.taskView(root, state, task)
+    return projectTaskView(state, task)
   }
 
   /**
@@ -96,7 +92,7 @@ export class TeamTaskBoard {
     const state = this.journal.state(root)
     return state.tasks
       .filter(task => task.status !== 'deleted')
-      .map(task => this.taskView(root, state, task))
+      .map(task => projectTaskView(state, task))
   }
 
   /**
@@ -210,7 +206,7 @@ export class TeamTaskBoard {
       }
       this.assertTaskGraph(state, task)
       await this.journal.appendAndFlush(root, 'team/task', { version: 2, teamId: TeamId(root.id), task })
-      return this.taskView(root, state, task)
+      return projectTaskView(state, task)
     })
   }
 
@@ -262,36 +258,4 @@ export class TeamTaskBoard {
     return without
   }
 
-  /**
-   * Build one task view with owner name, readiness, and advisory write overlaps.
-   * A committing caller may pass its pre-append state because `task` supplies the
-   * new value explicitly; owner names, blocker readiness, and other task scopes
-   * do not change when that snapshot is appended.
-   */
-  private taskView(root: Agent, state: TeamState, task: TeamTaskSnapshot): TeamTaskView {
-    const ownerName = task.ownerId === undefined
-      ? undefined
-      : task.ownerId === root.id
-        ? 'lead'
-        : state.members.find(member => member.id === task.ownerId)?.name
-    const warnings = new Set<string>()
-    for (const other of state.tasks) {
-      if (other.id === task.id || other.status !== 'in_progress') continue
-      if (task.writeScopes.some(left => other.writeScopes.some(right => scopesOverlap(left, right)))) {
-        warnings.add(`write scopes overlap with ${other.id}`)
-      }
-    }
-    return {
-      id: task.id,
-      revision: task.revision,
-      subject: task.subject,
-      description: task.description,
-      status: task.status,
-      blockedBy: structuredClone(task.blockedBy),
-      writeScopes: structuredClone(task.writeScopes),
-      ...ownerName === undefined ? {} : { ownerName },
-      ready: task.status === 'pending' && this.taskReady(state, task),
-      writeScopeWarnings: [...warnings],
-    }
-  }
 }

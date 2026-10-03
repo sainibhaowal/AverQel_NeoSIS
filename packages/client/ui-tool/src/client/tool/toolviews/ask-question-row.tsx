@@ -212,7 +212,11 @@ type AskQuestionRowProps = ToolCallViewProps & PropsLocale<'conversation'> & Inj
 
 /** Summarizes a pending, answered, cancelled, or interrupted question set. */
 export function AskQuestionRow({
+  // Framework-free renders (tests, previews) omit the slot shares below;
+  // the framework always supplies them, so these defaults only serve those.
+  // oxlint-disable-next-line typescript/no-useless-default-assignment
   callId, toolName, block, inspect, useDisclosure, useProjection = () => undefined,
+  // oxlint-disable-next-line typescript/no-useless-default-assignment
   revealPanel = () => false, reviewPanel = () => false, t,
 }: AskQuestionRowProps) {
   const model = toolRowModel(toolName, block)

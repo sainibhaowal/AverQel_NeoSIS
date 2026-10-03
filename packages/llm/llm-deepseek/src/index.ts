@@ -4,6 +4,7 @@ import type {} from '@averqel/neosis-deepseek-account'
 import type {} from '@averqel/cordis-plugin-loader'
 import type { Context } from '@averqel/cordis'
 import { assertUsableApiKey, LlmError, resolveImageAttachmentAccess } from '@averqel/neosis-llm'
+import { credentialRef } from '@averqel/neosis-credentials'
 import type {} from '@averqel/neosis-fs'
 import { launchEnvironmentOf } from '@averqel/neosis-launch-environment'
 import { deepEqualJson } from '@averqel/neosis-util-values'
@@ -59,33 +60,43 @@ export const inject = ['llm']
 const NS = 'llm-deepseek'
 const PROVIDER = 'deepseek-official'
 
+/**
+ * Resolve one DeepSeek API key from the credentials seam or the launch
+ * environment. Shared with the API-key provider package, which drives the
+ * same provider route through its own configuration.
+ * @param ctx - context supplying credentials and the launch environment.
+ * @param apiKeyEnv - environment variable naming the key.
+ * @returns the usable key.
+ */
+export async function resolveDeepSeekApiKey(ctx: Context, apiKeyEnv: string): Promise<string> {
+  // Every credential fact comes from the caller's snapshot, so a rejected
+  // settings generation cannot leak its key onto the previous endpoint.
+  const credentials = ctx.get('credentials')
+  if (credentials !== undefined) {
+    const hit = await credentials.resolve(credentialRef(apiKeyEnv))
+    if (hit !== undefined) return assertUsableApiKey(hit.value, 'llm-deepseek', apiKeyEnv)
+  } else {
+    // Without the seam there is no managed store to rank against, so the
+    // environment is the whole credential plane.
+    const ambient = launchEnvironmentOf(ctx).get(apiKeyEnv)
+    if (ambient !== undefined && ambient.value.length > 0) {
+      return assertUsableApiKey(ambient.value, 'llm-deepseek', apiKeyEnv)
+    }
+  }
+  throw new LlmError(
+    `llm-deepseek: no API key for provider route "${PROVIDER}"; store ${apiKeyEnv} through the credentials`
+    + ` service (the web Models page writes it), or export ${apiKeyEnv} in the launching environment`,
+    'MISSING_CREDENTIAL',
+  )
+}
+
 export function apply(ctx: Context, config: Config): void {
   ctx.inject(['settings'], (child) => { child.effect(() => child.settings.configure({ auto: false }, ctx.fiber)) })
   const options = (): ResolvedAverQelOptions => resolveAdapterOptions(plainOptions(config), launchEnvironmentOf(ctx))
   options()
 
-  const resolveApiKey = async (connection: ResolvedAverQelOptions): Promise<string> => {
-    // Every credential fact comes from the caller's snapshot, so a rejected
-    // settings generation cannot leak its key onto the previous endpoint.
-    const ref = connection.apiKeyEnv
-    const credentials = ctx.get('credentials')
-    if (credentials !== undefined) {
-      const hit = await credentials.resolve(ref)
-      if (hit !== undefined) return assertUsableApiKey(hit.value, 'llm-deepseek', ref)
-    } else {
-      // Without the seam there is no managed store to rank against, so the
-      // environment is the whole credential plane.
-      const ambient = launchEnvironmentOf(ctx).get(ref)
-      if (ambient !== undefined && ambient.value.length > 0) {
-        return assertUsableApiKey(ambient.value, 'llm-deepseek', ref)
-      }
-    }
-    throw new LlmError(
-      `llm-deepseek: no API key for provider route "${PROVIDER}"; store ${ref} through the credentials`
-      + ` service (the web Models page writes it), or export ${ref} in the launching environment`,
-      'MISSING_CREDENTIAL',
-    )
-  }
+  const resolveApiKey = async (connection: ResolvedAverQelOptions): Promise<string> =>
+    resolveDeepSeekApiKey(ctx, connection.apiKeyEnv)
 
   let userId: AnonymousUserId | undefined
   const resolveUserId = (): AnonymousUserId => userId ??= getOrCreateAnonymousUserId()

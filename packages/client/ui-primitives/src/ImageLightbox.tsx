@@ -1,3 +1,4 @@
+/* jscpd:ignore-start -- ui-primitives ImageLightbox variant: Tab trap, Escape+stopPropagation, capture listener, focus-visible */
 import { useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { IconCloseOutlineRegular } from './icons/index.tsx'
@@ -63,3 +64,4 @@ export function ImageLightbox({ src, alt, labels, onClose }: {
     document.body,
   )
 }
+/* jscpd:ignore-end */

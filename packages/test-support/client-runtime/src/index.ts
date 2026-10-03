@@ -162,7 +162,7 @@ function installTestShortcuts(ctx: Context): void {
       issue: null,
       conflicts: [],
     }),
-    edit: async () => ({ status: 'not-ready' as const, snapshot: config.getSnapshot() }),
+    edit: () => Promise.resolve({ status: 'not-ready' as const, snapshot: config.getSnapshot() }),
     recording: async () => {},
     closeWindow: async () => {},
   } as never)

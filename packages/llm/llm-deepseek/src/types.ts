@@ -85,7 +85,7 @@ export interface AverQelConnectionOptions {
 /** Request headers and error hook supplied by an alternate DeepSeek credential provider. */
 export interface AverQelRequestAuth {
   readonly headers: Readonly<Record<string, string>>
-  readonly onRequestError?: (error: unknown) => unknown | Promise<unknown>
+  readonly onRequestError?: (error: unknown) => unknown
 }
 
 /** Compatibility alias used by the account and API-key provider packages. */

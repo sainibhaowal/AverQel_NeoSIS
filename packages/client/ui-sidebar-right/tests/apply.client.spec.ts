@@ -162,6 +162,7 @@ describe('ui-sidebar-right apply', () => {
     if (surface === undefined) throw new Error('expected a surface')
     ctx.sidebarRight.tabDomain.sync(SESSION, surface.layout)
     expect(resources.pin).toHaveBeenCalledWith('sidebar://guide', expect.any(AbortSignal))
+    // oxlint-disable-next-line typescript/unbound-method -- existence check only; every call site invokes it on the service.
     expect(ctx.sidebarRight.toggleExpanded).toBeDefined()
   })
 

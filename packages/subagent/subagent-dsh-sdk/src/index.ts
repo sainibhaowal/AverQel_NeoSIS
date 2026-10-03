@@ -1,3 +1,4 @@
+/* jscpd:ignore-start -- fork of subagent-neosis-sdk; DeepSeek vs AverQel CLI paths diverge */
 /**
  * Out-of-process SDK subagent backend. Each child is a complete DeepSeek
  * Harness runtime in its own process — own named profile and patch composition,
@@ -198,3 +199,4 @@ export function apply(ctx: Context, config: Config): void {
     : { ...launchPaths, cwd: configuredCwd }
   ctx.subagents.registerProvider(new SdkSubagentProvider(validated.providerName, ctx, validated))
 }
+/* jscpd:ignore-end */

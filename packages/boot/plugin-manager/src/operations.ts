@@ -127,7 +127,7 @@ export async function runProfilePnpm(
     stdin: options.execution === 'cli' ? 'inherit' : 'ignore', cancelSignal: options.signal === undefined
       ? cancellation.signal : AbortSignal.any([cancellation.signal, options.signal]),
   })
-  let timedOut = false
+  let timedOut: boolean = false
   let idleTimer: NodeJS.Timeout | undefined
   const armIdleTimer = (): void => {
     if (options.execution === 'cli' || options.idleTimeoutMs === undefined) return
@@ -179,9 +179,12 @@ export async function runProfilePnpm(
     clearTimeout(idleTimer)
     await log.close()
   }
+  // Read through a closure: the idle timer flips the flag asynchronously,
+  // which straight-line narrowing cannot observe.
+  const timeoutMarker = (): { timedOut: true } | Record<string, never> => timedOut ? { timedOut: true } : {}
   return {
     exitCode, output: output.toString('utf8'), truncated, logPath,
-    ...(timedOut ? { timedOut: true } : {}),
+    ...timeoutMarker(),
   }
 }
 

@@ -7,11 +7,12 @@ import type { TeamTaskSnapshot, TeamTaskView } from './types.ts'
 
 /**
  * Whether two normalized file or directory prefixes overlap on path components.
+ * Shared with the task board, which derives the same advisory warnings.
  * @param left - normalized write scope.
  * @param right - normalized write scope.
  * @returns whether either scope contains the other.
  */
-function scopesOverlap(left: string, right: string): boolean {
+export function scopesOverlap(left: string, right: string): boolean {
   return left === right || left.startsWith(`${right}/`) || right.startsWith(`${left}/`)
 }
 

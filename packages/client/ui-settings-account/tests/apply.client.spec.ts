@@ -40,7 +40,7 @@ it('uses the Web login carrier and sends account client metadata', async ({ star
   mock.remote.account.startSignIn.mockResolvedValue(ok(view))
   await actions.start()
   expect(mock.remote.account.startSignIn).toHaveBeenCalledWith(expect.objectContaining({
-    version: expect.any(String), locale: 'en', timezoneOffsetSeconds: expect.any(Number),
+    version: expect.any(String) as string, locale: 'en', timezoneOffsetSeconds: expect.any(Number) as number,
   }), window.location.origin, 'web')
 }, 60_000)
 
@@ -131,7 +131,7 @@ it('uses the Desktop login carrier and exposes operation errors', async ({ start
   mock.remote.account.startSignIn.mockResolvedValue(ok(view))
   await actions.start()
   expect(mock.remote.account.startSignIn).toHaveBeenCalledWith(expect.objectContaining({
-    version: expect.any(String), locale: 'en', timezoneOffsetSeconds: expect.any(Number),
+    version: expect.any(String) as string, locale: 'en', timezoneOffsetSeconds: expect.any(Number) as number,
   }), window.location.origin, 'desktop')
   const failure = { ok: false as const, error: new RemoteError('gateway/internal', 'offline', {}) }
   mock.remote.account.startSignIn.mockResolvedValueOnce(failure)
@@ -158,7 +158,7 @@ it('uses the Desktop stream origin and exposes the native platform bridge', asyn
   mock.remote.account.startSignIn.mockResolvedValue(ok(view))
   await actions.start()
   expect(mock.remote.account.startSignIn).toHaveBeenCalledWith(expect.objectContaining({
-    version: expect.any(String), locale: 'en', timezoneOffsetSeconds: expect.any(Number),
+    version: expect.any(String) as string, locale: 'en', timezoneOffsetSeconds: expect.any(Number) as number,
   }), 'http://localhost:9876', 'desktop')
 }, 60_000)
 

@@ -1,3 +1,4 @@
+/* jscpd:ignore-start -- fork of subagent-neosis-sdk; DeepSeek vs AverQel CLI paths diverge */
 /**
  * Fresh-process SDK subagent client. Drives one child DeepSeek Harness
  * runtime over stdio JSON-RPC through `@averqel/neosis-sdk-client` and owns
@@ -357,3 +358,4 @@ export async function startSdkRun(request: SubagentStartRequest, spec: SdkRunSpe
     teardown,
   })
 }
+/* jscpd:ignore-end */

@@ -53,7 +53,11 @@ function mount(state: Omit<AccountView, 'links'>, copy: typeof en | typeof zh = 
     const platformPages = operations.platformPages
     if (platformPages === undefined) throw new Error('account test: missing platform page channel')
     render(<AccountPlatformHost {...globals} platform={platform}
-      usePage={selector => selector(useSyncExternalStore(platformPages.subscribe, platformPages.getSnapshot, platformPages.getSnapshot))}
+      usePage={selector => selector(useSyncExternalStore(
+        store => platformPages.subscribe(store),
+        () => platformPages.getSnapshot(),
+        () => platformPages.getSnapshot(),
+      ))}
       closePage={platformPages.close} t={key => key in copy ? copy[key as AccountKey] : key} />)
   }
   return operations

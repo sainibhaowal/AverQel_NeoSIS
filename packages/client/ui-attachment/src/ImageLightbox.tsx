@@ -1,3 +1,4 @@
+/* jscpd:ignore-start -- ui-attachment ImageLightbox variant: CSS mask, Escape-only close, no Tab trap */
 import { useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { IconCloseOutlineRegular } from '@averqel/neosis-client-ui-primitives'
@@ -62,3 +63,4 @@ export function ImageLightbox({ src, alt, labels, onClose }: {
     document.body,
   )
 }
+/* jscpd:ignore-end */

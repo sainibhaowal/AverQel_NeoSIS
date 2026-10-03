@@ -59,7 +59,10 @@ let disposeActiveHandlers: (() => void) | undefined
 export async function openWelcomeWindow(locale: DesktopLocale, operations: WelcomeOperations): Promise<BrowserWindow> {
   const window = new BrowserWindow(welcomeWindowOptions(process.platform, locale))
   disposeActiveHandlers?.()
-  let active = true
+  let active: boolean = true
+  // Read through a closure: the flag flips asynchronously on window close,
+  // which straight-line narrowing cannot observe.
+  const isActive = (): boolean => active
   const disposeHandlers = (): void => {
     if (!active) return
     active = false
@@ -120,6 +123,6 @@ export async function openWelcomeWindow(locale: DesktopLocale, operations: Welco
     if (!window.isDestroyed()) window.destroy()
     throw error
   }
-  if (active && !window.isDestroyed()) window.show()
+  if (isActive() && !window.isDestroyed()) window.show()
   return window
 }
