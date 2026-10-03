@@ -356,9 +356,51 @@ jobs:
         run: |
           set -euo pipefail
           soffice='/Applications/LibreOffice.app/Contents/MacOS/soffice'
+          # The documentfoundation mirror chain intermittently answers runners
+          # with a truncated body, which surfaces as `curl: (18)` and fails the
+          # whole job on a single cask fetch. Homebrew performs that one fetch
+          # without retries, so a transient mirror fault must not decide the
+          # lane: retry it, then install the same artifact from a resumable,
+          # checksum-verified direct download that Homebrew itself names.
+          install_from_cask() {
+            for attempt in 1 2 3; do
+              if brew install --cask libreoffice && [ -x "$soffice" ]; then
+                return 0
+              fi
+              # A half-applied cask would refuse the next attempt outright.
+              brew uninstall --cask libreoffice >/dev/null 2>&1 || true
+              [ "$attempt" -lt 3 ] && sleep $((attempt * 15))
+            done
+            return 1
+          }
+          install_from_verified_download() {
+            local url sha dmg mount
+            url="$(brew info --cask --json=v2 libreoffice | jq -r '.casks[0].url')"
+            sha="$(brew info --cask --json=v2 libreoffice | jq -r '.casks[0].sha256')"
+            [ -n "$url" ] && [ "$url" != null ] && [ -n "$sha" ] && [ "$sha" != null ] || {
+              echo "::error::Homebrew did not report a LibreOffice download URL and checksum"
+              return 1
+            }
+            dmg="$RUNNER_TEMP/libreoffice.dmg"
+            mount="$RUNNER_TEMP/libreoffice-mount"
+            curl --fail --location --silent --show-error \
+              --retry 6 --retry-all-errors --retry-delay 10 --connect-timeout 30 --max-time 1800 \
+              --continue-at - --output "$dmg" "$url"
+            echo "$sha  $dmg" | shasum -a 256 -c -
+            hdiutil attach "$dmg" -nobrowse -quiet -mountpoint "$mount"
+            cp -R "$mount/LibreOffice.app" /Applications/
+            hdiutil detach "$mount" -quiet
+          }
           if [ ! -x "$soffice" ]; then
-            brew install --cask libreoffice
+            install_from_cask || install_from_verified_download
           fi
+          # The conversion engine is a test dependency, so a missing soffice
+          # must fail here rather than surface later as a confusing preview
+          # assertion.
+          test -x "$soffice" || {
+            echo "::error::LibreOffice did not install; NEOSIS_OFFICE_EXECUTABLE would be a lie"
+            exit 1
+          }
           echo '/Applications/LibreOffice.app/Contents/MacOS' >> "$GITHUB_PATH"
           echo "NEOSIS_OFFICE_EXECUTABLE=$soffice" >> "$GITHUB_ENV"
 
