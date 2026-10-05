@@ -1,0 +1,99 @@
+{
+  "name": "@averqel/neosis-session-reference",
+  "description": "Cross-session snapshot references and durable untrusted model context (ctx.sessionReferenceResolver)",
+  "version": "0.2.0-rc.2",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sainibhaowal/AverQel_Neosis.git",
+    "directory": "packages/context/session-reference"
+  },
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/types/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./types": {
+      "types": "./lib/types/types.d.ts",
+      "default": "./lib/types/types.js"
+    },
+    "./typert": {
+      "types": "./lib/typert.host.d.ts",
+      "default": "./lib/typert.host.js"
+    },
+    "./remote": {
+      "types": "./lib/typert.remote-client.d.ts",
+      "default": "./lib/typert.remote-client.js"
+    },
+    "./src/*": "./src/*",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib/index.js",
+    "lib/types/**/*.js",
+    "lib/types/**/*.d.ts",
+    "lib/typert.host.js",
+    "lib/typert.host.d.ts",
+    "lib/typert.remote-client.js",
+    "lib/typert.remote-client.d.ts"
+  ],
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@averqel/neosis-brand": "workspace:*",
+    "@averqel/neosis-util-values": "workspace:*",
+    "@averqel/schemastery": "workspace:~",
+    "zod": "^4.4.3"
+  },
+  "peerDependencies": {
+    "@averqel/cordis": "workspace:~",
+    "@averqel/neosis-agent": "workspace:*",
+    "@averqel/neosis-compaction": "workspace:*",
+    "@averqel/neosis-llm": "workspace:*",
+    "@averqel/neosis-output-retention": "workspace:*",
+    "@averqel/neosis-session": "workspace:*",
+    "@averqel/neosis-session-projection": "workspace:*",
+    "@averqel/neosis-session-projection-cache": "workspace:*",
+    "@averqel/neosis-session-query": "workspace:*",
+    "@averqel/neosis-session-title": "workspace:*",
+    "@averqel/neosis-spill": "workspace:*",
+    "@averqel/neosis-subagent": "workspace:*",
+    "@averqel/neosis-system-prompt": "workspace:*",
+    "@averqel/neosis-typert-protocol": "workspace:*"
+  },
+  "peerDependenciesMeta": {
+    "@averqel/neosis-spill": {
+      "optional": true
+    },
+    "@averqel/neosis-session-projection-cache": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@averqel/cordis": "workspace:~",
+    "@averqel/cordis-plugin-include": "workspace:~",
+    "@averqel/cordis-plugin-loader": "workspace:~",
+    "@averqel/neosis-agent": "workspace:*",
+    "@averqel/neosis-compaction": "workspace:*",
+    "@averqel/neosis-fs-local": "workspace:*",
+    "@averqel/neosis-llm": "workspace:*",
+    "@averqel/neosis-output-retention": "workspace:*",
+    "@averqel/neosis-session": "workspace:*",
+    "@averqel/neosis-session-projection": "workspace:*",
+    "@averqel/neosis-session-projection-cache": "workspace:*",
+    "@averqel/neosis-session-query": "workspace:*",
+    "@averqel/neosis-session-query-sqlite": "workspace:*",
+    "@averqel/neosis-session-title": "workspace:*",
+    "@averqel/neosis-spill": "workspace:*",
+    "@averqel/neosis-subagent": "workspace:*",
+    "@averqel/neosis-spill-local": "workspace:*",
+    "@averqel/neosis-system-prompt": "workspace:*",
+    "@averqel/neosis-tool-fs": "workspace:*",
+    "@averqel/neosis-tools": "workspace:*",
+    "@averqel/neosis-typert-protocol": "workspace:*"
+  }
+}

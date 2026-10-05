@@ -1,0 +1,62 @@
+{
+  "name": "@averqel/neosis-experimental-tool-agent-team",
+  "description": "Scoped model-facing Agent Teams tools over ctx.agentTeams",
+  "version": "0.2.0-rc.2",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sainibhaowal/AverQel_Neosis.git",
+    "directory": "packages/experimental/tool-agent-team"
+  },
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/types/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./locale/*.json": "./locale/*.json",
+    "./src/*": "./src/*",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "locale/*.json",
+    "lib/index.js",
+    "lib/types/**/*.d.ts"
+  ],
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@averqel/schemastery": "workspace:~"
+  },
+  "peerDependencies": {
+    "@averqel/neosis-agent": "workspace:*",
+    "@averqel/neosis-session": "workspace:*",
+    "@averqel/neosis-system-prompt": "workspace:*",
+    "@averqel/neosis-experimental-agent-team": "workspace:*",
+    "@averqel/neosis-tools": "workspace:*",
+    "@averqel/cordis": "workspace:~"
+  },
+  "devDependencies": {
+    "@averqel/neosis-agent": "workspace:*",
+    "@averqel/neosis-agent-loop": "workspace:*",
+    "@averqel/neosis-agent-loop-testkit": "workspace:*",
+    "@averqel/neosis-session": "workspace:*",
+    "@averqel/neosis-session-projection": "workspace:*",
+    "@averqel/neosis-session-persistence-jsonl": "workspace:*",
+    "@averqel/neosis-session-query": "workspace:*",
+    "@averqel/neosis-scope": "workspace:*",
+    "@averqel/neosis-subagent": "workspace:*",
+    "@averqel/neosis-subagent-fork-in-process": "workspace:*",
+    "@averqel/neosis-subagent-spawn-in-process": "workspace:*",
+    "@averqel/neosis-tool-subagent-control": "workspace:*",
+    "@averqel/neosis-system-prompt": "workspace:*",
+    "@averqel/neosis-experimental-agent-team": "workspace:*",
+    "@averqel/neosis-tools": "workspace:*",
+    "@averqel/cordis": "workspace:~",
+    "@averqel/neosis-llm": "workspace:*",
+    "@averqel/neosis-llm-deepseek": "workspace:*"
+  }
+}

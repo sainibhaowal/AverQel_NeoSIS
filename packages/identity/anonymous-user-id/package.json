@@ -1,0 +1,39 @@
+{
+  "name": "@averqel/neosis-anonymous-user-id",
+  "description": "Shared anonymous user identity for AverQel NeoSIS telemetry and feedback correlation",
+  "version": "0.2.0-rc.2",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sainibhaowal/AverQel_Neosis.git",
+    "directory": "packages/identity/anonymous-user-id"
+  },
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/types/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./src/*": "./src/*",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib/index.js",
+    "lib/types/**/*.d.ts"
+  ],
+  "license": "Apache-2.0",
+  "peerDependencies": {
+    "@averqel/neosis-brand": "workspace:*",
+    "@averqel/neosis-home-paths": "workspace:*",
+    "@averqel/cordis": "workspace:~"
+  },
+  "devDependencies": {
+    "@averqel/neosis-brand": "workspace:*",
+    "@averqel/neosis-home-paths": "workspace:*",
+    "@averqel/cordis": "workspace:~"
+  }
+}

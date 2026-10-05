@@ -1,0 +1,70 @@
+{
+  "name": "@averqel/neosis-user-questions",
+  "description": "Abstract user-questions seam (ctx.userQuestions) for asking the human during agent runs",
+  "version": "0.2.0-rc.2",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sainibhaowal/AverQel_Neosis.git",
+    "directory": "packages/interaction/user-questions"
+  },
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/types/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./types": {
+      "types": "./lib/types/types.d.ts",
+      "default": "./lib/types/types.js"
+    },
+    "./src/*": "./src/*",
+    "./package.json": "./package.json",
+    "./typert": {
+      "types": "./lib/typert.host.d.ts",
+      "default": "./lib/typert.host.js"
+    },
+    "./remote": {
+      "types": "./lib/typert.remote-client.d.ts",
+      "default": "./lib/typert.remote-client.js"
+    }
+  },
+  "files": [
+    "lib/index.js",
+    "lib/types/**/*.js",
+    "lib/types/**/*.d.ts",
+    "lib/typert.host.js",
+    "lib/typert.host.d.ts",
+    "lib/typert.remote-client.js",
+    "lib/typert.remote-client.d.ts"
+  ],
+  "license": "Apache-2.0",
+  "peerDependencies": {
+    "@averqel/neosis-agent": "workspace:*",
+    "@averqel/neosis-llm": "workspace:*",
+    "@averqel/neosis-scope": "workspace:*",
+    "@averqel/cordis": "workspace:~",
+    "@averqel/neosis-typert-protocol": "workspace:*",
+    "@averqel/neosis-session": "workspace:*",
+    "@averqel/neosis-session-projection": "workspace:*"
+  },
+  "devDependencies": {
+    "@averqel/neosis-agent": "workspace:*",
+    "@averqel/neosis-llm": "workspace:*",
+    "@averqel/neosis-scope": "workspace:*",
+    "@averqel/cordis": "workspace:~",
+    "@averqel/neosis-typert-protocol": "workspace:*",
+    "@averqel/neosis-session": "workspace:*",
+    "@averqel/neosis-session-projection": "workspace:*",
+    "@averqel/neosis-session-persistence-jsonl": "workspace:*",
+    "@averqel/neosis-tools": "workspace:*"
+  },
+  "dependencies": {
+    "@averqel/schemastery": "workspace:~",
+    "zod": "^4.4.3"
+  }
+}

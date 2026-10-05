@@ -1,0 +1,64 @@
+{
+  "name": "@averqel/neosis-experimental-inspector",
+  "description": "Experimental cross-realm CDP hub for Host debugging and Client Runtime inspection",
+  "version": "0.2.0-rc.2",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sainibhaowal/AverQel_Neosis.git",
+    "directory": "packages/experimental/inspector"
+  },
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/types/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./client": {
+      "types": "./lib/types/client/index.d.ts",
+      "default": "./lib/client.js"
+    },
+    "./src/*": "./src/*",
+    "./package.json": "./package.json"
+  },
+  "neosis": {
+    "client": {
+      "inject": [],
+      "platform": "web",
+      "immediately": true
+    }
+  },
+  "files": [
+    "lib/index.js",
+    "lib/client.js",
+    "lib/worker.js",
+    "lib/types/**/*.d.ts"
+  ],
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@averqel/neosis-app-boot": "workspace:*",
+    "@averqel/neosis-brand": "workspace:*",
+    "@averqel/neosis-util-crypto": "workspace:*",
+    "@averqel/schemastery": "workspace:~",
+    "ws": "^8.21.0"
+  },
+  "peerDependencies": {
+    "@averqel/cordis": "workspace:~",
+    "@averqel/cordis-plugin-loader": "workspace:~",
+    "@averqel/neosis-client-modules": "workspace:*",
+    "@averqel/neosis-host-webserver": "workspace:*"
+  },
+  "devDependencies": {
+    "@averqel/cordis": "workspace:~",
+    "@averqel/cordis-plugin-include": "workspace:~",
+    "@averqel/cordis-plugin-loader": "workspace:~",
+    "@averqel/neosis-host-webserver": "workspace:*",
+    "@types/ws": "^8.18.1",
+    "playwright": "^1.49.0",
+    "tsx": "^4.19.2"
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "name": "@averqel/neosis-tool-workflow",
+  "description": "Model-facing workflow tool: run a JavaScript orchestration script over ctx.workflowEngine",
+  "version": "0.2.0-rc.2",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sainibhaowal/AverQel_Neosis.git",
+    "directory": "packages/workflow/tool-workflow"
+  },
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/types/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./invariant": {
+      "types": "./lib/types/invariant.d.ts",
+      "default": "./lib/invariant.js"
+    },
+    "./types": {
+      "types": "./lib/types/types.d.ts",
+      "default": "./lib/types/types.js"
+    },
+    "./src/*": "./src/*",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib/index.js",
+    "lib/invariant.js",
+    "lib/types/**/*.js",
+    "lib/types/**/*.d.ts"
+  ],
+  "license": "Apache-2.0",
+  "peerDependencies": {
+    "@averqel/cordis": "workspace:~",
+    "@averqel/neosis-agent": "workspace:*",
+    "@averqel/neosis-invariants": "workspace:*",
+    "@averqel/neosis-jobs": "workspace:*",
+    "@averqel/neosis-llm": "workspace:*",
+    "@averqel/neosis-session": "workspace:*",
+    "@averqel/neosis-system-prompt": "workspace:*",
+    "@averqel/neosis-tools": "workspace:*",
+    "@averqel/neosis-workflow": "workspace:*"
+  },
+  "dependencies": {
+    "@averqel/schemastery": "workspace:~"
+  },
+  "devDependencies": {
+    "@averqel/cordis": "workspace:~",
+    "@averqel/neosis-agent": "workspace:*",
+    "@averqel/neosis-agent-loop-testkit": "workspace:*",
+    "@averqel/neosis-invariants": "workspace:*",
+    "@averqel/neosis-jobs": "workspace:*",
+    "@averqel/neosis-jobs-local": "workspace:*",
+    "@averqel/neosis-llm": "workspace:*",
+    "@averqel/neosis-session": "workspace:*",
+    "@averqel/neosis-session-projection": "workspace:*",
+    "@averqel/neosis-subagent": "workspace:*",
+    "@averqel/neosis-system-prompt": "workspace:*",
+    "@averqel/neosis-tool-jobs": "workspace:*",
+    "@averqel/neosis-tools": "workspace:*",
+    "@averqel/neosis-workflow": "workspace:*",
+    "@averqel/neosis-workflow-ptc": "workspace:*"
+  }
+}

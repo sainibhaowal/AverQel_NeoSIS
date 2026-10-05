@@ -1,0 +1,63 @@
+{
+  "name": "@averqel/neosis-plugin-package-inventory-deepseek",
+  "description": "Active Loader-backed plugin package inventory for official AverQel LLM API requests",
+  "version": "0.2.0-rc.2",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sainibhaowal/AverQel_Neosis.git",
+    "directory": "packages/llm/plugin-package-inventory-deepseek"
+  },
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/types/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./types": {
+      "types": "./lib/types/types.d.ts",
+      "default": "./lib/types/types.js"
+    },
+    "./src/*": "./src/*",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib/index.js",
+    "lib/types/**/*.js",
+    "lib/types/**/*.d.ts"
+  ],
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@averqel/neosis-brand": "workspace:*",
+    "@averqel/schemastery": "workspace:~"
+  },
+  "peerDependencies": {
+    "@averqel/cordis": "workspace:~",
+    "@averqel/cordis-plugin-loader": "workspace:~",
+    "@averqel/neosis-agent": "workspace:*",
+    "@averqel/neosis-agent-preset-registry": "workspace:*",
+    "@averqel/neosis-deepseek-llm-api-extensions": "workspace:*",
+    "@averqel/neosis-session": "workspace:*"
+  },
+  "peerDependenciesMeta": {
+    "@averqel/neosis-agent-preset-registry": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@averqel/neosis-app-boot": "workspace:*",
+    "@averqel/cordis": "workspace:~",
+    "@averqel/cordis-plugin-include": "workspace:~",
+    "@averqel/cordis-plugin-loader": "workspace:~",
+    "@averqel/neosis-agent": "workspace:*",
+    "@averqel/neosis-agent-preset-registry": "workspace:*",
+    "@averqel/neosis-deepseek-llm-api-extensions": "workspace:*",
+    "@averqel/neosis-scope": "workspace:*",
+    "@averqel/neosis-session": "workspace:*",
+    "@averqel/neosis-session-projection": "workspace:*"
+  }
+}

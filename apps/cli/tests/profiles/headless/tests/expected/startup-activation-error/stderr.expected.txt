@@ -1,0 +1,5 @@
+neosis: warning: 1 entry did not activate
+activation-error (./activation-error.mjs): Error: startup activation snapshot failure
+    at activation-error-fixture
+neosis: reasoning:
+Inspecting the task before the tool call.

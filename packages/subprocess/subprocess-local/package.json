@@ -1,0 +1,62 @@
+{
+  "name": "@averqel/neosis-subprocess-local",
+  "description": "Local-subprocess implementation of the AverQel NeoSIS subprocess seam",
+  "version": "0.2.0-rc.2",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sainibhaowal/AverQel_Neosis.git",
+    "directory": "packages/subprocess/subprocess-local"
+  },
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/types/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./runner": {
+      "types": "./lib/types/bin.d.ts",
+      "default": "./lib/runner.js"
+    },
+    "./src/*": "./src/*",
+    "./package.json": "./package.json",
+    "./output": {
+      "types": "./lib/types/output.d.ts",
+      "default": "./lib/output.js"
+    }
+  },
+  "files": [
+    "lib/index.js",
+    "lib/runner.js",
+    "lib/runner-*.js",
+    "lib/output.js",
+    "lib/output-*.js",
+    "scripts/ensure-spawn-helper.mjs",
+    "lib/types/**/*.d.ts"
+  ],
+  "scripts": {
+    "postinstall": "node scripts/ensure-spawn-helper.mjs"
+  },
+  "license": "Apache-2.0",
+  "peerDependencies": {
+    "@averqel/neosis-subprocess": "workspace:*",
+    "@averqel/neosis-timeout": "workspace:*",
+    "@averqel/cordis": "workspace:~"
+  },
+  "dependencies": {
+    "@averqel/neosis-lazy-require": "workspace:*",
+    "@averqel/neosis-win32-process": "workspace:*",
+    "koffi": "3.3.1",
+    "node-pty": "1.2.0-beta.15"
+  },
+  "devDependencies": {
+    "@averqel/neosis-loader-smoke": "workspace:*",
+    "@averqel/neosis-subprocess": "workspace:*",
+    "@averqel/neosis-timeout": "workspace:*",
+    "@averqel/cordis": "workspace:~"
+  }
+}

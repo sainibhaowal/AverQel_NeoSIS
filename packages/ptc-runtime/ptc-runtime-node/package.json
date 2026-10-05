@@ -1,0 +1,61 @@
+{
+  "name": "@averqel/neosis-ptc-runtime-node",
+  "description": "Sandboxed Node process implementation of the AverQel NeoSIS PTC execution capability",
+  "version": "0.2.0-rc.2",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sainibhaowal/AverQel_Neosis.git",
+    "directory": "packages/ptc-runtime/ptc-runtime-node"
+  },
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/types/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./package.json": "./package.json",
+    "./process": {
+      "types": "./lib/types/process-entry.d.ts",
+      "default": "./lib/process.js"
+    }
+  },
+  "files": [
+    "lib/index.js",
+    "lib/process.js",
+    "lib/types/**/*.d.ts"
+  ],
+  "license": "Apache-2.0",
+  "peerDependencies": {
+    "@averqel/cordis": "workspace:~",
+    "@averqel/neosis-ptc-runtime": "workspace:*",
+    "@averqel/neosis-session": "workspace:*",
+    "@averqel/neosis-timeout": "workspace:*",
+    "@averqel/neosis-fs": "workspace:*",
+    "@averqel/neosis-subprocess": "workspace:*",
+    "@averqel/neosis-sandbox": "workspace:*",
+    "@averqel/neosis-sandbox-policy": "workspace:*"
+  },
+  "dependencies": {
+    "@averqel/neosis-util-values": "workspace:*",
+    "@averqel/schemastery": "workspace:~"
+  },
+  "devDependencies": {
+    "@averqel/cordis": "workspace:~",
+    "@averqel/neosis-ptc-runtime": "workspace:*",
+    "@averqel/neosis-session": "workspace:*",
+    "@averqel/neosis-timeout": "workspace:*",
+    "@averqel/neosis-fs": "workspace:*",
+    "@averqel/neosis-subprocess": "workspace:*",
+    "@averqel/neosis-sandbox": "workspace:*",
+    "@averqel/neosis-sandbox-policy": "workspace:*",
+    "@averqel/neosis-fs-local": "workspace:*",
+    "@averqel/neosis-subprocess-local": "workspace:*",
+    "@averqel/neosis-session-projection": "workspace:*",
+    "@averqel/neosis-sandbox-local": "workspace:*"
+  }
+}

@@ -1,0 +1,49 @@
+name: AverQel NeoSIS — Issue lifecycle
+
+on:
+  issues:
+    types:
+      - opened
+      - edited
+      - labeled
+      - unlabeled
+      - closed
+      - reopened
+  # This workflow checks out and executes only the trusted default-branch
+  # policy. The target trigger is therefore required for its project token to
+  # be available when a PR comes from a fork.
+  pull_request_target:
+    types:
+      - opened
+      - edited
+      - reopened
+      - review_requested
+  pull_request_review:
+    types:
+      - submitted
+
+permissions:
+  contents: read
+
+concurrency:
+  group: issue-lifecycle-${{ github.event.issue.number || github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  lifecycle:
+    name: Issue lifecycle
+    if: >-
+      (github.event_name != 'pull_request_review' || github.event.review.state == 'changes_requested') &&
+      (github.event_name != 'pull_request_target' || github.event.action != 'edited' || github.event.changes.body != null)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out trusted policy
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+      - name: Handle repository event
+        env:
+          GH_TOKEN: ${{ secrets.NEOSIS_ISSUE_MANAGEMENT_TOKEN }}
+          PROJECT_TOKEN: ${{ secrets.NEOSIS_ISSUE_MANAGEMENT_TOKEN }}
+        run: node .github/issue-management/policy.mjs lifecycle

@@ -1,0 +1,53 @@
+{
+  "name": "@averqel/neosis-tool-cordis",
+  "description": "Read-only runtime API inspection for Harness plugin development",
+  "version": "0.2.0-rc.2",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sainibhaowal/AverQel_Neosis.git",
+    "directory": "packages/extensions/tool-cordis"
+  },
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/types/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./host": {
+      "types": "./lib/types/host.d.ts",
+      "default": "./lib/types/host.js"
+    },
+    "./src/*": "./src/*",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib/index.js",
+    "lib/types/**/*.js",
+    "lib/types/**/*.d.ts"
+  ],
+  "license": "Apache-2.0",
+  "peerDependencies": {
+    "@averqel/cordis": "workspace:~",
+    "@averqel/cordis-plugin-loader": "workspace:~",
+    "@averqel/neosis-agent": "workspace:*",
+    "@averqel/neosis-app-boot": "workspace:*",
+    "@averqel/neosis-cordis-host-runner": "workspace:*",
+    "@averqel/neosis-tools": "workspace:*"
+  },
+  "devDependencies": {
+    "@averqel/cordis": "workspace:~",
+    "@averqel/cordis-plugin-group": "workspace:~",
+    "@averqel/cordis-plugin-loader": "workspace:~",
+    "@averqel/neosis-agent": "workspace:*",
+    "@averqel/neosis-app-boot": "workspace:*",
+    "@averqel/neosis-cordis-host-runner": "workspace:*",
+    "@averqel/neosis-system-prompt": "workspace:*",
+    "@averqel/neosis-tools": "workspace:*",
+    "@averqel/schemastery": "workspace:~"
+  }
+}

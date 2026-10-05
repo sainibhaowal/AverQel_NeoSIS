@@ -1,0 +1,32 @@
+# With 1,800 tokens of headroom, a 1,000-token output reservation lowers the
+# trigger from 8,240 to 7,500, between the history and its condensed replacement.
+
+- id: llm-deepseek
+  name: '@averqel/neosis-llm-deepseek'
+  disabled: true
+
+- id: session-persistence-jsonl
+  name: '@averqel/neosis-session-persistence-jsonl'
+  config:
+    root: !!js neosisHomePath('sessions')
+    compression: none
+
+- id: compaction-basic
+  name: '@averqel/neosis-compaction-basic'
+  config:
+    thresholdRatio: 0.8
+    headroomTokens: 1800
+    retainTokens: 20
+    maxTokens: 32
+
+- insert:
+    - id: llm-replay
+      name: '@averqel/neosis-llm-replay'
+      config:
+        providers:
+          - id: deepseek-official
+            name: DeepSeek
+            models:
+              - id: deepseek-v4-flash
+                contextWindow: 10300
+                defaultMaxTokens: 1000

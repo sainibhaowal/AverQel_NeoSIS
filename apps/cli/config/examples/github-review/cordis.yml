@@ -1,0 +1,35 @@
+# Opt-in GitHub webhook overlay over the shipped Web composition. The second
+# WebServer lives in an isolated realm so exposing it never exposes the UI API.
+
+- insert:
+    - id: webhook-runtime
+      name: '@averqel/neosis-webhook'
+
+    - id: github-ready-review-rule
+      name: './github-ready-review-rule.mjs'
+      config:
+        source: primary-github
+        repository: averqel/averqel-neosis
+        workspacePath: !!js process.env.NEOSIS_GITHUB_REVIEW_WORKSPACE ?? process.cwd()
+        agentPreset: standard
+        permissionPreset: read-only
+
+    - id: github-webhook-ingress
+      name: cordis:group
+      group: true
+      isolate:
+        webServer: true
+      config:
+        - id: github-webhook-server
+          name: '@averqel/neosis-host-webserver'
+          config:
+            host: '127.0.0.1'
+            port: !!js Number(process.env.NEOSIS_GITHUB_WEBHOOK_PORT ?? 3081)
+
+        - id: github-webhook-adapter
+          name: '@averqel/neosis-webhook-github'
+          config:
+            source: primary-github
+            path: /github
+            secretEnv: NEOSIS_GITHUB_WEBHOOK_SECRET
+            maxBodyBytes: 1048576

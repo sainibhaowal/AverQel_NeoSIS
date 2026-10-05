@@ -1,0 +1,56 @@
+{
+  "name": "@averqel/neosis-tool-bash-persistent",
+  "description": "Model-facing owner-scoped persistent Bash tool backed by the Harness PTY service",
+  "version": "0.2.0-rc.2",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sainibhaowal/AverQel_Neosis.git",
+    "directory": "packages/shell/tool-bash-persistent"
+  },
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/types/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib/index.js",
+    "lib/types/**/*.d.ts"
+  ],
+  "license": "Apache-2.0",
+  "peerDependencies": {
+    "@averqel/neosis-agent": "workspace:*",
+    "@averqel/neosis-terminal": "workspace:*",
+    "@averqel/neosis-timeout": "workspace:*",
+    "@averqel/neosis-tools": "workspace:*",
+    "@averqel/cordis": "workspace:~"
+  },
+  "dependencies": {
+    "@averqel/schemastery": "workspace:~"
+  },
+  "devDependencies": {
+    "@averqel/cordis-plugin-include": "workspace:~",
+    "@averqel/cordis-plugin-loader": "workspace:~",
+    "@averqel/neosis-agent": "workspace:*",
+    "@averqel/neosis-agent-loop-testkit": "workspace:*",
+    "@averqel/neosis-llm": "workspace:*",
+    "@averqel/neosis-terminal": "workspace:*",
+    "@averqel/neosis-terminal-bash": "workspace:*",
+    "@averqel/neosis-sandbox": "workspace:*",
+    "@averqel/neosis-sandbox-policy": "workspace:*",
+    "@averqel/neosis-session": "workspace:*",
+    "@averqel/neosis-subprocess-local": "workspace:*",
+    "@averqel/neosis-system-prompt": "workspace:*",
+    "@averqel/neosis-timeout": "workspace:*",
+    "@averqel/neosis-tools": "workspace:*",
+    "@averqel/cordis": "workspace:~",
+    "@averqel/neosis-session-projection": "workspace:*"
+  }
+}

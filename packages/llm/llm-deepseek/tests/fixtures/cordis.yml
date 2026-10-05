@@ -1,0 +1,21 @@
+- name: '@averqel/neosis-llm'
+- name: '@averqel/neosis-session'
+- name: '@averqel/neosis-session-projection'
+- name: '@averqel/neosis-system-prompt'
+- name: '@averqel/neosis-tools'
+- name: '@averqel/neosis-agent'
+- name: '@averqel/neosis-agent-loop'
+  config:
+    agents: []
+- name: '@averqel/neosis-credentials-local'
+  config:
+    path: {{credentials}}
+    watch: false
+- name: '@averqel/neosis-llm-deepseek'
+  config:
+    apiKeyEnv: DEEPSEEK_API_KEY
+    baseURL: {{endpoint}}
+    thinking: enabled
+    reasoningEffort: high
+    maxTokens: 256000
+    streamIdleTimeoutMs: 300000

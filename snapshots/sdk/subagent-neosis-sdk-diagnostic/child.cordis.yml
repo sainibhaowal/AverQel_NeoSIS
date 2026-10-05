@@ -1,0 +1,18 @@
+# SDK-profile patch for the deterministic diagnostic child runtime.
+
+- id: llm-deepseek
+  name: '@averqel/neosis-llm-deepseek'
+  disabled: true
+
+- id: agent-instructions
+  name: '@averqel/neosis-agent-instructions'
+  disabled: true
+
+- id: system-prompt
+  name: '@averqel/neosis-system-prompt'
+  config:
+    personaPrefix: 'Return the scripted NEOSIS SDK failure.'
+
+- insert:
+    - id: child-mock-llm
+      name: '../../../packages/subagent/subagent-neosis-sdk/tests/fixtures/loader/child-mock-llm.ts'

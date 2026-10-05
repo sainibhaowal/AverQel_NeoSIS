@@ -1,0 +1,48 @@
+{
+  "name": "@averqel/neosis-acp-app",
+  "description": "The neosis ACP profile bundle: automation-only JSON-RPC stdio and process lifecycle over neosis-base",
+  "version": "0.2.0-rc.2",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sainibhaowal/AverQel_Neosis.git",
+    "directory": "packages/bundle/acp-app"
+  },
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/types/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./src/*": "./src/*",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib/index.js",
+    "cordis.patch.yml",
+    "lib/types/**/*.d.ts"
+  ],
+  "license": "Apache-2.0",
+  "neosis": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "dependencies": {
+    "@averqel/neosis-acp": "workspace:*",
+    "@averqel/neosis-cmdline": "workspace:*",
+    "commander": "^15.0.0"
+  },
+  "peerDependencies": {
+    "@averqel/cordis": "workspace:~"
+  },
+  "devDependencies": {
+    "@averqel/cordis-plugin-include": "workspace:~",
+    "@averqel/cordis": "workspace:~"
+  }
+}

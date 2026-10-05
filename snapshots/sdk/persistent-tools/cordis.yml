@@ -1,0 +1,168 @@
+# Per-launch SDK customization: retain only persistent Bash and the string
+# editor as model-facing tools, with process-local providers and an explicit
+# danger-full-access / never-ask policy.
+
+- insert:
+    - id: tool-str-replace-editor
+      name: '@averqel/neosis-tool-str-replace-editor'
+      config:
+        maxOutputChars: 16000
+
+- id: llm-deepseek
+  name: '@averqel/neosis-llm-deepseek'
+  config:
+    apiKeyEnv: DEEPSEEK_API_KEY
+    streamIdleTimeoutMs: 172800000
+    models:
+      - id: !!js process.env.NEOSIS_MODEL ?? 'deepseek-v4-flash'
+        contextWindow: !!js Number(process.env.NEOSIS_CONTEXT_WINDOW ?? 1000000)
+
+- id: sandbox-policy
+  name: '@averqel/neosis-sandbox-policy'
+  config:
+    mode: danger-full-access
+    workspaceRoot: !!js process.cwd()
+
+- id: approval
+  name: '@averqel/neosis-user-approval'
+  config:
+    policy: never
+
+- id: permission
+  name: '@averqel/neosis-permission-presets'
+  disabled: true
+
+- id: bash-sandbox
+  name: '@averqel/neosis-bash-sandbox'
+  disabled: true
+
+- id: pwsh-sandbox
+  name: '@averqel/neosis-pwsh-sandbox'
+  disabled: true
+
+- id: fs-sandbox
+  name: '@averqel/neosis-fs-sandbox'
+  disabled: true
+
+- id: tool-bash
+  name: '@averqel/neosis-tool-bash'
+  disabled: true
+
+- id: tool-pwsh
+  name: '@averqel/neosis-tool-pwsh'
+  disabled: true
+
+- id: agent-instructions
+  name: '@averqel/neosis-agent-instructions'
+  disabled: true
+
+- id: skill
+  name: '@averqel/neosis-skill'
+  disabled: true
+
+- id: skill-filesystem
+  name: '@averqel/neosis-skill-filesystem'
+  disabled: true
+
+- id: tool-skill
+  name: '@averqel/neosis-tool-skill'
+  disabled: true
+
+- id: tool-jobs
+  name: '@averqel/neosis-tool-jobs'
+  disabled: true
+
+- id: tool-fs
+  name: '@averqel/neosis-tool-fs'
+  disabled: true
+
+- id: tool-fs-search
+  name: '@averqel/neosis-tool-fs-search'
+  disabled: true
+
+- id: tool-subagent-control
+  name: '@averqel/neosis-tool-subagent-control'
+  disabled: true
+
+- id: tool-subagent-list-agents
+  name: '@averqel/neosis-tool-subagent-control/list-agents'
+  disabled: true
+
+- id: tool-subagent
+  name: '@averqel/neosis-tool-subagent'
+  disabled: true
+
+- id: tool-subagent-fork
+  name: '@averqel/neosis-tool-subagent'
+  disabled: true
+
+- id: tool-workflow
+  name: '@averqel/neosis-tool-workflow'
+  disabled: true
+
+- id: tool-todo
+  name: '@averqel/neosis-tool-todo'
+  disabled: true
+
+- id: tool-goal
+  name: '@averqel/neosis-tool-goal'
+  disabled: true
+
+- id: tool-ralph
+  name: '@averqel/neosis-tool-ralph'
+  disabled: true
+
+- id: tool-web
+  name: '@averqel/neosis-tool-web'
+  disabled: true
+
+- id: plan-mode
+  name: '@averqel/neosis-plan-mode'
+  disabled: true
+
+- id: system-prompt
+  name: '@averqel/neosis-system-prompt'
+  config:
+    includeHarnessIdentity: false
+    personaPrefix: !!js process.env.NEOSIS_SYSTEM_PROMPT ?? 'You are a helpful software engineer assistant.'
+
+- id: session-persistence-jsonl
+  name: '@averqel/neosis-session-persistence-jsonl'
+  config:
+    root: !!js neosisHomePath('sessions')
+    compression: none
+
+- insert:
+    - id: bash-local
+      name: '@averqel/neosis-bash-local'
+
+    - id: fs-local
+      name: '@averqel/neosis-fs-local'
+      config:
+        cwd: !!js process.cwd()
+
+    - id: terminal
+      name: '@averqel/neosis-terminal'
+
+    - id: terminal-bash
+      name: '@averqel/neosis-terminal-bash'
+      config:
+        timeoutMs: 300000
+
+    - id: persistent-bash
+      name: '@averqel/neosis-tool-bash-persistent'
+      config:
+        timeoutMs: 300000
+        description: |-
+          Run commands in a bash shell
+          * When invoking this tool, the contents of the "command" parameter does NOT need to be XML-escaped.
+          * You don't have access to the internet via this tool.
+          * You do have access to a mirror of common linux and python packages via apt and pip.
+          * State is persistent across command calls and discussions with the user.
+          * To inspect a particular line range of a file, e.g. lines 10-25, try 'sed -n 10,25p /path/to/the/file'.
+          * Please avoid commands that may produce a very large amount of output.
+          * Please run long lived commands in the background, e.g. 'sleep 10 &' or start a server in the background.
+
+- id: session-log-deepseek
+  config:
+    enabled: false

@@ -1,0 +1,8 @@
+version: 1
+scenario: subagent-neosis-sdk-diagnostic
+profile: sdk
+composition: sdk-neosis-sdk-diagnostic
+recording: live
+header:
+  class: sdk-neosis-sdk-diagnostic
+  pin: true

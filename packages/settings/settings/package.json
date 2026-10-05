@@ -1,0 +1,60 @@
+{
+  "name": "@averqel/neosis-settings",
+  "description": "Abstract user-settings seam (ctx.settings) for the AverQel NeoSIS",
+  "version": "0.2.0-rc.2",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sainibhaowal/AverQel_Neosis.git",
+    "directory": "packages/settings/settings"
+  },
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/types/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./types": {
+      "types": "./lib/types/types.d.ts",
+      "default": "./lib/types/types.js"
+    },
+    "./src/*": "./src/*",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib/index.js",
+    "lib/types/**/*.js",
+    "lib/types/**/*.d.ts"
+  ],
+  "license": "Apache-2.0",
+  "peerDependencies": {
+    "@averqel/cordis": "workspace:~",
+    "@averqel/neosis-brand": "workspace:*",
+    "@averqel/neosis-invariants": "workspace:*",
+    "@averqel/neosis-session": "workspace:*",
+    "@averqel/schemastery": "workspace:~"
+  },
+  "devDependencies": {
+    "@averqel/cordis": "workspace:~",
+    "@averqel/neosis-brand": "workspace:*",
+    "@averqel/neosis-invariants": "workspace:*",
+    "@averqel/neosis-session": "workspace:*",
+    "@averqel/schemastery": "workspace:~",
+    "@averqel/cordis-plugin-timer": "workspace:~",
+    "@averqel/neosis-app-boot": "workspace:*",
+    "@averqel/neosis-hmr": "workspace:*",
+    "@averqel/neosis-agent-default-model": "workspace:*",
+    "yaml": "^2.8.1"
+  },
+  "dependencies": {
+    "@averqel/neosis-util-values": "workspace:*",
+    "@averqel/neosis-config-editor": "workspace:*",
+    "@averqel/cordis-plugin-loader": "workspace:~",
+    "@averqel/cosmokit": "workspace:~",
+    "yaml": "^2.8.1"
+  }
+}

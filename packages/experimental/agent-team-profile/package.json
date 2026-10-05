@@ -1,0 +1,53 @@
+{
+  "name": "@averqel/neosis-experimental-agent-team-profile",
+  "description": "Agent Teams collaboration, tools, and Web UI in one experimental bundle",
+  "version": "0.2.0-rc.2",
+  "icon": "./icon.svg",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sainibhaowal/AverQel_Neosis.git",
+    "directory": "packages/experimental/agent-team-profile"
+  },
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/types/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./locale/*.json": "./locale/*.json",
+    "./src/*": "./src/*",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "icon.svg",
+    "locale/*.json",
+    "lib/index.js",
+    "cordis.patch.yml",
+    "lib/types/**/*.d.ts"
+  ],
+  "license": "Apache-2.0",
+  "neosis": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "dependencies": {
+    "@averqel/neosis-experimental-agent-team": "workspace:*",
+    "@averqel/neosis-experimental-client-ui-agent-team": "workspace:*",
+    "@averqel/neosis-experimental-tool-agent-team": "workspace:*"
+  },
+  "peerDependencies": {
+    "@averqel/cordis": "workspace:~"
+  },
+  "devDependencies": {
+    "@averqel/cordis-plugin-include": "workspace:~",
+    "@averqel/cordis": "workspace:~",
+    "js-yaml": "^4.2.0"
+  }
+}

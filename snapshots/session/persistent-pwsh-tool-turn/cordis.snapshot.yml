@@ -1,0 +1,95 @@
+# Keyless replay counterpart to persistent-pwsh.cordis.yml.
+- id: llm-deepseek
+  name: '@averqel/neosis-llm-deepseek'
+  disabled: true
+
+- insert:
+    - id: llm-replay
+      name: '@averqel/neosis-llm-replay'
+      config:
+        providers:
+          - id: deepseek-official
+            name: DeepSeek
+            models:
+              - id: deepseek-v4-pro
+
+- insert:
+    - id: terminal
+      name: '@averqel/neosis-terminal'
+
+- id: sandbox-policy
+  name: '@averqel/neosis-sandbox-policy'
+  config:
+    mode: danger-full-access
+    workspaceRoot: !!js process.cwd()
+
+- id: subprocess
+  name: '@averqel/neosis-subprocess-local'
+
+- insert:
+    - id: terminal-pwsh
+      name: '@averqel/neosis-terminal-bash'
+      config:
+        shellDialect: pwsh
+        timeoutMs: 30000
+
+- id: agent-default-model
+  name: '@averqel/neosis-agent-default-model'
+  config:
+    provider: deepseek-official
+    model: deepseek-v4-pro
+
+- id: session-persistence-jsonl
+  name: '@averqel/neosis-session-persistence-jsonl'
+  config:
+    root: !!js neosisHomePath('sessions')
+    compression: none
+
+- id: agent-instructions
+  name: '@averqel/neosis-agent-instructions'
+  disabled: true
+
+- id: system-prompt
+  name: '@averqel/neosis-system-prompt'
+  config:
+    personaPrefix: You are a concise snapshot agent working in {{cwd}}.
+
+- id: tool-jobs
+  name: '@averqel/neosis-tool-jobs'
+  disabled: true
+
+- id: goal
+  name: '@averqel/neosis-goal'
+  disabled: true
+
+- id: goal-round-driver
+  name: '@averqel/neosis-goal-round-driver'
+  disabled: true
+
+- id: command-goal
+  name: '@averqel/neosis-command-goal'
+  disabled: true
+
+- id: tool-goal
+  name: '@averqel/neosis-tool-goal'
+  disabled: true
+
+- id: skill
+  name: '@averqel/neosis-skill'
+  disabled: true
+
+- id: skill-filesystem
+  name: '@averqel/neosis-skill-filesystem'
+  disabled: true
+
+- id: tool-skill
+  name: '@averqel/neosis-tool-skill'
+  disabled: true
+
+- id: tool-bash
+  name: '@averqel/neosis-tool-bash'
+  disabled: true
+
+- insert:
+    - id: tool-pwsh-persistent
+      name: '@averqel/neosis-tool-pwsh-persistent'

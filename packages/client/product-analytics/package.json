@@ -1,0 +1,82 @@
+{
+  "name": "@averqel/neosis-client-product-analytics",
+  "description": "Desktop product event collection and authenticated Host reporting",
+  "version": "0.2.0-rc.2",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sainibhaowal/AverQel_Neosis.git",
+    "directory": "packages/client/product-analytics"
+  },
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/types/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./client": {
+      "types": "./lib/types/client/index.d.ts",
+      "default": "./lib/client.js"
+    },
+    "./src/*": "./src/*",
+    "./package.json": "./package.json",
+    "./typert": {
+      "types": "./lib/typert.host.d.ts",
+      "default": "./lib/typert.host.js"
+    },
+    "./remote": {
+      "types": "./lib/typert.remote-client.d.ts",
+      "default": "./lib/typert.remote-client.js"
+    },
+    "./types": {
+      "types": "./lib/types/events.d.ts"
+    }
+  },
+  "neosis": {
+    "client": {
+      "inject": [
+        "@averqel/neosis-api-gateway"
+      ],
+      "platform": "web"
+    }
+  },
+  "scripts": {
+    "bundle": "tsdown",
+    "watch": "tsdown --watch"
+  },
+  "license": "MIT",
+  "peerDependencies": {
+    "@averqel/cordis": "workspace:~"
+  },
+  "devDependencies": {
+    "@averqel/cordis": "workspace:~",
+    "@averqel/neosis-api-gateway": "workspace:*",
+    "@averqel/neosis-compaction": "workspace:*",
+    "@averqel/neosis-llm": "workspace:*",
+    "@averqel/neosis-session": "workspace:*",
+    "@averqel/neosis-host-product-telemetry-otel": "workspace:*",
+    "@averqel/neosis-deepseek-account": "workspace:*",
+    "@averqel/neosis-host-webserver": "workspace:*",
+    "@averqel/neosis-settings": "workspace:*",
+    "@averqel/cordis-plugin-loader": "workspace:~",
+    "@averqel/neosis-otel": "workspace:*"
+  },
+  "files": [
+    "lib/index.js",
+    "lib/client.js",
+    "lib/types/**/*.d.ts",
+    "lib/typert.host.js",
+    "lib/typert.host.d.ts",
+    "lib/typert.remote-client.js",
+    "lib/typert.remote-client.d.ts"
+  ],
+  "dependencies": {
+    "@averqel/neosis-typert-protocol": "workspace:*",
+    "@averqel/schemastery": "workspace:~",
+    "zod": "^4.4.3"
+  }
+}

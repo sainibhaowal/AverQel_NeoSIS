@@ -1,0 +1,60 @@
+{
+  "name": "@averqel/neosis-client-connection",
+  "description": "Authenticated RPC transport and generation lifecycle",
+  "version": "0.2.0-rc.2",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sainibhaowal/AverQel_Neosis.git",
+    "directory": "packages/client/connection"
+  },
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/types/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./client": {
+      "types": "./lib/types/client/index.d.ts",
+      "default": "./lib/client.js"
+    },
+    "./src/*": "./src/*",
+    "./package.json": "./package.json"
+  },
+  "neosis": {
+    "client": {
+      "inject": [],
+      "platform": "web",
+      "immediately": true
+    }
+  },
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@averqel/neosis-credentials": "workspace:*",
+    "@averqel/schemastery": "workspace:~",
+    "zod": "^4.4.3"
+  },
+  "files": [
+    "lib/index.js",
+    "lib/client.js",
+    "lib/types/**/*.d.ts"
+  ],
+  "peerDependencies": {
+    "@averqel/cordis": "workspace:~",
+    "@averqel/neosis-scope": "workspace:*"
+  },
+  "devDependencies": {
+    "@averqel/cordis": "workspace:~",
+    "@averqel/neosis-attachment": "workspace:*",
+    "@averqel/neosis-brand": "workspace:*",
+    "@averqel/neosis-host-webserver": "workspace:*",
+    "@averqel/neosis-llm": "workspace:*",
+    "@averqel/neosis-scope": "workspace:*",
+    "@averqel/neosis-session": "workspace:*",
+    "@averqel/neosis-typert-protocol": "workspace:*"
+  }
+}

@@ -1,0 +1,13 @@
+- insert:
+    - id: speech-to-text
+      name: '@averqel/neosis-experimental-speech-to-text'
+      config:
+        defaultProvider: sensevoice-local
+    - id: speech-to-text-sensevoice
+      name: '@averqel/neosis-experimental-speech-to-text-sensevoice'
+      config:
+        dataRoot: !!js neosisHomePath('speech-to-text', 'sensevoice')
+    - id: api-speech-to-text
+      name: '@averqel/neosis-experimental-api-speech-to-text'
+    - id: ui-voice-input
+      name: '@averqel/neosis-experimental-client-ui-voice-input'

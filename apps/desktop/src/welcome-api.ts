@@ -1,0 +1,69 @@
+/** Operations available to the isolated native welcome renderer. */
+
+import type { AccountView, SignInAttemptId } from '@averqel/neosis-deepseek-account/types'
+import type { ProductEventMap } from '@averqel/neosis-client-product-analytics/types'
+import type { DesktopLocale } from './locale.ts'
+
+/** Private native welcome channels, installed only while its window exists. */
+export const WELCOME_IPC = {
+  saveApiKey: 'neosis-welcome:save-api-key',
+  analytics: 'neosis-welcome:analytics',
+  analyticsEnabled: 'neosis-welcome:analytics-enabled',
+  skip: 'neosis-welcome:skip',
+  start: 'neosis-welcome:start',
+  cancel: 'neosis-welcome:cancel',
+  copyLink: 'neosis-welcome:copy-link',
+  state: 'neosis-welcome:state',
+} as const
+
+/** Credential writes return a safe outcome without exposing Host diagnostics. */
+export type WelcomeSaveResult = { readonly ok: true } | { readonly ok: false }
+
+type WelcomeEventName = 'auth_page_view' | 'auth_page_click' | 'api_key_save_click'
+
+/** Host-owned operations used by the welcome window. */
+export interface WelcomeOperations {
+  /** @param eventName - approved welcome event. @param attributes - non-sensitive event fields. */
+  analytics?<K extends WelcomeEventName>(eventName: K, attributes: ProductEventMap[K]): Promise<void>
+  /** @returns the Host's current analytics collection policy. */
+  analyticsEnabled(): Promise<boolean>
+  /** @returns account state after starting a login attempt. */
+  startSignIn(): Promise<AccountView>
+  /** @param id - attempt to cancel. @returns the settled state. */
+  cancelSignIn(id: SignInAttemptId): Promise<AccountView>
+  /** @param id - current waiting attempt whose authorization URL is copied to the system clipboard. */
+  copySignInLink(id: SignInAttemptId): Promise<void>
+
+  /**
+   * Store the official provider's key before entering the workspace.
+   * @param value - validated, trimmed API key.
+   * @returns whether the write completed, without private error details.
+   */
+  saveApiKey(value: string): Promise<WelcomeSaveResult>
+  /**
+   * Enter the workspace without writing an onboarding-completion setting.
+   * @returns completion after the workspace opens.
+   */
+  skip(): Promise<void>
+}
+
+/** The renderer receives localized copy, login operations, and safe account snapshots. */
+export type WelcomeApi = DesktopLocale & WelcomeOperations & {
+  /** @param listener - safe account snapshot recipient. @returns subscription disposer. */
+  onAccountState(listener: (state: AccountView) => void): () => void
+}
+
+/** Authentication facts supplied at cold start or after a completed sign-out. */
+export interface WelcomeAuthentication {
+  readonly loggedIn: boolean
+  readonly hasApiKey: boolean
+}
+
+/**
+ * Decide whether a startup or sign-out requires the welcome entry.
+ * @param authentication - current account and independently stored API-key facts.
+ * @returns true only when neither authentication route is configured.
+ */
+export function needsWelcome(authentication: WelcomeAuthentication): boolean {
+  return !authentication.loggedIn && !authentication.hasApiKey
+}

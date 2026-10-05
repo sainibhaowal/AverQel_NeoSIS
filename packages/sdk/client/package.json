@@ -1,0 +1,43 @@
+{
+  "name": "@averqel/neosis-sdk-client",
+  "description": "TypeScript client SDK for driving a AverQel NeoSIS runtime subprocess over stdio JSON-RPC: the AverQelHarness high-level turns API and the lower-level HarnessClient",
+  "version": "0.2.0-rc.2",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sainibhaowal/AverQel_Neosis.git",
+    "directory": "packages/sdk/client"
+  },
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/types/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib/index.js",
+    "lib/types/**/*.d.ts"
+  ],
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@averqel/neosis": "workspace:*"
+  },
+  "peerDependencies": {
+    "@averqel/neosis-llm": "workspace:*",
+    "@averqel/neosis-sdk-protocol": "workspace:*",
+    "@averqel/neosis-session": "workspace:*",
+    "@averqel/cordis": "workspace:~"
+  },
+  "devDependencies": {
+    "@averqel/neosis-llm": "workspace:*",
+    "@averqel/neosis-sdk-protocol": "workspace:*",
+    "@averqel/neosis-session": "workspace:*",
+    "@averqel/cordis": "workspace:~"
+  }
+}

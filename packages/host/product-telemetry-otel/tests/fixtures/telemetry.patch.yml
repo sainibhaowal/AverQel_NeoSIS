@@ -1,0 +1,15 @@
+- id: session-telemetry-otel
+  disabled: true
+- id: headless-startup
+  disabled: true
+- id: headless-runner
+  disabled: true
+- insert:
+    - id: product-telemetry-otel
+      name: '@averqel/neosis-host-product-telemetry-otel'
+      config:
+        endpoint: !!js process.env.NEOSIS_PRODUCT_TELEMETRY_TEST_ENDPOINT
+        serviceName: neosis-telemetry-test
+        serviceVersion: !!js process.env.NEOSIS_APP_VERSION
+        compression: gzip
+        scheduledDelayMillis: 60000

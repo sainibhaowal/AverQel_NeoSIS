@@ -1,0 +1,9 @@
+- insert:
+    - id: demo
+      name: '@averqel/neosis-mcp-client'
+      disabled: true
+      config:
+        serverName: demo
+        transport: streamable-http
+        url: !!js process.env.NEOSIS_MCP_DEMO_URL
+        failOnStartupError: true

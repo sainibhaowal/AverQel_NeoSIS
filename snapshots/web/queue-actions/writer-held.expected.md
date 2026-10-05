@@ -1,0 +1,7 @@
+- alert: This session is already in use, possibly by another running NEOSIS instance (such as neosis web or the desktop app). Quit other running NEOSIS instances and try again.
+- textbox "Message or run a task, / commands, @ files or sessions":
+  - paragraph: Queue submission to retry
+- button "Add files or run commands"
+- 'button "Access mode, current: Workspace Write"': Workspace Write
+- button "Select model, current AverQel-V4-Flash": AverQel-V4-Flash
+- button "Queue message"

@@ -1,0 +1,27 @@
+# Minimal tool-pwsh composition: real app boot path, real pwsh executor, real
+# foreground + background tool calls; driven by the package's loader.spec.ts.
+- id: system-prompt
+  name: '@averqel/neosis-system-prompt'
+
+- id: tools
+  name: '@averqel/neosis-tools'
+
+- id: subprocess
+  name: '@averqel/neosis-subprocess-local'
+
+- id: bash
+  name: '@averqel/neosis-pwsh-local'
+  config:
+    graceMs: 200
+
+- id: shell-env
+  name: '@averqel/neosis-shell-env'
+
+- id: tasks
+  name: '@averqel/neosis-jobs-local'
+
+- id: tool-jobs
+  name: '@averqel/neosis-tool-jobs'
+
+- id: tool-pwsh
+  name: '@averqel/neosis-tool-pwsh'

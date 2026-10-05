@@ -1,0 +1,152 @@
+{
+  "name": "@averqel/neosis-subagent",
+  "description": "Abstract subagent seam (ctx.subagents): named-provider registry for delegating to child agents",
+  "version": "0.2.0-rc.2",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sainibhaowal/AverQel_Neosis.git",
+    "directory": "packages/subagent/subagent"
+  },
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/types/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./internal": {
+      "types": "./lib/types/internal.d.ts",
+      "default": "./lib/types/internal.js"
+    },
+    "./invariant": {
+      "types": "./lib/types/invariant.d.ts",
+      "default": "./lib/invariant.js"
+    },
+    "./client": {
+      "types": "./lib/types/client.d.ts",
+      "default": "./lib/types/client.js"
+    },
+    "./typert": {
+      "types": "./lib/typert.host.d.ts",
+      "default": "./lib/typert.host.js"
+    },
+    "./remote": {
+      "types": "./lib/typert.remote-client.d.ts",
+      "default": "./lib/typert.remote-client.js"
+    },
+    "./src/*": "./src/*",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib/index.js",
+    "lib/invariant.js",
+    "lib/types/**/*.js",
+    "lib/types/**/*.d.ts",
+    "lib/typert.host.js",
+    "lib/typert.host.d.ts",
+    "lib/typert.remote-client.js",
+    "lib/typert.remote-client.d.ts"
+  ],
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@averqel/neosis-brand": "workspace:*",
+    "@averqel/neosis-chunked-list": "workspace:*",
+    "@averqel/neosis-util-values": "workspace:*",
+    "@averqel/schemastery": "workspace:~",
+    "zod": "^4.4.3"
+  },
+  "peerDependencies": {
+    "@averqel/cordis": "workspace:~",
+    "@averqel/neosis-agent": "workspace:*",
+    "@averqel/neosis-agent-preset-registry": "workspace:*",
+    "@averqel/neosis-attachment": "workspace:*",
+    "@averqel/neosis-invariants": "workspace:*",
+    "@averqel/neosis-jobs": "workspace:*",
+    "@averqel/neosis-llm": "workspace:*",
+    "@averqel/neosis-sandbox": "workspace:*",
+    "@averqel/neosis-sandbox-policy": "workspace:*",
+    "@averqel/neosis-scope": "workspace:*",
+    "@averqel/neosis-session": "workspace:*",
+    "@averqel/neosis-session-persistence": "workspace:*",
+    "@averqel/neosis-session-projection": "workspace:*",
+    "@averqel/neosis-session-projection-cache": "workspace:*",
+    "@averqel/neosis-session-query": "workspace:*",
+    "@averqel/neosis-system-prompt": "workspace:*",
+    "@averqel/neosis-tools": "workspace:*",
+    "@averqel/neosis-typert-protocol": "workspace:*",
+    "@averqel/neosis-user-approval": "workspace:*",
+    "@averqel/neosis-util-time": "workspace:*",
+    "@averqel/neosis-permission-presets": "workspace:*",
+    "@averqel/neosis-workspace": "workspace:*"
+  },
+  "peerDependenciesMeta": {
+    "@averqel/neosis-agent-preset-registry": {
+      "optional": true
+    },
+    "@averqel/neosis-permission-presets": {
+      "optional": true
+    },
+    "@averqel/neosis-sandbox": {
+      "optional": true
+    },
+    "@averqel/neosis-sandbox-policy": {
+      "optional": true
+    },
+    "@averqel/neosis-session-persistence": {
+      "optional": true
+    },
+    "@averqel/neosis-session-projection": {
+      "optional": true
+    },
+    "@averqel/neosis-session-projection-cache": {
+      "optional": true
+    },
+    "@averqel/neosis-session-query": {
+      "optional": true
+    },
+    "@averqel/neosis-workspace": {
+      "optional": true
+    },
+    "@averqel/neosis-jobs": {
+      "optional": true
+    },
+    "@averqel/neosis-user-approval": {
+      "optional": true
+    },
+    "@averqel/neosis-settings": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@averqel/cordis": "workspace:~",
+    "@averqel/neosis-agent": "workspace:*",
+    "@averqel/neosis-agent-preset-registry": "workspace:*",
+    "@averqel/neosis-attachment": "workspace:*",
+    "@averqel/neosis-invariants": "workspace:*",
+    "@averqel/neosis-jobs": "workspace:*",
+    "@averqel/neosis-llm": "workspace:*",
+    "@averqel/neosis-sandbox": "workspace:*",
+    "@averqel/neosis-sandbox-policy": "workspace:*",
+    "@averqel/neosis-schedule": "workspace:*",
+    "@averqel/neosis-scope": "workspace:*",
+    "@averqel/neosis-session": "workspace:*",
+    "@averqel/neosis-session-persistence": "workspace:*",
+    "@averqel/neosis-session-projection": "workspace:*",
+    "@averqel/neosis-session-projection-cache": "workspace:*",
+    "@averqel/neosis-session-query": "workspace:*",
+    "@averqel/neosis-storage": "workspace:*",
+    "@averqel/neosis-storage-domain": "workspace:*",
+    "@averqel/neosis-storage-json": "workspace:*",
+    "@averqel/neosis-system-prompt": "workspace:*",
+    "@averqel/neosis-tools": "workspace:*",
+    "@averqel/neosis-typert-protocol": "workspace:*",
+    "@averqel/neosis-user-approval": "workspace:*",
+    "@averqel/neosis-util-time": "workspace:*",
+    "@averqel/neosis-permission-presets": "workspace:*",
+    "@averqel/neosis-workspace": "workspace:*"
+  }
+}

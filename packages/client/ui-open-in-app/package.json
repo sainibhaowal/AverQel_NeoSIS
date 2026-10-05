@@ -1,0 +1,77 @@
+{
+  "name": "@averqel/neosis-client-ui-open-in-app",
+  "description": "Web \"Open In...\" controls: the Session-header split button opening the workspace directory in an installed application, and the document preview's default-application controls for one file",
+  "version": "0.2.0-rc.2",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sainibhaowal/AverQel_Neosis.git",
+    "directory": "packages/client/ui-open-in-app"
+  },
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/types/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./client": {
+      "types": "./lib/types/client/index.d.ts",
+      "default": "./lib/client.js"
+    },
+    "./src/*": "./src/*",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib/index.js",
+    "lib/client.js",
+    "lib/types/**/*.d.ts"
+  ],
+  "scripts": {
+    "bundle": "tsdown",
+    "watch": "tsdown --watch"
+  },
+  "license": "Apache-2.0",
+  "neosis": {
+    "client": {
+      "inject": [
+        "@averqel/neosis-api-gateway",
+        "@averqel/neosis-api-remotes",
+        "@averqel/neosis-api-session-controller",
+        "@averqel/neosis-client-locale",
+        "@averqel/neosis-client-ui-conversation",
+        "@averqel/neosis-client-ui-renderer",
+        "@averqel/neosis-client-ui-session",
+        "@averqel/neosis-client-ui-sidebar-documentpreview"
+      ],
+      "platform": "web"
+    }
+  },
+  "peerDependencies": {
+    "@averqel/cordis": "workspace:~"
+  },
+  "devDependencies": {
+    "@averqel/cordis": "workspace:~",
+    "@averqel/neosis-api-gateway": "workspace:*",
+    "@averqel/neosis-api-remotes": "workspace:*",
+    "@averqel/neosis-api-session-controller": "workspace:*",
+    "@averqel/neosis-client-locale": "workspace:*",
+    "@averqel/neosis-client-store": "workspace:*",
+    "@averqel/neosis-client-test-runtime": "workspace:*",
+    "@averqel/neosis-client-ui-conversation": "workspace:*",
+    "@averqel/neosis-client-ui-primitives": "workspace:*",
+    "@averqel/neosis-client-ui-renderer": "workspace:*",
+    "@averqel/neosis-client-ui-session": "workspace:*",
+    "@averqel/neosis-client-ui-sidebar-documentpreview": "workspace:*",
+    "@averqel/neosis-client-ui-slots": "workspace:*",
+    "@averqel/neosis-host-open-in-app": "workspace:*",
+    "@averqel/neosis-session": "workspace:*",
+    "@types/react": "~18.3.1",
+    "react": "^18.2.0",
+    "@averqel/neosis-client-ui-deliverables": "workspace:*",
+    "@averqel/neosis-native-command": "workspace:*"
+  }
+}

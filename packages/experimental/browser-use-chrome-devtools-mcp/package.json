@@ -1,0 +1,53 @@
+{
+  "name": "@averqel/neosis-experimental-browser-use-chrome-devtools-mcp",
+  "description": "Experimental per-Session Chromium browser tools through chrome-devtools-mcp",
+  "version": "0.2.0-rc.2",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sainibhaowal/AverQel_Neosis.git",
+    "directory": "packages/experimental/browser-use-chrome-devtools-mcp"
+  },
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/types/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./src/*": "./src/*",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib/index.js",
+    "lib/types/**/*.d.ts"
+  ],
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@averqel/neosis-experimental-browser-use-runtime": "workspace:*",
+    "chrome-devtools-mcp": "1.9.0"
+  },
+  "peerDependencies": {
+    "@averqel/cordis": "workspace:~",
+    "@averqel/neosis-browser-use": "workspace:*",
+    "@averqel/neosis-agent": "workspace:*",
+    "@averqel/neosis-tools": "workspace:*",
+    "@averqel/neosis-system-prompt": "workspace:*"
+  },
+  "devDependencies": {
+    "@averqel/cordis": "workspace:~",
+    "@averqel/cordis-plugin-loader": "workspace:~",
+    "@averqel/cordis-plugin-include": "workspace:~",
+    "@averqel/neosis-browser-use": "workspace:*",
+    "@averqel/neosis-agent": "workspace:*",
+    "@averqel/neosis-agent-loop": "workspace:*",
+    "@averqel/neosis-llm": "workspace:*",
+    "@averqel/neosis-session": "workspace:*",
+    "@averqel/neosis-tools": "workspace:*",
+    "@averqel/neosis-system-prompt": "workspace:*",
+    "@averqel/neosis-session-projection": "workspace:*"
+  }
+}

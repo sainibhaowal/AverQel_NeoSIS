@@ -1,0 +1,53 @@
+{
+  "name": "@averqel/neosis-llm-deepseek-api-key",
+  "description": "DeepSeek api-key provider authentication and discovery",
+  "version": "0.2.0-rc.2",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sainibhaowal/AverQel_Neosis.git",
+    "directory": "packages/llm/llm-deepseek-api-key"
+  },
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/types/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./src/*": "./src/*",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib/index.js",
+    "lib/types/**/*.d.ts"
+  ],
+  "license": "MIT",
+  "peerDependencies": {
+    "@averqel/cordis": "workspace:~",
+    "@averqel/neosis-llm": "workspace:*",
+    "@averqel/neosis-llm-deepseek": "workspace:*",
+    "@averqel/neosis-launch-environment": "workspace:*",
+    "@averqel/neosis-credentials": "workspace:*",
+    "@averqel/cordis-plugin-loader": "workspace:~"
+  },
+  "devDependencies": {
+    "@averqel/cordis": "workspace:~",
+    "@averqel/neosis-llm": "workspace:*",
+    "@averqel/neosis-llm-deepseek": "workspace:*",
+    "@averqel/neosis-launch-environment": "workspace:*",
+    "@averqel/neosis-credentials": "workspace:*",
+    "@averqel/cordis-plugin-loader": "workspace:~"
+  },
+  "peerDependenciesMeta": {
+    "@averqel/cordis-plugin-loader": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "@averqel/schemastery": "workspace:~"
+  }
+}
