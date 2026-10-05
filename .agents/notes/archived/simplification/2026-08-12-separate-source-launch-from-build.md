@@ -13,7 +13,7 @@ Source modules reached through tsx and browser modules reached through built bun
 
 ## Decision
 
-The root `neosis` script only runs `node --import tsx/esm apps/cli/src/bin.ts`. `pnpm run build` remains the separate operation that generates package and frontend artifacts. Source users run the build before the first production-like launch and whenever frontend or client-plugin artifacts need refreshing.
+The root `dsh` script only runs `node --import tsx/esm apps/cli/src/bin.ts`. `pnpm run build` remains the separate operation that generates package and frontend artifacts. Source users run the build before the first production-like launch and whenever frontend or client-plugin artifacts need refreshing.
 
 Missing Typert host artifacts fail profile boot through module-resolution errors without a build instruction. Once those host artifacts exist, missing frontend and client-plugin artifacts fail at startup with diagnostics that direct the user to `pnpm run build`. The launcher does not validate artifact freshness: existing stale frontend or client-plugin bundles are accepted and can run older browser code until the next build. After package Node halves have been built once, `pnpm run dev:web` rebuilds only packages that declare `dsh.client`; it keeps client-plugin bundles current and activates their hot-reload path, but does not rebuild the frontend shell.
 
@@ -25,7 +25,7 @@ This decision owns build scheduling only. The [tsx ESM source-launch decision](.
 
 **Build only when an artifact is missing.** This avoids some startup work but leaves stale output undetected while making build behavior implicit and dependent on the current filesystem contents.
 
-**Start the Web artifact watcher from `pnpm neosis`.** This keeps client-plugin bundles current but changes a one-shot launcher into an owner of another long-lived process. The explicit `pnpm run dev:web` command already owns that development lifecycle.
+**Start the Web artifact watcher from `pnpm dsh`.** This keeps client-plugin bundles current but changes a one-shot launcher into an owner of another long-lived process. The explicit `pnpm run dev:web` command already owns that development lifecycle.
 
 ## Consequences
 

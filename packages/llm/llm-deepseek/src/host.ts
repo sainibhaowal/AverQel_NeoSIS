@@ -7,7 +7,13 @@ import { getOrCreateAnonymousUserId, type AnonymousUserId } from '@averqel/neosi
 import { AverQelAdapter } from './adapter.ts'
 import type { AverQelAdapterOptions, AverQelConnectionOptions, AverQelRequestAuth } from './types.ts'
 
-/** Register an adapter route whose credential package supplies request headers. */
+/**
+ * Register an adapter route whose credential package supplies request headers.
+ * @typeParam C - The credential-specific connection options.
+ * @param ctx - Host context that owns the adapter registration.
+ * @param provider - Provider key exposed to the model registry.
+ * @param dependencies - Credential route callbacks and provider metadata.
+ */
 export function registerDeepSeekProvider<C extends AverQelConnectionOptions>(
   ctx: Context,
   provider: string,

@@ -4,7 +4,12 @@ import type { ToolCallInjected } from '../contract/slots.ts'
 
 const subscribeEmpty = (): (() => void) => () => {}
 
-/** Bind one call to its live raw argument prefix. */
+/**
+ * Bind one call to its live raw argument prefix.
+ * @param _standard - The standard Tool hook implementation, retained for slot symmetry.
+ * @param context - The assistant snapshot and tool-call identity to observe.
+ * @returns A React hook that returns the current raw argument prefix.
+ */
 export const bindToolCallArgumentsPartial: ToolCallInjected['hooks']['toolCallArgumentsPartial'] = (
   _standard, context,
 ) => {

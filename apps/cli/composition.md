@@ -190,8 +190,10 @@ flowchart LR
   cfg --> plugin_neosis_base_agent_loop
   plugin_neosis_base_fs_sandbox["fs-sandbox<br/>@averqel/neosis-fs-sandbox"]
   cfg --> plugin_neosis_base_fs_sandbox
-  plugin_neosis_base_llm_deepseek["llm-deepseek<br/>@averqel/neosis-llm-deepseek"]
+  plugin_neosis_base_llm_deepseek["llm-deepseek<br/>@averqel/neosis-llm-deepseek-api-key"]
   cfg --> plugin_neosis_base_llm_deepseek
+  plugin_neosis_base_llm_deepseek_account["llm-deepseek-account<br/>@averqel/neosis-llm-deepseek-account"]
+  cfg --> plugin_neosis_base_llm_deepseek_account
 ```
 
 | Plugin id | Package / module |
@@ -287,7 +289,8 @@ flowchart LR
 | `system-prompt` | `@averqel/neosis-system-prompt` |
 | `agent-loop` | `@averqel/neosis-agent-loop` |
 | `fs-sandbox` | `@averqel/neosis-fs-sandbox` |
-| `llm-deepseek` | `@averqel/neosis-llm-deepseek` |
+| `llm-deepseek` | `@averqel/neosis-llm-deepseek-api-key` |
+| `llm-deepseek-account` | `@averqel/neosis-llm-deepseek-account` |
 
 Source config: [`packages/bundle/base/cordis.patch.yml`](../../packages/bundle/base/cordis.patch.yml).
 

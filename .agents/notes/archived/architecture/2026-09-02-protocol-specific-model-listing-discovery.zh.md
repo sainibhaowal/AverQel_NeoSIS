@@ -41,4 +41,4 @@ Models 页面无需改变请求身份，即可询问 OpenAI 兼容网关与 Anth
 
 ## 测试
 
-本地 HTTP 服务器测试钉住两种受支持响应格式、字段归一化、名称回退、忽略畸形条目、Anthropic 标头、最大页查询，以及 Anthropic 根地址的两种写法。2026-09-02 从 OpenRouter、models.dev 与 AverQel 录得的回复，连同 Anthropic List Models 参考文档给出的示例回复，存放在 `packages/llm/llm-pi-ai/tests/fixtures/model-listings/` 下并经解析器回放，因此受支持的字段拼写钉在真实端点与公开参考文档上，而不是手写样例上。
+本地 HTTP 服务器测试钉住两种受支持响应格式、字段归一化、名称回退、忽略畸形条目、Anthropic 标头、最大页查询，以及 Anthropic 根地址的两种写法。2026-09-02 从 OpenRouter、models.dev 与 DeepSeek 录得的回复，连同 Anthropic List Models 参考文档给出的示例回复，存放在 `packages/llm/llm-pi-ai/tests/fixtures/model-listings/` 下并经解析器回放，因此受支持的字段拼写钉在真实端点与公开参考文档上，而不是手写样例上。

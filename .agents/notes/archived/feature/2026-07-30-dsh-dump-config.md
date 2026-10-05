@@ -1,4 +1,4 @@
-# Agent Note: neosis --dump-config prints the composed config tree
+# Agent Note: dsh --dump-config prints the composed config tree
 
 Status: implemented
 Archived: 2026-08-07
@@ -7,11 +7,11 @@ English | [中文](2026-07-30-dsh-dump-config.zh.md)
 
 ## Problem
 
-The booted tree is a composition the user never sees: the shipped base, a surface overlay, and the `--config` or personal `~/.neosis/config.yaml` overlay apply as sibling patch lists where each id-targeted patch replaces the row's whole `config` and an unmatched id only warns. Debugging a misbehaving personal overlay (a restated field dropped, a row id typo, a patch applying to the wrong surface) required mentally replaying the patch algorithm across three files. There was no way to see the effective tree or to diff it against the shipped defaults.
+The booted tree is a composition the user never sees: the shipped base, a surface overlay, and the `--config` or personal `~/.dsh/config.yaml` overlay apply as sibling patch lists where each id-targeted patch replaces the row's whole `config` and an unmatched id only warns. Debugging a misbehaving personal overlay (a restated field dropped, a row id typo, a patch applying to the wrong surface) required mentally replaying the patch algorithm across three files. There was no way to see the effective tree or to diff it against the shipped defaults.
 
 ## Decision
 
-`neosis --dump-config` and `neosis web --dump-config` print the composed entry list — base, surface overlay, then the `--config` or personal overlay, exactly the layers that surface's boot assembles — as YAML on stdout and exit without booting. `neosis --dump-default-config` / `neosis web --dump-default-config` stop at the surface overlay, so diffing the two outputs shows precisely what the user layer changes.
+`dsh --dump-config` and `dsh web --dump-config` print the composed entry list — base, surface overlay, then the `--config` or personal overlay, exactly the layers that surface's boot assembles — as YAML on stdout and exit without booting. `dsh --dump-default-config` / `dsh web --dump-default-config` stop at the surface overlay, so diffing the two outputs shows precisely what the user layer changes.
 
 The dump cannot drift from what boots because it shares the mounting code: the vendored include exports its patch algorithm as the pure `applyEntryPatches(data, patches, warn)` (the private `applyPatches` method now delegates to it) and its `!!js` YAML dialect as `entryListSchema`; `dsh-app-boot`'s `renderConfigDump()` composes labeled layers and renders through both, and `apps/cli/src/dump-config.ts` is a thin surface-selection wrapper. `!!js` expressions print verbatim and unevaluated — the dump shows composition, not one process's environment — and a patch whose target row is absent goes to stderr with its layer label, mirroring the Loader's boot-time warning. Launcher-owned boot-context values (session identity, web CLI-flag patches, the frontend dist path) are per-invocation facts outside the config tree and do not appear. The dump flags reject boot-only flags (`-p`, `--resume`, `--config-replace`) and each other, and `--dump-default-config` takes no `--config`.
 
@@ -25,7 +25,7 @@ Each run of same-provenance rows is preceded by a `# ==` comment naming the file
 
 **Reimplement the patch merge in the CLI.** Rejected: a second implementation of `applyPatches` would silently drift from the vendored include — the exact failure mode the feature exists to debug. Exporting the include's own algorithm costs one logged vendor modification and guarantees identity.
 
-**A `/dump-config` TUI command instead of flags.** Rejected as the only form: the primary use is a piped `neosis --dump-config | diff - <(neosis --dump-default-config)` style workflow, which needs a boot-free non-TTY surface. A TUI command can be added later over the same `renderConfigDump`.
+**A `/dump-config` TUI command instead of flags.** Rejected as the only form: the primary use is a piped `dsh --dump-config | diff - <(dsh --dump-default-config)` style workflow, which needs a boot-free non-TTY surface. A TUI command can be added later over the same `renderConfigDump`.
 
 ## Consequences
 

@@ -19,7 +19,7 @@ The summarization directive moves from the **front** of the request (a fresh `sy
 
 ### The instruction is a trailing user message
 
-`COMPACTION_INSTRUCTION` opens "You are now acting as a compaction engine…" and directs the model to condense *the conversation ABOVE*. It keeps the prior checkpoint's structured headings and adds two rules the front-loaded system prompt did not need in its new position: do not mention the summarization request, and output only the checkpoint text without calling a tool. The shadowed region always ends on a tool-pairing-balanced boundary, so appending a `user` message after it is a valid message ordering for OpenAI-compatible and AverQel adapters.
+`COMPACTION_INSTRUCTION` opens "You are now acting as a compaction engine…" and directs the model to condense *the conversation ABOVE*. It keeps the prior checkpoint's structured headings and adds two rules the front-loaded system prompt did not need in its new position: do not mention the summarization request, and output only the checkpoint text without calling a tool. The shadowed region always ends on a tool-pairing-balanced boundary, so appending a `user` message after it is a valid message ordering for OpenAI-compatible and DeepSeek adapters.
 
 ### Cache reuse is best-effort, correctness is not
 

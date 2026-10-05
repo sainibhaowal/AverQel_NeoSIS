@@ -19,7 +19,7 @@ Archived: 2026-09-04
 
 ### 指令是一条尾部 user 消息
 
-`COMPACTION_INSTRUCTION` 以 "You are now acting as a compaction engine…" 开头，指示模型浓缩*上方的对话*。它保留先前检查点的结构化标题，并在其新位置上新增了两条前置系统提示词此前不需要的规则：不要提及摘要请求，以及只输出检查点文本而不调用任何工具。被遮蔽区域总是结束在工具配对平衡的边界上，因此在其后追加一条 `user` 消息，对 OpenAI 兼容适配器和 AverQel 适配器而言是合法的消息排序。
+`COMPACTION_INSTRUCTION` 以 "You are now acting as a compaction engine…" 开头，指示模型浓缩*上方的对话*。它保留先前检查点的结构化标题，并在其新位置上新增了两条前置系统提示词此前不需要的规则：不要提及摘要请求，以及只输出检查点文本而不调用任何工具。被遮蔽区域总是结束在工具配对平衡的边界上，因此在其后追加一条 `user` 消息，对 OpenAI 兼容适配器和 DeepSeek 适配器而言是合法的消息排序。
 
 ### 缓存复用是尽力而为，正确性则有保证
 

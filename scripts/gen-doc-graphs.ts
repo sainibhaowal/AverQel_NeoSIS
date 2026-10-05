@@ -404,6 +404,22 @@ const SERVICE_ROLES: ServiceRole[] = [
     mode: 'service',
     note: 'Exports explicitly submitted analytics events through OTLP/HTTP; mounting alone collects nothing.',
   },
+  {
+    key: 'otel',
+    pkg: 'otel',
+    title: 'Independent OpenTelemetry channel factory',
+    mode: 'seam',
+    consumers: ['host-product-telemetry-otel', 'session-telemetry-otel'],
+    note: 'Creates independent ordinary-event and byte-bounded Session-log reporters; each consumer owns authorization, redaction, transport configuration, and shutdown.',
+  },
+  {
+    key: 'productAnalytics',
+    pkg: 'client-product-analytics',
+    title: 'Desktop product event collection',
+    mode: 'service',
+    consumers: ['api-remotes', 'client-ui-conversation', 'client-ui-plugin-manager', 'client-ui-settings-account'],
+    note: 'Accepts explicitly selected Desktop events and forwards them through the Host product-telemetry service; disabled policy prevents collection and delivery.',
+  },
 
   {
     key: 'sessionTelemetry',
@@ -413,6 +429,14 @@ const SERVICE_ROLES: ServiceRole[] = [
     implementations: ['session-telemetry-otel'],
     consumers: [],
     note: 'The seam captures, redacts, and hands session records to one backend; nothing else consumes the service — its output leaves the process.',
+  },
+  {
+    key: 'schedule',
+    pkg: 'schedule',
+    title: 'Durable reminder management',
+    mode: 'service',
+    consumers: ['api-remotes', 'client-ui-schedule', 'client-ui-workspace', 'experimental-schedule-bundle', 'subagent'],
+    note: 'Owns agent-scoped after, at, and recurring reminders, their durable Session events, delivery history, and Host/Client remotes.',
   },
   {
     key: 'storage',

@@ -7,7 +7,7 @@ Archived: 2026-09-04
 
 ## 问题
 
-`composeProfile` 交付内置 agent-preset 根目录的方式，是在启动时推入一个 overlay：其 `config` 展开已组合的 roster 行后，把 `roots` 硬设为仅含内置根。由于 id 定向补丁整体替换 `config` 值，这个 overlay 压掉了 profile 的 `cordis.patch.yml`（以及 home 层、`--patch` overlay）配置的全部根目录：把 `agent-presets` 指向共享 preset 目录的部署，启动后只剩内置根加 roster 的可写 home 根，所有自定义 preset 从 Web 选择器中消失。`neosis --dump-config` 只组合文件承载的层，dump 显示配置的根目录完好而启动却丢弃了它们。该 overlay 还把行的启动时 `config` 冻结在所有热重载之上，重启前对该行的任何 `cordis.patch.yml` 编辑都不生效。外部报告 discussion #3636 给出了准确根因。
+`composeProfile` 交付内置 agent-preset 根目录的方式，是在启动时推入一个 overlay：其 `config` 展开已组合的 roster 行后，把 `roots` 硬设为仅含内置根。由于 id 定向补丁整体替换 `config` 值，这个 overlay 压掉了 profile 的 `cordis.patch.yml`（以及 home 层、`--patch` overlay）配置的全部根目录：把 `agent-presets` 指向共享 preset 目录的部署，启动后只剩内置根加 roster 的可写 home 根，所有自定义 preset 从 Web 选择器中消失。`dsh --dump-config` 只组合文件承载的层，dump 显示配置的根目录完好而启动却丢弃了它们。该 overlay 还把行的启动时 `config` 冻结在所有热重载之上，重启前对该行的任何 `cordis.patch.yml` 编辑都不生效。外部报告 discussion #3636 给出了准确根因。
 
 在"补丁整体替换 `config`"的语义下，任何"必须在用户层之后存活"的值都需要组合后的强制注入——而评审否决了把这份强制留在启动器里：`apps/cli` 对某一个插件的行 id、config 键与优先级做特判，是组合机器不应携带的耦合。
 

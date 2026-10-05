@@ -1,4 +1,4 @@
-# Agent Note: Unit tests remove the neosis-* temp dirs they create
+# Agent Note: Unit tests remove the dsh-* temp dirs they create
 
 Status: implemented
 Archived: 2026-09-04

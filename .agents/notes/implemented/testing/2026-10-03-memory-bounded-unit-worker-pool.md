@@ -16,6 +16,14 @@ Both projects declare `maxWorkers: 8`. The cap is set identically in each becaus
 
 The failure mode was never a missing timeout budget: raising `testTimeout` alone let the starved specs run longer and raised the failure count. Correctness came from restoring the memory headroom those specs need, not from extending the time they are allowed to take.
 
+## Alternatives considered
+
+**Raise each affected test timeout** — rejected because it increases waiting time without restoring the memory headroom that the worker pool consumes.
+
+**Partition the heavy specifications into a separate benchmark runner** — rejected because it would hide the resource contention from the ordinary unit lane and require a second maintenance path.
+
+**Use the six-worker measurement directly** — rejected because the shared Vitest group requires one matching cap for both projects; eight workers preserves more parallelism while keeping the lane within its resource budget.
+
 ## Consequences
 
 The full unit lane completes with zero failures in roughly four to five minutes on a many-core host, inside the maintenance budget without partitioning or a separate benchmark runner. Hosts with fewer than eight cores are unaffected, because Vitest does not start more workers than it has cores. A larger-memory CI runner now uses eight workers instead of one per core, which trades some peak parallelism for a lane that does not need a retry.

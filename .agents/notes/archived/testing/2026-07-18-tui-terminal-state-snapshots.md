@@ -28,7 +28,7 @@ The deleted application suite gave each scenario `session.jsonl`, optional child
 
 That suite rejected a journey when its tool-call sequence differed, an expected event count was missing, a tool result was an error, a turn ended in error, a workflow lifecycle was incomplete, or the live child-session count differed from the fixture set. These checks remain the acceptance pattern for any future terminal deployment; they are no longer shipped fixtures.
 
-The removed recording workflow used `NEOSIS_SNAPSHOT=record` for model journeys and `NEOSIS_SNAPSHOT=refresh` for derived terminal output. Removing the product entrypoint also removed those modes from the repository snapshot lane; reusable TUI snapshots are authored directly from package scenarios.
+The removed recording workflow used `DSH_SNAPSHOT=record` for model journeys and `DSH_SNAPSHOT=refresh` for derived terminal output. Removing the product entrypoint also removed those modes from the repository snapshot lane; reusable TUI snapshots are authored directly from package scenarios.
 
 ### Semantic terminal projection
 

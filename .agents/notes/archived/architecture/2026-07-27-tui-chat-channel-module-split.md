@@ -1,4 +1,4 @@
-# Agent Note: neosis-tui chat channel module split
+# Agent Note: dsh-tui chat channel module split
 
 Status: implemented
 Archived: 2026-08-04

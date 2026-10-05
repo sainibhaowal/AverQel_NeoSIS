@@ -1,4 +1,4 @@
-# Agent Note: 内置 neosis 徽章 skill
+# Agent Note: 内置 dsh 徽章 skill
 
 Status: implemented
 Archived: 2026-08-22
@@ -7,11 +7,11 @@ Archived: 2026-08-22
 
 ## 问题
 
-[Cordis 教程](../../../../docs/cordis-tutorial/index.zh.md)的各个页面都使用官方「powered by neosis」徽章，但交付的 CLI（命令行界面）既没有用于在其他位置应用同样署名的可复用指令，也没有可显式选择加入的提供方。
+[Cordis 教程](../../../../docs/cordis-tutorial/index.zh.md)的各个页面都使用官方「powered by dsh」徽章，但交付的 CLI（命令行界面）既没有用于在其他位置应用同样署名的可复用指令，也没有可显式选择加入的提供方。
 
 ## 决策
 
-`@averqel/neosis-skill-badge` 是一个原生 Cordis 插件，会在 `ctx.skills` 上注册一个不可变的内置提供方。该提供方负责 `dsh-badge` 的摘要、指令正文和 PNG 资源基底；`dsh-tool-skill` 仍是面向模型的目录与 loader 渲染的唯一归属方。
+`@deepseek-ai/dsh-skill-badge` 是一个原生 Cordis 插件，会在 `ctx.skills` 上注册一个不可变的内置提供方。该提供方负责 `dsh-badge` 的摘要、指令正文和 PNG 资源基底；`dsh-tool-skill` 仍是面向模型的目录与 loader 渲染的唯一归属方。
 
 交付的 CLI 组合将 `skill-badge` 声明为禁用。启用这个现有配置行就是显式选择加入；禁用它的安装实例不会公开任何徽章 skill（技能），也不会获得任何模型可见内容。
 

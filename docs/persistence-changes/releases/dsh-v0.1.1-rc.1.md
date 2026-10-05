@@ -5,7 +5,7 @@ kind: persistence-release
 
 # Persistence release: dsh-v0.1.1-rc.1
 
-English | [中文](dsh-v0.1.1-rc.1.md)
+English | [中文](dsh-v0.1.1-rc.1.zh.md)
 
 ## Summary
 

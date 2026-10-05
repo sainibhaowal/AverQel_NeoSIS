@@ -7,7 +7,7 @@ Archived: 2026-09-04
 
 ## 问题
 
-`MarkdownText` 把每个 GFM 表格都按自然宽度渲染（`.tableScroll table { width: max-content; max-width: max-content }`，`packages/client/ui-primitives/src/markdown/MarkdownText.module.css`），于是任何比 748px 消息列更宽的表格都只能靠横向滚动阅读。单元格本可以舒适换行的三列表格也被迫滚动；而真正宽的表格即便转录区周围有几百像素的空余，也永远只能用消息列那么宽。Issue #1761（含外部反馈 neosis-external/issues#520）要求先换行适应，并为需要的表格提供更宽的视图。deepsuite chat 产品已用 CSS 优先的方式解决了同一问题；按评审方向，本变更对齐该方案，替换此前起草的交互式展开对话框方案。
+`MarkdownText` 把每个 GFM 表格都按自然宽度渲染（`.tableScroll table { width: max-content; max-width: max-content }`，`packages/client/ui-primitives/src/markdown/MarkdownText.module.css`），于是任何比 748px 消息列更宽的表格都只能靠横向滚动阅读。单元格本可以舒适换行的三列表格也被迫滚动；而真正宽的表格即便转录区周围有几百像素的空余，也永远只能用消息列那么宽。Issue #1761（含外部反馈 dsh-external/issues#520）要求先换行适应，并为需要的表格提供更宽的视图。deepsuite chat 产品已用 CSS 优先的方式解决了同一问题；按评审方向，本变更对齐该方案，替换此前起草的交互式展开对话框方案。
 
 ## 决定
 

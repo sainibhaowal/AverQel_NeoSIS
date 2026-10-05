@@ -23,7 +23,7 @@ Providers return `{ answers: [{ id, selected, custom? }] }`. `selected` is alway
 
 ## UI mappings
 
-`neosis web` mounts `dsh-client-ui-question`, whose host half opts the Web product into the model-facing tool and whose browser half registers a `question` entry in the conversation-owned keyed composer slot. `createApiProxy` implements the Web provider with a process-memory pending table keyed by a host-minted rpcId. It registers the wait before broadcasting `question/requested`, replays the same id on every mux reopen, validates the session and complete answer batch before claiming it, and broadcasts `question/resolved` after answer, cancellation, abort, or disposal. Claiming deletes the entry synchronously, so the first valid response wins and duplicate or late responses return `not-pending`.
+`dsh web` mounts `dsh-client-ui-question`, whose host half opts the Web product into the model-facing tool and whose browser half registers a `question` entry in the conversation-owned keyed composer slot. `createApiProxy` implements the Web provider with a process-memory pending table keyed by a host-minted rpcId. It registers the wait before broadcasting `question/requested`, replays the same id on every mux reopen, validates the session and complete answer batch before claiming it, and broadcasts `question/resolved` after answer, cancellation, abort, or disposal. Claiming deletes the entry synchronously, so the first valid response wins and duplicate or late responses return `not-pending`.
 
 The Web composer shows one question at a time while retaining every request in the session object layer. It supports single-select, multi-select, optionless or explicit custom answers, description text, and a visual recommendation badge without selecting the recommendation automatically. Single-select choices advance to the next item immediately, and Enter submits when every item is answered or explicitly skipped; Enter during IME composition only confirms the input candidate. The footer skips only the current item and preserves earlier drafts; the close control rejects the whole tool call with `ASK_CANCELLED`. The normal composer returns only after the host's resolved frame removes the pending item.
 
@@ -45,7 +45,7 @@ An ACP elicitation mapping existed while the bridge was an editor UI; [ACP as an
 
 The feature gives the model a powerful pause primitive, so prompt guidance matters. The tool description tells the model to ask concise questions and use options when possible. Product policy can later wrap `tools/execute` to restrict when the tool is allowed, but the loop should not special-case it.
 
-`dsh-user-interaction` and `dsh-tool-ask-user` both live in `packages/ui` because they form one product-facing human-interaction capability. `agent-core` does not load either the tool or a provider. `dsh-tui-demo` opts into the seam, TUI provider, and model-facing tool. `neosis web` boots the seam/provider in the host runtime and exposes the tool through the selected Web question plugin. The ACP automation app mounts neither the seam nor the tool.
+`dsh-user-interaction` and `dsh-tool-ask-user` both live in `packages/ui` because they form one product-facing human-interaction capability. `agent-core` does not load either the tool or a provider. `dsh-tui-demo` opts into the seam, TUI provider, and model-facing tool. `dsh web` boots the seam/provider in the host runtime and exposes the tool through the selected Web question plugin. The ACP automation app mounts neither the seam nor the tool.
 
 ## Testing
 

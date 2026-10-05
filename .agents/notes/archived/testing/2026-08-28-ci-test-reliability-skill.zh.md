@@ -7,7 +7,7 @@ Archived: 2026-09-04
 
 ## 问题
 
-AverQel NeoSIS 会在并发的 Vitest 文件、worker 进程、仓库 gate 与 Actions job 中运行测试。进程隔离不会隔离宿主机端口、可预测路径、外部命名空间或继承的子进程，而进程全局状态变更与未完成的 teardown 可能污染后续测试。即使测试选择了正确层级，也可能只在独占运行时通过。
+DeepSeek Harness 会在并发的 Vitest 文件、worker 进程、仓库 gate 与 Actions job 中运行测试。进程隔离不会隔离宿主机端口、可预测路径、外部命名空间或继承的子进程，而进程全局状态变更与未完成的 teardown 可能污染后续测试。即使测试选择了正确层级，也可能只在独占运行时通过。
 
 测试政策负责测试层级，防御性模式负责运行时生命周期规则，pre-push 指引负责选择命令，代码 review 负责检查已完成的 diff。它们都没有为 agent 提供一个聚焦流程，用于按照真实 CI 拓扑设计会占用资源的测试，或在修改代码前对已有概率性失败进行分类。
 
@@ -27,9 +27,9 @@ AverQel NeoSIS 会在并发的 Vitest 文件、worker 进程、仓库 gate 与 A
 
 ## 考虑过的替代方案
 
-**扩展 neosis-pre-push-checks。** Pre-push 指引在测试设计之后运行，负责选择证据。如果它还负责资源分配、同步、teardown 与 CI 诊断，就会混合两种不同决策，并让普通 push 也加载可靠性流程。
+**扩展 dsh-pre-push-checks。** Pre-push 指引在测试设计之后运行，负责选择证据。如果它还负责资源分配、同步、teardown 与 CI 诊断，就会混合两种不同决策，并让普通 push 也加载可靠性流程。
 
-**扩展 neosis-code-review。** Review 指引可以在 diff 已存在后发现不可靠测试，但无法在 fixture 设计过程中指导 agent，也无法在没有 PR 时指导故障诊断。
+**扩展 dsh-code-review。** Review 指引可以在 diff 已存在后发现不可靠测试，但无法在 fixture 设计过程中指导 agent，也无法在没有 PR 时指导故障诊断。
 
 **把完整流程放入常驻测试政策。** 测试政策需要保持为测试层级与放置规则的简洁权威来源。让每个测试任务都加载详细 Actions 诊断与资源专项流程，会重复情境性指引，也会降低政策的可扫描性。
 

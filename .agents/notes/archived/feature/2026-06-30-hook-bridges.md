@@ -1,4 +1,4 @@
-# Agent Note: neosis-hooks-claude-code + neosis-hooks-codex — the Claude Code / Codex hook bridges
+# Agent Note: dsh-hooks-claude-code + dsh-hooks-codex — the Claude Code / Codex hook bridges
 
 Status: implemented
 Archived: 2026-09-04

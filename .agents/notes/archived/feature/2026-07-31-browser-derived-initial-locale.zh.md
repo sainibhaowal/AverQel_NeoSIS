@@ -13,7 +13,7 @@ Archived: 2026-09-04
 
 ## Decision
 
-**暂定 locale 先经浏览器、再经 `FALLBACK_LOCALE`（`en`）解析；显式 Host 偏好会实时替换它。** `packages/client/locale/src/client/index.ts` 中的 `resolveInitialLocale()` 在服务构造时和每次语言目录变化后运行，依据当时已注册的定义表达浏览器／回落顺序。随后，非阻塞 settings 生命周期会应用 `$NEOSIS_HOME/settings.yaml` 中可选的 `locale.preference`；若该值缺失，则继续使用由浏览器派生的值；若已保存的 id 暂不可用，则保留待采用状态，并在对应语言注册后生效。
+**暂定 locale 先经浏览器、再经 `FALLBACK_LOCALE`（`en`）解析；显式 Host 偏好会实时替换它。** `packages/client/locale/src/client/index.ts` 中的 `resolveInitialLocale()` 在服务构造时和每次语言目录变化后运行，依据当时已注册的定义表达浏览器／回落顺序。随后，非阻塞 settings 生命周期会应用 `$DSH_HOME/settings.yaml` 中可选的 `locale.preference`；若该值缺失，则继续使用由浏览器派生的值；若已保存的 id 暂不可用，则保留待采用状态，并在对应语言注册后生效。
 
 **开场时的最终回落与字典链终点共用一个常量。** `FALLBACK_LOCALE` 同时回答「浏览器未声明任何已注册语言时，界面以哪种语言开场」与「每条已声明的字典 fallback 链必须在哪里结束」。这是两个不同的问题，若其中任一答案必须不同，拆成两个常量才是对的。外部语言可以贡献不完整字典并声明中间 fallback，但每条链最终仍到达 `en`。每一对内置 `zh`／`en` 字典都声明完全相同的 key 集合，因此最后一次回落能够解析；`scripts/locale-dictionary-parity.spec.ts` 会拒绝只加在内置一侧的 key，避免它日后在运行中的界面里显现为形如 `list.aria` 的裸 key。
 
@@ -42,6 +42,6 @@ Archived: 2026-09-04
 
 - 首次访问会从浏览器的有序列表中选择第一个匹配的已注册语言。若目录中只有内置语言，英文浏览器进入英文界面，中文浏览器进入中文界面，两者皆未声明的浏览器则进入英文而非中文界面；外部注册项会加入同一个语言行与匹配过程。
 - 字典解析最终到达 `en`：内置 `zh` 缺失 key 时直接到达它，外部语言则先按自己声明的链逐 key 回落。内置字典对称性保证已提供的文案完整，这正是对称性门禁存在的原因。
-- `<html lang>` 现在在两个方向上都如实报告屏幕上的语言，这也关闭了 [#2160](https://github.com/sainibhaowal-neosis/averqel-neosis/issues/2160)。若某个客户端从未激活 locale 插件，则保留所服务的默认值，因此该属性退化为旧的静态行为，而不会退化为空值。
+- `<html lang>` 现在在两个方向上都如实报告屏幕上的语言，这也关闭了 [#2160](https://github.com/deepseek-harness/deepseek-harness/issues/2160)。若某个客户端从未激活 locale 插件，则保留所服务的默认值，因此该属性退化为旧的静态行为，而不会退化为空值。
 - 客户端树的非浏览器运行（node 启动、非 jsdom 单测车道）现在以 `en` 开场。断言已提供中文文案的用例必须在其构造的 runtime 上显式调用 `setLocale('zh')`；套件级的 `usePinnedBrowserLanguages('zh-CN')` 仅在同时声明了 `@vitest-environment jsdom` 的文件中生效，因为没有 `window` 时探测路径根本不会读取 `navigator`。此前有七个 `*.client.spec.ts` 文件带着这样一条失效的固定语句，实际依赖的是旧的 `zh` 回落值。
 - 探测的代价是每次服务构造或语言目录变化时遍历一次数组，且不会隐式写入 settings；插件激活后或待采用语言注册时，显式 Host 偏好可能引发一次实时收敛。

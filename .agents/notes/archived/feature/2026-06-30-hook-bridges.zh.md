@@ -1,4 +1,4 @@
-# Agent Note: neosis-hooks-claude-code + neosis-hooks-codex —— Claude Code / Codex 钩子桥接插件
+# Agent Note: dsh-hooks-claude-code + dsh-hooks-codex —— Claude Code / Codex 钩子桥接插件
 
 Status: implemented
 Archived: 2026-09-04

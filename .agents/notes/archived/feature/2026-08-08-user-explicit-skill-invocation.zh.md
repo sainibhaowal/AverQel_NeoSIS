@@ -18,7 +18,7 @@ Archived: 2026-09-04
 - 客户端沿用[纯文本引用决策](../architecture/2026-07-25-web-input-machine-and-slash-pipeline.zh.md)：菜单 pick 落下字面文本 `/name `，该文本随提示词原样提交；ui-skill 不实现任何裁决钩子，也没有引用 codec。`skills/list`（现在是该领域唯一的 RPC）提供每一个用户可调用的 skill 并携带 `modelInvocable`，供菜单标出仅限用户的条目。与宿主命令同名的名称解析为命令——客户端会在该行成为提示词之前完成裁决并将其认领。
 - 注入是一条携带 `skill-invocation` 来源（`{ name, form: 'instructions' }`）的 `user` 角色消息，因此 `user/message` 落账、上下文注入的 transcript 行（以 skill 名称标注）与回放全部免费获得；`renderSkillContent` 位于 `dsh-skill` seam，由注入和 `skill` 工具结果共用，二者内容逐字相同，目录的结尾一句会告诉模型遵循注入块而不是重新加载。
 
-同类产品调研（Pi、OpenCode、Claude Code、Kimi Code、Codex、AverQel-Reasonix——本地检出）一致表明：用户显式触发都是模型零参与的程序化注入；最终形态最接近 Codex 核心侧的 `$name` mention 扫描——它同样让每一种运行入口免于自行实现识别。
+同类产品调研（Pi、OpenCode、Claude Code、Kimi Code、Codex、DeepSeek-Reasonix——本地检出）一致表明：用户显式触发都是模型零参与的程序化注入；最终形态最接近 Codex 核心侧的 `$name` mention 扫描——它同样让每一种运行入口免于自行实现识别。
 
 ## 考虑过的替代方案
 

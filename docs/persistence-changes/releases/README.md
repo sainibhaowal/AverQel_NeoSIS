@@ -4,7 +4,7 @@ description: "Browse Session persistence-type changes across every captured NEOS
 
 # Persistence changes across NEOSIS prereleases
 
-English | [中文](README.md)
+English | [中文](README.zh.md)
 
 ## Summary
 

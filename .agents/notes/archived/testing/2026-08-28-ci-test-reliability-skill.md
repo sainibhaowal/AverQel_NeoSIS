@@ -7,7 +7,7 @@ English | [中文](2026-08-28-ci-test-reliability-skill.zh.md)
 
 ## Problem
 
-AverQel NeoSIS runs tests across concurrent Vitest files, worker processes, repository gates, and Actions jobs. Process isolation does not isolate host ports, predictable paths, external namespaces, or inherited children, while process-global mutations and incomplete teardown can contaminate later tests. A test can select the correct tier and still pass only when it runs alone.
+DeepSeek Harness runs tests across concurrent Vitest files, worker processes, repository gates, and Actions jobs. Process isolation does not isolate host ports, predictable paths, external namespaces, or inherited children, while process-global mutations and incomplete teardown can contaminate later tests. A test can select the correct tier and still pass only when it runs alone.
 
 The testing policy owns test tiers, defensive patterns own runtime lifecycle rules, pre-push guidance selects commands, and code review evaluates completed diffs. None of them gives an agent a focused workflow for designing resource-owning tests against the real CI topology or classifying an existing probabilistic failure before changing code.
 
@@ -27,9 +27,9 @@ This decision partially overlaps the [deterministic and stress testing proposal]
 
 ## Alternatives considered
 
-**Expand neosis-pre-push-checks.** Pre-push guidance runs after test design and owns evidence selection. Making it also own resource allocation, synchronization, teardown, and CI diagnosis would mix two different decisions and load reliability procedure for ordinary pushes.
+**Expand dsh-pre-push-checks.** Pre-push guidance runs after test design and owns evidence selection. Making it also own resource allocation, synchronization, teardown, and CI diagnosis would mix two different decisions and load reliability procedure for ordinary pushes.
 
-**Expand neosis-code-review.** Review guidance can detect unreliable tests after a diff exists, but it cannot guide the agent while the fixture is being designed or while a failure is being diagnosed without a PR.
+**Expand dsh-code-review.** Review guidance can detect unreliable tests after a diff exists, but it cannot guide the agent while the fixture is being designed or while a failure is being diagnosed without a PR.
 
 **Put the complete workflow in the standing testing policy.** The testing policy must remain the concise authority for tiers and placement. Loading detailed Actions diagnosis and resource-specific procedure for every test task would duplicate situational guidance and make that policy harder to scan.
 

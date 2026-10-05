@@ -12,9 +12,18 @@ export type Options = ProtocolOptions
 /** Endpoint facts resolved from one configuration generation. */
 export type ResolvedDeepSeekOptions = DeepSeekConnectionOptions
 
-/** Read one validated provider configuration. */
+/**
+ * Read one validated provider configuration.
+ * @param config - Validated API-key provider configuration.
+ * @returns Plain protocol options for the provider.
+ */
 export function plainOptions(config: Config): Options { return protocolOptions(config) }
-/** Resolve protocol settings against the trusted launch environment. */
+/**
+ * Resolve protocol settings against the trusted launch environment.
+ * @param config - Plain provider options.
+ * @param environment - Trusted launch-environment values, when supplied.
+ * @returns Resolved endpoint and credential settings for one configuration generation.
+ */
 export function resolveAdapterOptions(config: Options, environment?: LaunchEnvironmentSnapshot): ResolvedDeepSeekOptions {
   return resolveProtocolOptions(config, environment)
 }

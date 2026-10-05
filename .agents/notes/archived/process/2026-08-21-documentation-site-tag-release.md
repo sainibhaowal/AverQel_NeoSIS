@@ -13,7 +13,7 @@ Every other public surface of this project advances only at a release tag. The n
 
 `docs-pages.yml` declares `workflow_dispatch` alone and publishes from a `dsh-v*` tag, which is the structure `release-publish.yml` already uses for npm: publication is an explicit act from a release tag and never appears as a pull-request check.
 
-The build job runs `release:verify --family neosis` with `RELEASE_PUBLISH=true` before it builds anything. That is the gate npm publication runs, so the site and the npm sequence share one definition of a released version rather than each carrying its own: the run must come from a `refs/tags/` ref, the tag must carry the family prefix, and the tag must name a version the working tree actually carries. Checkout takes complete history because the release scripts read tags.
+The build job runs `release:verify --family dsh` with `RELEASE_PUBLISH=true` before it builds anything. That is the gate npm publication runs, so the site and the npm sequence share one definition of a released version rather than each carrying its own: the run must come from a `refs/tags/` ref, the tag must carry the family prefix, and the tag must name a version the working tree actually carries. Checkout takes complete history because the release scripts read tags.
 
 The `github-pages` environment carries a `dsh-v*` deployment tag policy and required reviewers, matching `npm-publish`. The two layers answer different failures: the script gate rejects a dispatch from the wrong ref, and the environment policy still rejects the deployment if a later workflow edit stops asking.
 

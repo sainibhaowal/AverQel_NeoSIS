@@ -11,7 +11,7 @@ HMR's file watcher only reacts to in-place `change` events under its configured 
 
 ## Decision
 
-`dsh-tui` gains an **experimental, dev-only** `/reload` slash command: it walks `ctx.loader.entries()` and calls `refresh()` on every file-backed subtree (`Include`), i.e. the exact code path the HMR watcher's config-change branch drives, invoked manually and watcher-independent. Unchanged files are no-ops (content comparison in `Include.read`); invalid files warn and keep the running tree (the hot-reload-resilience contract); include `patches` — including the neosis CLI's personal overlay — re-apply on every re-read.
+`dsh-tui` gains an **experimental, dev-only** `/reload` slash command: it walks `ctx.loader.entries()` and calls `refresh()` on every file-backed subtree (`Include`), i.e. the exact code path the HMR watcher's config-change branch drives, invoked manually and watcher-independent. Unchanged files are no-ops (content comparison in `Include.read`); invalid files warn and keep the running tree (the hot-reload-resilience contract); include `patches` — including the dsh CLI's personal overlay — re-apply on every re-read.
 
 The TUI reaches the Loader **structurally** (`ctx.loader` via a local type, not `inject`): tests and embedders run the TUI without a Loader, where `/reload` degrades to a warning notice instead of failing the mount. Module-source hot reload stays watcher-owned; `/reload` refreshes configs only.
 
@@ -21,7 +21,7 @@ The TUI reaches the Loader **structurally** (`ctx.loader` via a local type, not 
 
 **Declaring `loader` in `inject`.** Rejected: it would make the Loader a hard dependency of the TUI, breaking every Loader-less composition (unit harness, embedders) for a dev convenience.
 
-**A `cordis_reload` model-facing tool in neosis-tool-cordis.** Rejected: this is an operator action for the human at the terminal, not a capability the model should trigger; the cordis toolset's mount/unmount surface already covers the model's runtime-modification story.
+**A `cordis_reload` model-facing tool in dsh-tool-cordis.** Rejected: this is an operator action for the human at the terminal, not a capability the model should trigger; the cordis toolset's mount/unmount surface already covers the model's runtime-modification story.
 
 ## Consequences
 

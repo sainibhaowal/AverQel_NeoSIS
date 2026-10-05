@@ -47,7 +47,7 @@ Archived: 2026-09-04
 
 两个适配器同样都需要那句完全相同的「拒绝一个已存储凭据」的诊断，差别仅在包名前缀。`LlmError` 声明在 Service Definition 的 `index.ts` 中，因此 `assertUsableApiKey(raw, pkg, ref)` 就住在它旁边，两个适配器都不再各留一份。断言模块本身保持零依赖：把 `LlmError` 引入 `api-key.ts` 会与 `index.ts` 对它的再导出成环。
 
-客户端无法引入其中任何一个：client 包只 reference client 包，因此 `packages/client/ui-settings-models` 在自己的 `apiKey.ts` 中镜像这个断言并持有本地化文案，正如 `validateAverQelModels` 镜像 host 侧的 `catalogModel` schema。两侧在注释中互相指名。
+客户端无法引入其中任何一个：client 包只 reference client 包，因此 `packages/client/ui-settings-models` 在自己的 `apiKey.ts` 中镜像这个断言并持有本地化文案，正如 `validateDeepSeekModels` 镜像 host 侧的 `catalogModel` schema。两侧在注释中互相指名。
 
 ### 各处分别做什么
 
@@ -59,7 +59,7 @@ Archived: 2026-09-04
 | `llm-pi-ai` `discoverModels` | 在构造 header 之前归一化，使非法 Key 成为凭据故障而非端点不可达。不带 Key 的探测保持未鉴权。 |
 | `ui-settings-models` | 镜像字符集规则，加入形状启发式，在探测与 `credentials.set` 之前 trim `keyDraft`，并修正 `stringAt` 的空值判断。留空的输入框仍是可以提交的空操作；只含空白的输入框则是字段级失败。提交**与端点探测**同时受拦截，因此被拒绝的密钥不会白花一次往返去换取字段上已经写明的答案；失败呈现在字段上，与既有的 `modelFailure` 模式一致。 |
 
-`ProviderEditor` 同时服务 AverQel 与 pi-ai 两种布局，因此一处客户端改动覆盖两个提供方。`CustomProviderCard` 为手工声明的路由承载同一套判定。
+`ProviderEditor` 同时服务 DeepSeek 与 pi-ai 两种布局，因此一处客户端改动覆盖两个提供方。`CustomProviderCard` 为手工声明的路由承载同一套判定。
 
 `credentials-local` 刻意不动。它存储各类凭据，而可打印 ASCII 是 HTTP header 的约束而非凭据存储的约束；它既有的、拒绝任何 dotenv 样式都无法表示的值的行为保持原样。
 
@@ -75,7 +75,7 @@ Archived: 2026-09-04
 
 **让形状启发式也在 resolver 中运行。** 更对称，且能拦住直接写进 `.env` 的整行环境变量。因上文所述的锁死风险而否决：resolver 中的一次误判会让用户无路可走，浏览器中的一次误判则仍留有环境变量这条路。
 
-**在保存时探测提供方以证明 Key 可用。** 它能关掉最初报告的那件事——保存报成功、首个轮次才失败。因超出范围而否决，且在当时的代码上无法建成：对 pi-ai 恰好自带 catalog 的那些提供方，`discoverModels` 会在任何网络调用之前短路到内置 catalog，因而对 Key 什么都验证不了；而 AverQel 卡片根本没有探测。验证器的价值在于分清「Key 被拒」与「无法连通」，而这正是本次改动让其变得可靠的区分；先建验证器只会得到一个分不清自身结果的验证器。同类产品也不在保存时验证，因此保存时的阻断式网络调用会是一个意外行为，而非一处缺失。
+**在保存时探测提供方以证明 Key 可用。** 它能关掉最初报告的那件事——保存报成功、首个轮次才失败。因超出范围而否决，且在当时的代码上无法建成：对 pi-ai 恰好自带 catalog 的那些提供方，`discoverModels` 会在任何网络调用之前短路到内置 catalog，因而对 Key 什么都验证不了；而 DeepSeek 卡片根本没有探测。验证器的价值在于分清「Key 被拒」与「无法连通」，而这正是本次改动让其变得可靠的区分；先建验证器只会得到一个分不清自身结果的验证器。同类产品也不在保存时验证，因此保存时的阻断式网络调用会是一个意外行为，而非一处缺失。
 
 ## 后果
 

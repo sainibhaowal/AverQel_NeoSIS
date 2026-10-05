@@ -13,9 +13,9 @@ Archived: 2026-09-04
 
 ## 决策
 
-在 `apps/cli/config/examples/mcp-memory` 下交付三份默认关闭的 Cordis overlay 示例：Memorix、MCP Reference Memory 和 Engram。每个文件只插入一个 `@averqel/neosis-mcp-client` 配置项。默认组合不会引用这些文件；CLI（命令行界面）声明通用桥接器，使显式选择的 overlay 能在安装后与源码启动中解析。[记忆 MCP 指南](../../../../docs/user/guide/mcp-memory.zh.md)负责安装与验证步骤。
+在 `apps/cli/config/examples/mcp-memory` 下交付三份默认关闭的 Cordis overlay 示例：Memorix、MCP Reference Memory 和 Engram。每个文件只插入一个 `@deepseek-ai/dsh-mcp-client` 配置项。默认组合不会引用这些文件；CLI（命令行界面）声明通用桥接器，使显式选择的 overlay 能在安装后与源码启动中解析。[记忆 MCP 指南](../../../../docs/user/guide/mcp-memory.zh.md)负责安装与验证步骤。
 
-这些第三方配置仅作为互操作参考；收录不代表 AverQel 的认可、推荐、合作关系或持续支持承诺。系统没有记忆预设注册表、提供方专属 DSH 插件、通用记忆服务、安装 UI、迁移层、健康检查器或重连控制器。其他记忆 MCP 服务器可以使用同一份文档中的 stdio 或 Streamable HTTP 配置项。
+这些第三方配置仅作为互操作参考；收录不代表 DeepSeek 的认可、推荐、合作关系或持续支持承诺。系统没有记忆预设注册表、提供方专属 DSH 插件、通用记忆服务、安装 UI、迁移层、健康检查器或重连控制器。其他记忆 MCP 服务器可以使用同一份文档中的 stdio 或 Streamable HTTP 配置项。
 
 ## 职责边界
 
@@ -28,7 +28,7 @@ Archived: 2026-09-04
 | 账户、认证、模型、embedding、存储初始化 | 否 | 是 |
 | 提供方数据迁移、重试、崩溃恢复 | 否 | 是 |
 
-通用 stdio 传输会清除环境中名称类似凭据的变量和 `NEOSIS_*` 变量，同时继承其他环境变量。基线示例仅添加必需的覆盖项；可选的提供方密钥必须添加到 `config.env`，或配置在提供方自己的文件中。
+通用 stdio 传输会清除环境中名称类似凭据的变量和 `DSH_*` 变量，同时继承其他环境变量。基线示例仅添加必需的覆盖项；可选的提供方密钥必须添加到 `config.env`，或配置在提供方自己的文件中。
 
 ## 版本固定、存储与身份
 
@@ -38,13 +38,13 @@ Archived: 2026-09-04
 | MCP Reference Memory | npm `2026.7.4`，package commit `6dd0a683e198783e30feabf7abaf42f925bd18b1` |
 | Engram | tag `v1.20.0`，commit `ba9e46ced152c37a7cb9e576153c41995873e2fc` |
 
-存储仍由提供方负责。Memorix 默认使用 `~/.memorix/data`，Engram 默认使用 `~/.engram`。Reference Memory 示例设置稳定的 `$HOME/.neosis-mcp-reference-memory.jsonl` 路径，而不是写入已安装的 npm 包目录。每个提供方自己的环境变量都可以在 DSH 启动前覆盖这些位置。
+存储仍由提供方负责。Memorix 默认使用 `~/.memorix/data`，Engram 默认使用 `~/.engram`。Reference Memory 示例设置稳定的 `$HOME/.dsh-mcp-reference-memory.jsonl` 路径，而不是写入已安装的 npm 包目录。每个提供方自己的环境变量都可以在 DSH 启动前覆盖这些位置。
 
 项目身份仍由提供方负责：Memorix 和 Engram 使用 DSH 工作目录中的 Git 项目，其中 Engram 还可以选择接受 `ENGRAM_PROJECT`。
 
 ## 模型指导
 
-示例不会修改 `@averqel/neosis-system-prompt`：配置 patch 会替换某个配置项的完整配置，可能抹除已有 persona。README 改为提供一条可选的附加指令：
+示例不会修改 `@deepseek-ai/dsh-system-prompt`：配置 patch 会替换某个配置项的完整配置，可能抹除已有 persona。README 改为提供一条可选的附加指令：
 
 > 当用户要求你记住某件事时，调用记忆写入工具。当历史信息可能相关时，搜索记忆并使用相关结果。
 

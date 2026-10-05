@@ -7,7 +7,7 @@ English | [中文](2026-07-23-personal-staging-maintenance-skills.zh.md)
 
 ## Problem
 
-Personal neosis customizations need a repeatable way to locate the installed source, isolate task work, serialize integration, and incorporate upstream changes without rewriting the checkout used by running sessions. User-local instructions solve this for one installation but cannot guide other users or remain synchronized with repository installer behavior.
+Personal dsh customizations need a repeatable way to locate the installed source, isolate task work, serialize integration, and incorporate upstream changes without rewriting the checkout used by running sessions. User-local instructions solve this for one installation but cannot guide other users or remain synchronized with repository installer behavior.
 
 ## Decision
 
@@ -23,7 +23,7 @@ After validation in the independent clone, the workflow creates and verifies the
 
 **Keep the workflows user-scoped.** This preserves personal flexibility but prevents other users from discovering the same safety rules and lets the workflow drift from the installer shipped by the repository.
 
-**Rebase the active staging checkout in place.** This is simpler but changes many files during preparation, can disrupt new neosis launches, and cannot provide atomic publication or an unchanged rollback checkout.
+**Rebase the active staging checkout in place.** This is simpler but changes many files during preparation, can disrupt new dsh launches, and cannot provide atomic publication or an unchanged rollback checkout.
 
 **Update the existing staging checkout after moving the launcher elsewhere.** This retains one staging path but requires a mid-upgrade launcher target that is not a staging branch and still rewrites a checkout that may host a running process.
 

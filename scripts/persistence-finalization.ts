@@ -5,7 +5,13 @@ import { existsSync, readFileSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
 import { JSON_SCHEMA, load } from 'js-yaml'
 import type { PersistenceHistory, PersistenceHistoryEntry } from './persistence-changes.ts'
-import { canonicalizeSchema, type PersistenceRoot, type PersistenceSchemaInventory } from './persistence-schema-model.ts'
+import {
+  canonicalizeSchema,
+  historicalSchemaDigest,
+  schemaDigest,
+  type PersistenceRoot,
+  type PersistenceSchemaInventory,
+} from './persistence-schema-model.ts'
 
 const DIRECTORY = 'docs/persistence-changes/finalized'
 const DIGEST = /^[a-f0-9]{64}$/u
@@ -32,6 +38,12 @@ function identity(root: PersistenceRoot): RootIdentity {
   return { kind: root.kind, digest: root.digest,
     ...(root.event === undefined ? {} : { event: root.event }),
     ...(root.surface === undefined ? {} : { surface: root.surface }) }
+}
+
+function normalizeDigestDomain(root: PersistenceRoot): PersistenceRoot {
+  if (root.digest === schemaDigest(root.schema)) return root
+  if (root.digest === historicalSchemaDigest(root.schema)) return { ...root, digest: schemaDigest(root.schema) }
+  return root
 }
 
 function compare(left: string, right: string): number {
@@ -173,7 +185,9 @@ export function loadPersistenceFinalization(root: string, history: Pick<Persiste
         || Object.entries(expected).some(([field, expectedValue]) => value[field] !== expectedValue)
     })) throw new Error(`${file}: finalized roots do not match complete accepted history`)
     if (writerVersion([...tips.values()]) !== capturedVersion) throw new Error(`${file}: accepted SessionHeader.version does not match finalized version`)
-    if (capturedVersion === version) latestRoots = tips
+    if (capturedVersion === version) {
+      latestRoots = new Map([...tips].map(([key, root]) => [key, normalizeDigestDomain(root)]))
+    }
   }
   if (latestRoots === undefined) throw new Error(`missing finalized schemas for Session format ${version}`)
   return { version, roots: latestRoots, acceptedRecords }

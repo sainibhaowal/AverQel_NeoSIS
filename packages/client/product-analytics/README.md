@@ -47,7 +47,19 @@ No runtime invariant companion is published: the package owns one policy observe
 <a id="model-experience"></a>
 ## Model Experience
 
-Indirectly. Product analytics never sends model prompts, responses, tool arguments, credentials, or Session transcript content.
+### Product-event reporting
+
+#### What the model sees
+
+Nothing. Product analytics reports approved `ProductEventMap` events and never adds prompts, responses, tool arguments, credentials, or Session transcript content to model context.
+
+#### Token effect
+
+None; product-event reporting does not change model request text or token accounting.
+
+#### KV Cache effect
+
+None; this package does not assemble or send provider requests.
 
 ## Known Limitations and Deferred Work
 

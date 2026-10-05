@@ -47,7 +47,7 @@ The rule applies to a value that was *provided*; deciding whether one was provid
 
 Both adapters also need the identical "refuse a stored credential" diagnosis, differing only by package prefix. `LlmError` is declared in the Service Definition's `index.ts`, so `assertUsableApiKey(raw, pkg, ref)` lives there beside it and neither adapter carries a local copy. The predicate module stays dependency-free: importing `LlmError` into `api-key.ts` would cycle with `index.ts`'s re-export of it.
 
-The client cannot import any of this: client packages reference only client packages, so `packages/client/ui-settings-models` mirrors the predicate in its own `apiKey.ts` and owns the localized messages, exactly as `validateAverQelModels` mirrors the host's `catalogModel` schema. Each side names the other in a comment.
+The client cannot import any of this: client packages reference only client packages, so `packages/client/ui-settings-models` mirrors the predicate in its own `apiKey.ts` and owns the localized messages, exactly as `validateDeepSeekModels` mirrors the host's `catalogModel` schema. Each side names the other in a comment.
 
 ### What each surface does
 
@@ -59,7 +59,7 @@ The client cannot import any of this: client packages reference only client pack
 | `llm-pi-ai` `discoverModels` | Normalizes before building the header, so an illegal key is a credential fault rather than an unreachable endpoint. A probe carrying no key stays unauthenticated. |
 | `ui-settings-models` | Mirrors the charset rule, adds the shape heuristic, trims `keyDraft` before probe and `credentials.set`, and fixes the `stringAt` emptiness test. A blank field remains a no-op that submits; a field holding only whitespace is a field-level failure. Submit **and the endpoint interrogation** are both gated, so a refused key never spends a round trip to be told what the field already says, and the failure renders on the field, matching the existing `modelFailure` pattern. |
 
-`ProviderEditor` serves both the AverQel and pi-ai layouts, so one client change covers both providers. `CustomProviderCard` carries the same judgement for a hand-declared route.
+`ProviderEditor` serves both the DeepSeek and pi-ai layouts, so one client change covers both providers. `CustomProviderCard` carries the same judgement for a hand-declared route.
 
 `credentials-local` is deliberately untouched. It stores credentials generally, and printable-ASCII is a constraint of HTTP headers rather than of credential storage; its existing refusal of values no dotenv style can represent stands as it was.
 
@@ -75,7 +75,7 @@ The client cannot import any of this: client packages reference only client pack
 
 **Running the shape heuristic in the resolvers too.** Symmetric, and it would stop a pasted environment line written directly into `.env`. Rejected for the lockout described above: a false positive in a resolver leaves the user no working path, while a false positive in the browser leaves the environment open.
 
-**Probing the provider at save time to prove the key works.** It would close the original complaint — a save that reports success and fails at the first turn. Rejected as out of scope and, on the code as it stood, unbuildable: `discoverModels` short-circuits to the installed catalog before any network call for exactly the providers pi-ai ships catalogs for, so it verified nothing about the key, and the AverQel card has no probe at all. A verifier's value is distinguishing "key rejected" from "cannot reach", which is the distinction this change makes reliable; building it first would have produced a verifier unable to tell its own outcomes apart. Comparable products also do not verify on save, so a blocking network call there would be an unexpected behavior rather than a missing one.
+**Probing the provider at save time to prove the key works.** It would close the original complaint — a save that reports success and fails at the first turn. Rejected as out of scope and, on the code as it stood, unbuildable: `discoverModels` short-circuits to the installed catalog before any network call for exactly the providers pi-ai ships catalogs for, so it verified nothing about the key, and the DeepSeek card has no probe at all. A verifier's value is distinguishing "key rejected" from "cannot reach", which is the distinction this change makes reliable; building it first would have produced a verifier unable to tell its own outcomes apart. Comparable products also do not verify on save, so a blocking network call there would be an unexpected behavior rather than a missing one.
 
 ## Consequences
 

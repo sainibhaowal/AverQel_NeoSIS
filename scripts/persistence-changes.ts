@@ -386,6 +386,10 @@ export function classifyPersistenceChange(before: PersistenceRoot | null, after:
     ({ path, kind, description: CHANGE_DESCRIPTIONS[kind], requiresVersionBump })
   const changes: PersistenceTypeChange[] = []
   if (before.kind !== after.kind || before.surface !== after.surface) changes.push(describe(key, 'root-classification-changed'))
+  // Historical snapshots may use the pre-NeoSIS digest namespace. A validated
+  // graph with identical canonical bytes is the same persistence type even
+  // when its domain-separated fingerprint changed during rebranding.
+  if (JSON.stringify(before.schema) === JSON.stringify(after.schema)) return changes
   if (before.digest === after.digest) return changes
   const fingerprints = [new Map<number, string>(), new Map<number, string>()] as const
   const fingerprint = (schema: CanonicalSchema, index: number, side: 0 | 1): string => {

@@ -27,7 +27,7 @@ Classification stays on message text because that is the only signal pi-ai deliv
 
 **Leave both as `PI_AI_ERROR` and widen `llm-retry`'s retryable set.** Rejected: `PI_AI_ERROR` is the catch-all for genuinely unclassified failures, including non-retryable ones (a malformed provider response, an unexpected SDK bug). Making the catch-all retryable would retry failures that will never succeed; the fix is to classify the recoverable case, not to blur the bucket.
 
-**Wrap the flattened error in an `LlmError('TRANSPORT', { cause })` in the adapter, mirroring the AverQel adapter.** Rejected here: the AverQel adapter wraps a *pre-response* `fetch` rejection whose `cause` is still intact, so chaining preserves real detail. In the pi-ai path the terminal event's `errorMessage` is already a flattened string with no `cause` to chain, so wrapping would add a layer without recovering anything; classifying the code is the only value left to add.
+**Wrap the flattened error in an `LlmError('TRANSPORT', { cause })` in the adapter, mirroring the DeepSeek adapter.** Rejected here: the DeepSeek adapter wraps a *pre-response* `fetch` rejection whose `cause` is still intact, so chaining preserves real detail. In the pi-ai path the terminal event's `errorMessage` is already a flattened string with no `cause` to chain, so wrapping would add a layer without recovering anything; classifying the code is the only value left to add.
 
 ## Consequences
 

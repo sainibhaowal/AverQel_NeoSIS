@@ -18,7 +18,7 @@ User-explicit invocation is a host-side pre-step injection, uniform for every us
 - The client keeps the [plain-text-reference decision](../architecture/2026-07-25-web-input-machine-and-slash-pipeline.md): a menu pick lands the literal `/name ` and the prompt ships it verbatim; ui-skill implements no adjudication hooks and no reference codec. `skills/list` (now the domain's only RPC) serves every user-invocable skill with `modelInvocable` so menus mark user-only entries. A name shared with a host command resolves to the command — adjudication claims the line client-side before it becomes a prompt.
 - The injection is a `user`-role message carrying the `skill-invocation` source (`{ name, form: 'instructions' }`), so `user/message` logging, the context-injection transcript row (labelled with the skill name), and replay all come free; `renderSkillContent` lives in the `dsh-skill` seam, shared verbatim with the `skill` tool result, and the catalog's closing sentence tells the model to follow an injected block instead of re-loading it.
 
-Peer-product survey (Pi, OpenCode, Claude Code, Kimi Code, Codex, AverQel-Reasonix — local checkouts) was unanimous that user-explicit triggering is programmatic injection with zero model participation; the final shape is closest to Codex's core-side `$name` mention scanning, which likewise frees every entry point from implementing recognition.
+Peer-product survey (Pi, OpenCode, Claude Code, Kimi Code, Codex, DeepSeek-Reasonix — local checkouts) was unanimous that user-explicit triggering is programmatic injection with zero model participation; the final shape is closest to Codex's core-side `$name` mention scanning, which likewise frees every entry point from implementing recognition.
 
 ## Alternatives considered
 

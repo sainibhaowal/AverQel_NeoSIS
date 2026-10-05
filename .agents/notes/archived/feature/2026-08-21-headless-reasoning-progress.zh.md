@@ -21,7 +21,7 @@ Archived: 2026-09-04
 
 ## 验证
 
-包测试在 reasoning frame 后保持 Agent 活跃，并在 idle 前观察 stderr；测试同时固定由 provider 终止和未终止的 reasoning 段换行归属，以及 terminal error。产品自有期望通过包含 reasoning 与工具调用的 turn 驱动随附 headless profile，并固定 stderr 与持久 Session。录制 Session replay 通过展开嵌入式 Assistant stream 重建预期 stderr，在 text 与 tool-call output 处关闭 reasoning 段，并在 record mode 下于 fixture path tokenization 前使用原始 run log。构建后二进制 acceptance 通过原生 AverQel SSE adapter 发送 `reasoning_content`，要求 reasoning 出现在 stderr，同时 stdout 仍只包含最终答案。
+包测试在 reasoning frame 后保持 Agent 活跃，并在 idle 前观察 stderr；测试同时固定由 provider 终止和未终止的 reasoning 段换行归属，以及 terminal error。产品自有期望通过包含 reasoning 与工具调用的 turn 驱动随附 headless profile，并固定 stderr 与持久 Session。录制 Session replay 通过展开嵌入式 Assistant stream 重建预期 stderr，在 text 与 tool-call output 处关闭 reasoning 段，并在 record mode 下于 fixture path tokenization 前使用原始 run log。构建后二进制 acceptance 通过原生 DeepSeek SSE adapter 发送 `reasoning_content`，要求 reasoning 出现在 stderr，同时 stdout 仍只包含最终答案。
 
 ## 考虑过的替代方案
 

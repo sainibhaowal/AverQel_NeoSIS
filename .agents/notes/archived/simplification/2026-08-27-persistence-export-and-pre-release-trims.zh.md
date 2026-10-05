@@ -15,7 +15,7 @@ Archived: 2026-09-04
 
 **不提供面向消费方的路径查询。**`locate` 不是服务方法。`SessionLocation` 仅作为拒绝诊断保留：JSONL 后端在内部推导工件路径，使 `SessionFormatUnsupportedError` 能指向构建所拒绝的原始日志。基于 `locate` 构建的三项消费方功能被移除或降级，而非移植：
 
-- `NEOSIS_SESSION_JSONL` 不复存在；shell-env 不再注册持久化贡献方。该变量只有在 `compression: 'none'` 时才是诚实的——默认的 `.jsonl.zstd` 产物无法从 bash 读取。
+- `DSH_SESSION_JSONL` 不复存在；shell-env 不再注册持久化贡献方。该变量只有在 `compression: 'none'` 时才是诚实的——默认的 `.jsonl.zstd` 产物无法从 bash 读取。
 - Claude Code／Codex 钩子桥接层为保持协议格式，仍在线上 payload 中保留 `transcript_path`，但始终发送 `''`／`null`。钩子脚本同样无法解析压缩产物。
 - session-controller 中基于 `locate` 的大小门槛和冷空白探测都被删除。[基于句柄的 seam](../architecture/2026-08-27-handle-based-session-persistence.zh.md) 的 `stat()`/`list()` 快照仍可携带 `eventCount`/`sizeBytes`，但 listing 不会根据这些提示打开正文，也没有 `coldBlankProbeMaxEvents`/`coldBlankProbeMaxBytes` 配置。没有当前 cache 答案的冷 row 报告 `blank: false`（未知）。
 
@@ -44,4 +44,4 @@ Archived: 2026-09-04
 - [保留可忽略的外部会话事件](../architecture/2026-08-30-retain-ignorable-external-session-events.zh.md)——拥有本变更所依赖的仅读取侧未知类型门禁。
 - [会话持久化作为抽象服务](../architecture/2026-06-14-session-persistence.zh.md)——拥有本次精简所缩小的 seam。
 - [Zstandard JSONL 会话日志](../architecture/2026-07-19-zstandard-jsonl-session-logs.zh.md)——拥有这些读取与追加流经的帧容器。
-- [会话标识与日志位置](../feature/2026-07-10-agent-session-identity-and-log-location.zh.md)——部分被取代：其 `NEOSIS_SESSION_ID` 与 shell-env 注册表决策仍然有效；其 `locate`/`NEOSIS_SESSION_JSONL`/`transcript_path` 决策在此移除。
+- [会话标识与日志位置](../feature/2026-07-10-agent-session-identity-and-log-location.zh.md)——部分被取代：其 `DSH_SESSION_ID` 与 shell-env 注册表决策仍然有效；其 `locate`/`DSH_SESSION_JSONL`/`transcript_path` 决策在此移除。

@@ -6,7 +6,7 @@ import { parseArgs } from 'node:util'
 import { JSON_SCHEMA, load } from 'js-yaml'
 import { classifyPersistenceChange, parseHistoricalPersistenceSnapshot } from './persistence-changes.ts'
 import type { PersistenceTypeChange } from './persistence-changes.ts'
-import { canonicalizeSchema, schemaDigest } from './persistence-schema-model.ts'
+import { canonicalizeSchema, historicalSchemaDigest, schemaDigest } from './persistence-schema-model.ts'
 import type { PersistenceRoot, PersistenceSchemaInventory } from './persistence-schema-model.ts'
 import { persistenceReleaseFactArtifacts } from './persistence-release-facts.ts'
 
@@ -155,9 +155,11 @@ function parseRecord(source: string, release: PersistenceRelease, previous: stri
 }
 
 function validateTypes(snapshot: PersistenceSchemaInventory, tag: string): void {
+  const historicalDomain = snapshot.roots.some(root => root.digest === historicalSchemaDigest(root.schema))
+  const digest = historicalDomain ? historicalSchemaDigest : schemaDigest
   const reachable = new Set<string>()
   for (const root of snapshot.roots) {
-    for (const [index] of root.schema.nodes.entries()) reachable.add(schemaDigest(canonicalizeSchema(root.schema.nodes, index)))
+    for (const [index] of root.schema.nodes.entries()) reachable.add(digest(canonicalizeSchema(root.schema.nodes, index)))
   }
   const listed = new Set<string>()
   for (const type of snapshot.types) {

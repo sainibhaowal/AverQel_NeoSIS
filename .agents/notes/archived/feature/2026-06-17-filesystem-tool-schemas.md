@@ -13,7 +13,7 @@ The schema must be small, yet stable enough that local/remote/sandboxed filesyst
 
 ## Decision
 
-`@averqel/neosis-tool-fs` exposes these three model-facing tools in the first filesystem suite:
+`@deepseek-ai/dsh-tool-fs` exposes these three model-facing tools in the first filesystem suite:
 
 | Tool | Our schema | Claude Code | OpenCode | Notes |
 |---|---|---|---|---|
@@ -21,7 +21,7 @@ The schema must be small, yet stable enough that local/remote/sandboxed filesyst
 | `write` | `write(file_path, content)` | `Write(file_path, content)` | `write(content, filePath)` | Creates or overwrites UTF-8 text. Under the default fs-observation-policy, updates to existing files require a prior observation; new-file creates do not. |
 | `edit` | `edit(file_path, old_string, new_string, replace_all?)` | `Edit(file_path, old_string, new_string, replace_all?)` | `edit(filePath, oldString, newString, replaceAll?)` | Literal string replacement; unique match required by default; under the default fs-observation-policy requires a prior observation (any windowed read counts). |
 
-The schema uses snake_case field names (`file_path`, `old_string`, `new_string`, `replace_all`) to align with Claude Code and with existing AverQel NeoSIS tool-schema examples. The Consumer package translates these model-facing names into `ctx.fs` calls and `fs/*` event dispatches.
+The schema uses snake_case field names (`file_path`, `old_string`, `new_string`, `replace_all`) to align with Claude Code and with existing DeepSeek Harness tool-schema examples. The Consumer package translates these model-facing names into `ctx.fs` calls and `fs/*` event dispatches.
 
 ## Tool schemas
 

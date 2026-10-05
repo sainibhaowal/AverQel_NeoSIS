@@ -25,7 +25,7 @@ Archived: 2026-09-10
 
 **恢复归 `dsh-compaction-image-offload`。** 图片省略是 compaction 在另一个容量维度上的实例：provider 拒绝请求，持久历史被缩减，step 重试。执行器是 compaction 组里 `compaction-tool-result-pruner` 的兄弟包，监听 `agent/request-error` waterfall。收到 `IMAGE_OFFLOAD_REQUIRED` 时，它按模型请求顺序遍历表层，给前 `offloadImages` 个保留的出现位置打标记，为每个承载了其中任一位置的节点先追加 seam 的 `compaction/prune` 影子价格，再追加带标记的副本，然后返回 `retry` 动作，不占提供方重试预算，也不记录 `llm/retry`。assistant 节点承载的是模型输出而不是输入图片，直接跳过。没有可省略的出现位置时向下游委托，失败进入普通恢复路径。循环在替换后的表层上重跑该 step，并像每次表层替换后一样记录新的 `request/header`；agent loop 不变。
 
-**token 记账。** `priceImages` 接收表层的 `ImageBlock`，把带标记的按占位文本定价；AverQel 和 replay 的定价不再复现任何 offload 算术。meter 不需要新状态：`compaction/prune` 事件加替换节点，和工具结果剪枝一样重新为该节点定价。
+**token 记账。** `priceImages` 接收表层的 `ImageBlock`，把带标记的按占位文本定价；DeepSeek 和 replay 的定价不再复现任何 offload 算术。meter 不需要新状态：`compaction/prune` 事件加替换节点，和工具结果剪枝一样重新为该节点定价。
 
 **其他消费方。** compaction 通过 `deriveEventMessage()` 重建每个选中事件，看得到标记。resume、fork 和重放从日志复现表层。纯文本路由保留各自的全历史替换。
 
@@ -41,7 +41,7 @@ Archived: 2026-09-10
 
 **让各个 adapter 自己追加替换。** adapter 拥有预算，但不拥有会话表层；在循环之下追加表层变更会让两个 adapter 对表层做出不同定义。adapter 改为上报它需要的数量。
 
-**在发送前规划省略，无论放在循环里还是插件里。** 循环在派生每个请求之前就知道精确的已准备路由，在那里规划永远不会多花一次失败的尝试；但这会把一条路由专属的策略放进所有 profile 共用的那个组件，改变已记录的 step 顺序，还绕过了上下文溢出 compaction 和重试已经在用的同一套 `agent/request-error` waterfall。pre-step 插件不改循环，但看不到 step 自己的消息和第一个请求的路由，失败路径仍然必需，而且规划要求每条路由在模型信息上声明预算。只处理失败的代价是每越过一个量子多一次尝试（AverQel file 模式 64 MiB，pi-ai 20 MiB），并且和既定方向一致：路由将不再本地检查大小，全部发送，由 provider 报告无法缓存的部分，那正是一个指明省略点的失败。
+**在发送前规划省略，无论放在循环里还是插件里。** 循环在派生每个请求之前就知道精确的已准备路由，在那里规划永远不会多花一次失败的尝试；但这会把一条路由专属的策略放进所有 profile 共用的那个组件，改变已记录的 step 顺序，还绕过了上下文溢出 compaction 和重试已经在用的同一套 `agent/request-error` waterfall。pre-step 插件不改循环，但看不到 step 自己的消息和第一个请求的路由，失败路径仍然必需，而且规划要求每条路由在模型信息上声明预算。只处理失败的代价是每越过一个量子多一次尝试（DeepSeek file 模式 64 MiB，pi-ai 20 MiB），并且和既定方向一致：路由将不再本地检查大小，全部发送，由 provider 报告无法缓存的部分，那正是一个指明省略点的失败。
 
 **为内联回退和精确字节溢出保留临时的额外省略。** 恰好会在不变量所针对的场景发送未记录的投影；失败再推进的路径只多花一次序列化尝试，且让每个已发出请求都可由日志派生。
 

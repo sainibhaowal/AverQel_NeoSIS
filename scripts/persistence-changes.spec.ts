@@ -6,7 +6,7 @@ import { mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSyn
 import { tmpdir } from 'node:os'
 import { join, posix, resolve } from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
-import { canonicalizeSchema, schemaDigest } from './persistence-schema-model.ts'
+import { canonicalizeSchema, historicalSchemaDigest, schemaDigest } from './persistence-schema-model.ts'
 import type { PersistenceRoot, PersistenceSchemaInventory, SchemaNode, SchemaProperty, SourceCompatibility } from './persistence-schema-model.ts'
 import { extractPersistenceSchema } from './persistence-schema.ts'
 import { persistenceCatalogArtifacts } from './gen-persistence-catalog.ts'
@@ -578,6 +578,12 @@ describe('persistence change classification', () => {
 })
 
 describe('persistence history verification', () => {
+  it('treats the frozen pre-NeoSIS digest domain as the same schema', () => {
+    const current = typeRoot('event:example/value', { value: 'string' })
+    const historical = { ...current, digest: historicalSchemaDigest(current.schema) }
+    expect(classifyPersistenceChange(historical, current)).toEqual([])
+  })
+
   it('accepts a baseline and a successive optional addition without comparing the historical schema to current', () => {
     const before = inventory()
     const after = inventory({ value: 'string', 'label?': 'string' })

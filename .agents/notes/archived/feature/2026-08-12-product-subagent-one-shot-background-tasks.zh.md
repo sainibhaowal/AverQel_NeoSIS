@@ -13,7 +13,7 @@ Codex 与 Claude Code 提供方已经能够运行一项自包含任务并返回�
 
 ## 决策
 
-生产 `neosis` 不安装可选产品提供方。选择启用产品集成的 Profile 会安装所需的 `dsh-subagent-codex` 或 `dsh-subagent-claude-code` 包，并在 host plane（宿主平面）挂载所需的提供方实例。`standard`、`code` 与 `cordis` Agent Preset 使用 `backgroundMode: one-shot` 配置相应的休眠工具行；删除某一行的 `disabled` 字段后，现有可选参数 `run_in_background` 会向由该 preset 组装的 agent 公开。省略该参数或传入 `false` 时会在前台等待；显式传入 `true` 时会在同步完成 Job 预检与登记后返回由父级拥有的 Job id，而不会等待提供方启动或完成。
+生产 `dsh` 不安装可选产品提供方。选择启用产品集成的 Profile 会安装所需的 `dsh-subagent-codex` 或 `dsh-subagent-claude-code` 包，并在 host plane（宿主平面）挂载所需的提供方实例。`standard`、`code` 与 `cordis` Agent Preset 使用 `backgroundMode: one-shot` 配置相应的休眠工具行；删除某一行的 `disabled` 字段后，现有可选参数 `run_in_background` 会向由该 preset 组装的 agent 公开。省略该参数或传入 `false` 时会在前台等待；显式传入 `true` 时会在同步完成 Job 预检与登记后返回由父级拥有的 Job id，而不会等待提供方启动或完成。
 
 [命名实例决策](2026-08-18-product-subagent-named-instances.zh.md)允许两个产品分别拥有多个配置项。每个新增宿主提供方配置项都有独立的 `providerName`，每个公开的 preset 工具配置项都通过 `provider` 绑定该名称并保持唯一的 `toolName`；前台或后台调度选择不会限制实例数量。
 
@@ -36,7 +36,7 @@ product tool call
 
 | 事实或资源 | 责任方 | 产品工具职责 | 可观察结果 |
 | --- | --- | --- | --- |
-| 产品提供方安装与登记 | 显式 Profile | 安装可选提供方包，并在 host plane 挂载所需的命名实例 | 提供方名称可用，但不会让每次生产 `neosis` 安装都包含该包 |
+| 产品提供方安装与登记 | 显式 Profile | 安装可选提供方包，并在 host plane 挂载所需的命名实例 | 提供方名称可用，但不会让每次生产 `dsh` 安装都包含该包 |
 | 产品选择与公开 | Agent Preset | 把一个固定工具名绑定到一个固定提供方 | 启用一行只会公开对应产品工具 |
 | 前台或后台选择 | `dsh-tool-subagent` | 按 `one-shot` 策略解析 `run_in_background` | 省略参数时在前台运行；显式传入 `true` 时返回 Job id |
 | Job id、状态、输出、取消与通知 | `ctx.jobs` 与 `dsh-tool-jobs` | 登记并展示现有 one-shot 运行 | 通用作业工具为准确父级收集或停止运行 |

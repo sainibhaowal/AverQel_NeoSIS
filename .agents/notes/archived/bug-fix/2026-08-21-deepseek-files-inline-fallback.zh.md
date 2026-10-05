@@ -1,4 +1,4 @@
-# Agent Note: AverQel Files 解析失败时恢复图片请求
+# Agent Note: DeepSeek Files 解析失败时恢复图片请求
 
 Status: implemented
 Archived: 2026-09-04
@@ -7,7 +7,7 @@ Archived: 2026-09-04
 
 ## Problem
 
-AverQel 官方视觉路由使用提供方文件 ID，使重复请求不必再次发送图片字节。如果 Files 端点不可用、不受支持或一直不返回，chat 会在模型请求开始前失败，即使同一端点仍接受内联图片数据。沿用 128MiB Files 预算的回退会超过内联请求体上限，独立转换图片的回退则可能发送与失败 file ID 尝试不同的像素。
+DeepSeek 官方视觉路由使用提供方文件 ID，使重复请求不必再次发送图片字节。如果 Files 端点不可用、不受支持或一直不返回，chat 会在模型请求开始前失败，即使同一端点仍接受内联图片数据。沿用 128MiB Files 预算的回退会超过内联请求体上限，独立转换图片的回退则可能发送与失败 file ID 尝试不同的像素。
 
 ## Decision
 

@@ -16,6 +16,7 @@ When enabled, root Agents receive schedule tools, sessions expose reminder state
 ## Table of Contents
 
 - [Use this package](#use-this-package)
+- [Model Experience](#model-experience)
 - [Known Limitations and Deferred Work](#known-limitations-and-deferred-work)
 - [Dev Note](#dev-note)
 
@@ -31,6 +32,22 @@ Enable the bundle from the NeoSIS plugin manager. It composes the Host schedule 
 The package is configuration-only. `cordis.patch.yml` inserts the Host time and Schedule services and enables the Web Schedule row. Its package dependencies make every patched row resolvable from the bundle. No brand assets or DeepSeek product identity are introduced.
 
 **Runtime invariant:** No companion is published. This package owns no mutable runtime relationship.
+
+## Model Experience
+
+### Schedule tools
+
+#### What the model sees
+
+The bundle enables the `schedule` tools supplied by the Schedule package. It does not add a second prompt section or duplicate the tool schemas; the Schedule package owns the model-facing schedule behavior.
+
+#### Token effect
+
+The enabled Schedule tools and their results can affect requests when the agent uses them. This bundle adds no separate prompt text or token policy.
+
+#### KV Cache effect
+
+The shared Schedule package determines cache behavior for any resulting request. Enabling the bundle does not independently rewrite cached model context.
 
 ## Known Limitations and Deferred Work
 

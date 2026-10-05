@@ -13,7 +13,7 @@ Archived: 2026-09-04
 
 `docs-pages.yml` 只声明 `workflow_dispatch`，并从 `dsh-v*` tag 发布，这正是 `release-publish.yml` 为 npm 采用的结构：发布是从发布 tag 出发的显式动作，绝不作为拉取请求检查出现。
 
-build 作业在构建任何东西之前先以 `RELEASE_PUBLISH=true` 运行 `release:verify --family neosis`。这就是 npm 发布所用的门禁，因此站点和 npm 序列共用同一个「已发布版本」的定义，而不是各自携带一份：运行必须来自 `refs/tags/` ref，tag 必须带有该家族前缀，且 tag 必须命名工作树确实携带的版本。checkout 取完整历史，因为发布脚本要读 tag。
+build 作业在构建任何东西之前先以 `RELEASE_PUBLISH=true` 运行 `release:verify --family dsh`。这就是 npm 发布所用的门禁，因此站点和 npm 序列共用同一个「已发布版本」的定义，而不是各自携带一份：运行必须来自 `refs/tags/` ref，tag 必须带有该家族前缀，且 tag 必须命名工作树确实携带的版本。checkout 取完整历史，因为发布脚本要读 tag。
 
 `github-pages` 环境携带 `dsh-v*` 部署 tag 策略和必需审阅人，与 `npm-publish` 一致。两层应对的是不同的失效：脚本门禁拒绝从错误 ref 发起的 dispatch，而当日后某次工作流编辑不再校验时，环境策略仍会拒绝该次部署。
 

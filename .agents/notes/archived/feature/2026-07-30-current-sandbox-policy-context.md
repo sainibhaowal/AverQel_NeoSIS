@@ -41,7 +41,7 @@ The cache-safe delivery rework then supplied a separate, non-statistical accepta
 
 **Scan denial history or remember the last narrated mode.** Rejected because denial events describe attempted operations, not authoritative current state, while process-local bookkeeping does not survive resume. The owner can fold the durable policy directly on every request.
 
-**Put current policy in a dynamic system section.** Rejected after real provider evidence showed that a first-time permission switch reduced cache reads to 256 tokens while roughly 14.7k input tokens missed. AverQel matches complete prefixes; changing the first wire message prevents reuse of the longer system-plus-history prefix.
+**Put current policy in a dynamic system section.** Rejected after real provider evidence showed that a first-time permission switch reduced cache reads to 256 tokens while roughly 14.7k input tokens missed. DeepSeek matches complete prefixes; changing the first wire message prevents reuse of the longer system-plus-history prefix.
 
 **Call `agent.inject()` independently from each policy owner.** Rejected because sibling listener order would define model order, separate messages could expose mismatched intermediate snapshots, and every owner would need its own compaction-retention scan. The existing assembly owner can order contributions and materialize one atomic full snapshot.
 

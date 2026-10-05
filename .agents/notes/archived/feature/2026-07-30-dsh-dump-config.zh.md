@@ -1,4 +1,4 @@
-# Agent Note: neosis --dump-config 打印合成后的配置树
+# Agent Note: dsh --dump-config 打印合成后的配置树
 
 Status: implemented
 Archived: 2026-08-07
@@ -7,11 +7,11 @@ Archived: 2026-08-07
 
 ## Problem
 
-启动的配置树是一份用户从未见过的合成结果：已交付的基础配置、界面覆盖层，以及 `--config` 或个人 `~/.neosis/config.yaml` 覆盖层作为同级补丁列表依次应用，其中每个按 id 定向的补丁替换目标行的整个 `config`，未匹配的 id 只产生警告。调试一个行为异常的个人覆盖层（漏掉需要重述的字段、行 id 拼错、补丁应用到了错误的界面）需要在脑中跨三个文件重放补丁算法。既没有办法看到生效的树，也没有办法把它与已交付的默认值做 diff。
+启动的配置树是一份用户从未见过的合成结果：已交付的基础配置、界面覆盖层，以及 `--config` 或个人 `~/.dsh/config.yaml` 覆盖层作为同级补丁列表依次应用，其中每个按 id 定向的补丁替换目标行的整个 `config`，未匹配的 id 只产生警告。调试一个行为异常的个人覆盖层（漏掉需要重述的字段、行 id 拼错、补丁应用到了错误的界面）需要在脑中跨三个文件重放补丁算法。既没有办法看到生效的树，也没有办法把它与已交付的默认值做 diff。
 
 ## Decision
 
-`neosis --dump-config` 和 `neosis web --dump-config` 把合成后的条目列表——基础配置、界面覆盖层、再叠 `--config` 或个人覆盖层，恰好是该界面启动时组装的那些层——以 YAML 打印到 stdout 后退出，不启动任何东西。`neosis --dump-default-config` / `neosis web --dump-default-config` 止步于界面覆盖层，因此对两份输出做 diff 就能精确看出用户层改了什么。
+`dsh --dump-config` 和 `dsh web --dump-config` 把合成后的条目列表——基础配置、界面覆盖层、再叠 `--config` 或个人覆盖层，恰好是该界面启动时组装的那些层——以 YAML 打印到 stdout 后退出，不启动任何东西。`dsh --dump-default-config` / `dsh web --dump-default-config` 止步于界面覆盖层，因此对两份输出做 diff 就能精确看出用户层改了什么。
 
 dump 不可能与实际启动漂移，因为它复用挂载代码：vendored include 把补丁算法导出为纯函数 `applyEntryPatches(data, patches, warn)`（私有的 `applyPatches` 方法现在委托给它），并把 `!!js` YAML 方言导出为 `entryListSchema`；`dsh-app-boot` 的 `renderConfigDump()` 通过这两者对带标签的层完成合成与渲染，`apps/cli/src/dump-config.ts` 只是选择界面的薄封装。`!!js` 表达式原样打印、不求值——dump 展示的是合成结果，不是某个进程的环境——目标行不存在的补丁会连同其层标签报到 stderr，与 Loader 启动时的警告一致。由启动器持有的启动上下文值（会话身份、web 的 CLI 标志补丁、前端 dist 路径）是每次调用的事实，位于配置树之外，不会出现。dump 标志拒绝仅用于启动的标志（`-p`、`--resume`、`--config-replace`）且两个 dump 标志互斥，`--dump-default-config` 不接受 `--config`。
 
@@ -25,7 +25,7 @@ dump 不可能与实际启动漂移，因为它复用挂载代码：vendored inc
 
 **在 CLI 里重新实现补丁合并。** 拒绝：`applyPatches` 的第二个实现会与 vendored include 悄然漂移——这恰恰是该功能要调试的失败模式。导出 include 自己的算法只花费一条记录在案的 vendor 修改，却保证了同一性。
 
-**用 `/dump-config` TUI 命令代替标志。** 作为唯一形式被拒绝：主要用法是 `neosis --dump-config | diff - <(neosis --dump-default-config)` 这类管道工作流，需要免启动、非 TTY 的界面。之后可以在同一个 `renderConfigDump` 之上再加 TUI 命令。
+**用 `/dump-config` TUI 命令代替标志。** 作为唯一形式被拒绝：主要用法是 `dsh --dump-config | diff - <(dsh --dump-default-config)` 这类管道工作流，需要免启动、非 TTY 的界面。之后可以在同一个 `renderConfigDump` 之上再加 TUI 命令。
 
 ## Consequences
 

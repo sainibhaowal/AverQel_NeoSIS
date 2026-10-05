@@ -7,7 +7,7 @@ Archived: 2026-09-18
 
 ## 问题
 
-一个 `neosis` 进程服务多个会话，但决定 agent（智能体）究竟是什么的那套组装——它的工具、人设、提示词段落、委派后端——由启动器所引导的 `cordis.yml` 一次性固定给整个进程。若某个部署希望一个 benchmark 精简 agent 与一个完整编码 agent 并存，就必须跑两个进程；而现有的变通方案（`apps/cli/config/minimal.cordis.yml`，一个用来禁用工具行的 `--config` 覆盖层）会一次性改变所有会话。
+一个 `dsh` 进程服务多个会话，但决定 agent（智能体）究竟是什么的那套组装——它的工具、人设、提示词段落、委派后端——由启动器所引导的 `cordis.yml` 一次性固定给整个进程。若某个部署希望一个 benchmark 精简 agent 与一个完整编码 agent 并存，就必须跑两个进程；而现有的变通方案（`apps/cli/config/minimal.cordis.yml`，一个用来禁用工具行的 `--config` 覆盖层）会一次性改变所有会话。
 
 对"让会话自选组装"最直觉的理解，是 loader 需要新增一层。其实不需要。[`dsh-tools`](../../../../packages/core/tools/README.zh.md) 与 [`dsh-system-prompt`](../../../../packages/core/system-prompt/README.zh.md) 本就按调用方上下文的 scope 分层归档注册，而且 [agent 本身就是一个注册 scope](2026-07-08-agent-scope-contexts.zh.md)。此前缺的只是一种把整份 `cordis.yml` 指向某一个 agent scope 的办法。
 
@@ -56,11 +56,11 @@ Archived: 2026-09-18
 
 **创作 preset 是一次 RPC，而且是特权 RPC。** 组装是一个文件，但“去文件系统里改它”并不是浏览器能提供的操作，因此名单在 `select` 之外新增了 `read`/`write`/`remove`。Connection 用一个浏览器会话认证创作操作、`list`、`select` 与完整 Host API：组装指明一个会话所运行的插件，因此读取它是侦察，写入它是任意能力；选择 preset 则没有授予 `session.create` 携带 `agentPreset` 时尚未拥有的能力。这份能力也不由 preset 授予：部署自带的默认 preset 本就带着 `bash` 与文件系统工具，因此任何被允许开启会话的调用方，早已能以本进程的身份执行命令。约束是 id 自身的性质（`[a-z0-9][a-z0-9-]*`），在它成为目录名之前就检查，而不是事后再去审视拼接出的路径；文本使用 loader 自身的 schema 与方言解析，因此保存不会留下任何会话都无法加载的文件。随部署提供的 preset 拒绝写入与删除，因为部署自带的那一份正是用来对照有问题的本地 preset 的——这也让“先复制、再编辑”成为创作路径本身，而非事后补充。
 
-**在 agent 平面之外还有消费方的服务，不能搬进 preset。** 激进拆分把 `subagents` 注册表连同 spawn/fork 后端一起搬进了 delegation 组的 entry-local realm，于是 `neosis web` 直接起不来：`SubagentRuntime` 是 Host 行，它公开浏览器的跨会话 Remote 查询（`list`、`prompt`），因而永远等待一个只有会话才提供的服务。按会话各一份在两个层面上都是错的——provider 名只能注册一次，第二个会话本来也会相撞。注册表与所有共享后端，包括[固定的 Codex 与 Claude Code 产品 provider](../../archived/architecture/2026-08-10-product-subagent-providers-in-shared-host.md)，都属于宿主平面；preset 只贡献自己的 agent 应看见的委派**工具**，这些工具解析宿主注册表。`workflows` 保持 entry-local，因为 agent 之外没有任何东西读它。本该拦下它的是「检索注入方」这一步，而它没拦住：检索必须覆盖宿主包，而不只是 agent 平面的包。
+**在 agent 平面之外还有消费方的服务，不能搬进 preset。** 激进拆分把 `subagents` 注册表连同 spawn/fork 后端一起搬进了 delegation 组的 entry-local realm，于是 `dsh web` 直接起不来：`SubagentRuntime` 是 Host 行，它公开浏览器的跨会话 Remote 查询（`list`、`prompt`），因而永远等待一个只有会话才提供的服务。按会话各一份在两个层面上都是错的——provider 名只能注册一次，第二个会话本来也会相撞。注册表与所有共享后端，包括[固定的 Codex 与 Claude Code 产品 provider](../../archived/architecture/2026-08-10-product-subagent-providers-in-shared-host.md)，都属于宿主平面；preset 只贡献自己的 agent 应看见的委派**工具**，这些工具解析宿主注册表。`workflows` 保持 entry-local，因为 agent 之外没有任何东西读它。本该拦下它的是「检索注入方」这一步，而它没拦住：检索必须覆盖宿主包，而不只是 agent 平面的包。
 
 **真实组装测试若禁用了某个宿主行，就无法审计该行。** web 组装测试保持 API Gateway 与各业务 Remote 服务启用，同时禁用只承载传输的 webserver、Connection、Session export、资源与遥测行。替换为 browse 目录选择器后，其启动审计无需绑定端口即可覆盖 Host 平面的服务图。
 
-**preset 的包名必须从 harness 解析，而非从 preset 解析。** `EntryTree.import()` 按行所属树的 `baseUrl` 解析，而 `Include` 把它设为组装文件所在的目录。这对相对标识符是对的，对包名却是致命的：本地创作的 preset 位于用户主目录之下，Node 向上查找 `node_modules` 永远够不到已安装的 harness，因此每一个 `@averqel/neosis-*` 行都会导入失败，整个 preset 无法挂载。随部署提供的 preset 掩盖了这一点——它们本就在安装目录之内。挂载在插入子树之前先记录宿主组装的基址，并把裸标识符送往那里，同时让相对路径继续从 preset 解析，使它自带的文件仍随它一同迁移。发现它的正是那个把 preset 写入临时根目录的真实组装测试。
+**preset 的包名必须从 harness 解析，而非从 preset 解析。** `EntryTree.import()` 按行所属树的 `baseUrl` 解析，而 `Include` 把它设为组装文件所在的目录。这对相对标识符是对的，对包名却是致命的：本地创作的 preset 位于用户主目录之下，Node 向上查找 `node_modules` 永远够不到已安装的 harness，因此每一个 `@deepseek-ai/dsh-*` 行都会导入失败，整个 preset 无法挂载。随部署提供的 preset 掩盖了这一点——它们本就在安装目录之内。挂载在插入子树之前先记录宿主组装的基址，并把裸标识符送往那里，同时让相对路径继续从 preset 解析，使它自带的文件仍随它一同迁移。发现它的正是那个把 preset 写入临时根目录的真实组装测试。
 
 **preset id 对模型可见，必须写入日志。** 它决定工具集与提示词，因此被恢复的会话必须还原同一份组装；记录它属于会话事实，而非运行时状态。它与 `cwd` 并列写在会话头部，并由会话摘要携带，使客户端界面显示某个会话实际运行的 preset，而非部署当前的默认值。
 

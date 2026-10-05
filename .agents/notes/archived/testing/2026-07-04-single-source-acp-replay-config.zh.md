@@ -11,7 +11,7 @@ Archived: 2026-07-26
 
 ## 决策
 
-`cordis.snapshot.yml` include 正式配置，通过 id 和 name 禁用指定的 AverQel 适配器，并插入回放适配器。其余所有条目因此来自正式运行树。回放时选择 overlay；录制仍然启动 `cordis.yml`，加载守卫允许被有意禁用的条目。
+`cordis.snapshot.yml` include 正式配置，通过 id 和 name 禁用指定的 DeepSeek 适配器，并插入回放适配器。其余所有条目因此来自正式运行树。回放时选择 overlay；录制仍然启动 `cordis.yml`，加载守卫允许被有意禁用的条目。
 
 overlay 有意依赖一项 vendored 插件事实：include 加载文件时会应用 `patches`，而其 `refresh()`/`internal/update` 路径会重新读取但不重新打补丁——这恰好足以满足一次性重放启动（重放应用不加载 `hmr`，运行中也没有内容重写配置）。快照套件就是证明：所有场景都能在 overlay 上原样通过，包括逐字节相同的预期输出。
 

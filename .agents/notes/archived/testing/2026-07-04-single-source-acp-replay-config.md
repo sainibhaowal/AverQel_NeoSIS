@@ -11,7 +11,7 @@ English | [中文](2026-07-04-single-source-acp-replay-config.zh.md)
 
 ## Decision
 
-`cordis.snapshot.yml` includes the live config, disables the named AverQel adapter by id and name, and inserts the replay adapter. Every other entry therefore comes from the shipping tree. Replay selects the overlay; recording still boots `cordis.yml`, and the load guard permits the intentionally disabled entry.
+`cordis.snapshot.yml` includes the live config, disables the named DeepSeek adapter by id and name, and inserts the replay adapter. Every other entry therefore comes from the shipping tree. Replay selects the overlay; recording still boots `cordis.yml`, and the load guard permits the intentionally disabled entry.
 
 One vendored-plugin fact the overlay depends on, deliberately: the include applies `patches` when it loads the file — its `refresh()`/`internal/update` paths re-read without re-patching — which is exactly enough for a one-shot replay boot (the replay app loads no `hmr` and nothing rewrites the config mid-run). The snapshot suite is the proof: all scenarios pass unchanged on the overlay, byte-identical expected outputs included.
 

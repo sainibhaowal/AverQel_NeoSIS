@@ -16,7 +16,24 @@ The table is adapted from DeepSeek Harness `dsh-v0.2.0-rc.2`; NeoSIS keeps its o
 ## Table of Contents
 
 - [Known Limitations and Deferred Work](#known-limitations-and-deferred-work)
+- [Model Experience](#model-experience)
 - [Dev Note](#dev-note)
+
+## Model Experience
+
+### Language selection
+
+#### What the model sees
+
+Nothing directly. This utility returns syntax-language hints through `languageForPath`; client consumers decide whether any related file content enters a model request.
+
+#### Token effect
+
+None in this package; language selection does not add prompt text or change token accounting.
+
+#### KV Cache effect
+
+None in this package; it does not assemble or send provider requests.
 
 ## Known Limitations and Deferred Work
 

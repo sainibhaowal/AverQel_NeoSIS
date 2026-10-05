@@ -52,7 +52,9 @@ it('switches the open main Session to the signed-in account model', async ({ sta
     attempt: { id: 'login' as SignInAttemptId, phase: 'succeeded' },
     links: { usageUrl: '', topUpUrl: '' },
   })
-  await vi.waitFor(() => expect(mock.remote.session.selectModel).toHaveBeenCalledWith({ sessionId, ...selection }))
+  await vi.waitFor(() => {
+    expect(mock.remote.session.selectModel).toHaveBeenCalledWith({ sessionId, ...selection })
+  })
 }, 60_000)
 
 it('uses the Web login carrier and sends account client metadata', async ({ start, mock }) => {

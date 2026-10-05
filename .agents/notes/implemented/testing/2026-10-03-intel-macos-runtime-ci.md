@@ -12,6 +12,12 @@ The `node24-macos-x64` runtime cell runs the installed-wheel black box, whose Of
 
 Continuous integration builds `node24-linux-arm64` and `node24-macos-arm64` for the post-merge Python runtime lane, and a blank `build-exe-for-python-sdk` dispatch covers `node24-linux-x64`, `node24-linux-arm64`, `node24-macos-arm64`, and `node24-win-x64`. The builder keeps `node24-macos-x64` selectable and the release workflow still publishes it, because the wheel is a product artifact for Intel macOS installations and removing that capability would drop a supported platform from the distribution rather than from the test matrix.
 
+## Alternatives considered
+
+**Keep retrying the Intel LibreOffice download** — rejected because the tested mirrors and versioned Intel URLs do not provide an image, so retries cannot make the Office scenarios executable.
+
+**Remove Intel macOS from the release artifacts** — rejected because Intel users still need a runtime wheel even though the hosted Office test cannot run on that platform.
+
 ## Consequences
 
 Each post-merge push builds one fewer native runtime and stops paying for the most expensive hosted runner tier on a target that cannot run its own assertions. A maintainer who needs an Intel macOS wheel dispatches the builder with `targets=node24-macos-x64`; that build produces the runtime but its Office scenarios remain unrunnable, so the receipt is the runtime build and smoke only. The `macos-15-intel` runner mapping, the GitLab release job, and the release workflow target list stay in place so a release remains reproducible without a workflow edit.
