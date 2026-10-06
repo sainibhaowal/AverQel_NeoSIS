@@ -46,6 +46,19 @@ describe('desktop package-set selection', () => {
     ])
   })
 
+  it('keeps the host native platform optional dependency in the local package set', () => {
+    const platformName = `@averqel/node-addon-system-${process.platform}-${process.arch}`
+    const available = new Map<string, PackedDesktopPackage>([
+      ['@averqel/neosis', packed('@averqel/neosis', {
+        optionalDependencies: { [platformName]: '~0.1.2' },
+      })],
+      ['@averqel/neosis-desktop-host', packed('@averqel/neosis-desktop-host')],
+      [platformName, packed(platformName)],
+    ])
+
+    expect(selectDesktopPackageClosure(available).map(entry => entry.manifest.name)).toContain(platformName)
+  })
+
   it.each([
     '@averqel/neosis-base', '@averqel/cordis', '@averqel/node-addon-system',
   ])('rejects required prepared package %s absent from the packed release inputs', (dependency) => {

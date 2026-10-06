@@ -67,6 +67,18 @@ describe.skipIf(MODE === 'record')('web e2e: Sidebar Browser', () => {
     await page.getByText('LIGHTHOUSE', { exact: true }).waitFor({ timeout: 15_000 })
     const column = page.locator('[data-rightbar-col]')
     await page.locator('[data-sidebar-right-expand]').click()
+    const toolbarCenters: number[] = []
+    for (const selector of [
+      '[data-dockkit-tab][aria-selected="true"] [data-sidebar-right-tab] svg',
+      '[data-dockkit-split-button]',
+      '[data-sidebar-right-mode]',
+      '[data-sidebar-right-toggle]',
+    ]) {
+      const box = await column.locator(selector).first().boundingBox()
+      expect(box, `Expected visible toolbar element ${selector}`).not.toBeNull()
+      if (box !== null) toolbarCenters.push(box.y + box.height / 2)
+    }
+    expect(Math.max(...toolbarCenters) - Math.min(...toolbarCenters)).toBeLessThanOrEqual(0.5)
     await column.locator('[data-sidebar-right-guide-entry="browser"]').click()
     const input = column.getByRole('textbox', { name: 'Enter an HTTP(S) address' })
     await input.fill('https://browser.test/one')

@@ -145,6 +145,18 @@
   cursor: pointer;
 }
 
+/* A tab renderer can return inline SVG followed by text (the Start guide does).
+   Keep those parts on one centered row instead of baseline-aligning the SVG,
+   which leaves its visible center several pixels above the strip controls. */
+.tabTitle {
+  display: inline-flex;
+  flex: 1 1 auto;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  line-height: 1.4;
+}
+
 .iconButton svg {
   width: 15px;
   height: 15px;
