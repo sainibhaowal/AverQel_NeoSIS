@@ -35,10 +35,11 @@ it('smokes an x64 target verified on an arm64 build host without revalidating ag
   const descriptor = await verifyDesktopRuntime(root, fixture.release.version, target)
   const electron = join(root, 'target-electron')
   const resources = join(root, 'runtime')
-  await smokePreparedRuntime(root, electron, resources, descriptor)
+  const office = join(root, 'office')
+  await smokePreparedRuntime(root, electron, resources, descriptor, office)
   expect(payload.mock.calls[0]![0]).toBe(electron)
   expect(payload.mock.calls[0]![1]).toEqual(expect.arrayContaining([root, resources]))
-  expect(smokeDesktopRuntime).toHaveBeenCalledWith(root, electron, descriptor, expect.any(Object), resources, undefined)
+  expect(smokeDesktopRuntime).toHaveBeenCalledWith(root, electron, descriptor, expect.any(Object), resources, office)
   const environment = vi.mocked(smokeDesktopRuntime).mock.calls[0]![3]
   expect(existsSync(environment.NARB_NATIVE_CACHE_DIR!)).toBe(false)
 })

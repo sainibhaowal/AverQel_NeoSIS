@@ -76,7 +76,9 @@ async function main(): Promise<void> {
         if (process.argv.includes('--neosis')) {
           const version = JSON.parse(await readFile(join(paths.neosis, 'package.json'), 'utf8')).version as string
           await signWindowsDesktopRuntime(paths.neosis, version, { ...options,
-            smoke: descriptor => smokePreparedRuntime(paths.neosis, join(paths.electron, 'electron.exe'), paths.runtime, descriptor),
+            smoke: descriptor => smokePreparedRuntime(
+              paths.neosis, join(paths.electron, 'electron.exe'), paths.runtime, descriptor, paths.office,
+            ),
           })
         } else {
           await signWindowsPrimaryRuntime(join(paths.runtime, 'primary-runtime'), { ...options, smoke: smokePrimaryRuntime })

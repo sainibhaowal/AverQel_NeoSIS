@@ -160,7 +160,9 @@ async function main(): Promise<void> {
     await packagingStep(process.env.NEOSIS_DESKTOP_PACKAGING_RUN_DIR, 'runtime:write-descriptor', async () => writeDesktopRuntime(NEOSIS_OUTPUT_ROOT, release, packageSet.packages.map(entry => entry.name), target))
     const descriptor = await packagingStep(process.env.NEOSIS_DESKTOP_PACKAGING_RUN_DIR, 'runtime:verify-before-smoke', () => verifyDesktopRuntime(NEOSIS_OUTPUT_ROOT, release.version, target))
     if (!process.argv.includes('--defer-runtime-smoke')) {
-      await packagingStep(process.env.NEOSIS_DESKTOP_PACKAGING_RUN_DIR, 'runtime:smoke', () => smokePreparedRuntime(NEOSIS_OUTPUT_ROOT, NODE, RUNTIME_ROOT, descriptor))
+      await packagingStep(process.env.NEOSIS_DESKTOP_PACKAGING_RUN_DIR, 'runtime:smoke', () => smokePreparedRuntime(
+        NEOSIS_OUTPUT_ROOT, NODE, RUNTIME_ROOT, descriptor, BUILD_PATHS.office,
+      ))
       await packagingStep(process.env.NEOSIS_DESKTOP_PACKAGING_RUN_DIR, 'runtime:verify-after-smoke', () => verifyDesktopRuntime(NEOSIS_OUTPUT_ROOT, release.version, target))
     }
   } catch (error) {
