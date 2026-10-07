@@ -157,12 +157,18 @@ describe('HMR exact config paths', () => {
     }
   })
 
-  it('observes creation when the config parent did not exist at registration', { timeout: 20_000 }, async () => {
+  it('refreshes a config when its previously missing parent is added', async () => {
     const root = mkdtempSync(join(tmpdir(), 'neosis-hmr-config-'))
     hmrRoots.push(root)
     const dir = join(root, 'later')
     const filename = join(dir, 'plugins.yml')
-    const ctx = await bootHmr(root)
+    const ctx = new Context()
+    const watcher = new FSWatcher()
+    const previousFactory = configWatch.create
+    configWatch.create = () => {
+      queueMicrotask(() => { watcher.emit('ready') })
+      return watcher
+    }
     const observed: string[] = []
     try {
       await watchConfig(ctx, filename, {}, () => {
@@ -170,8 +176,10 @@ describe('HMR exact config paths', () => {
       })
       mkdirSync(dir)
       writeFileSync(filename, 'created')
+      watcher.emit('addDir', dir)
       await eventually(() => observed.includes('created'), 'HMR did not observe config creation under a new parent')
     } finally {
+      configWatch.create = previousFactory
       await ctx.fiber.dispose()
     }
   })
