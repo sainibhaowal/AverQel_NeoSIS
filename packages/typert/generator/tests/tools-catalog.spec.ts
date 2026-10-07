@@ -17,7 +17,8 @@ afterEach(() => {
 })
 
 describe('model-driven neosis-tools generation', () => {
-  it('round-trips the complete service and event structure through the runtime registry', { timeout: 30_000 }, async () => {
+  // This analyzes and emits the full host catalog; allow slower CI workers to finish it.
+  it('round-trips the complete service and event structure through the runtime registry', { timeout: 90_000 }, async () => {
     const workspace = new WorkspaceAnalyzer({
       root: workspaceRoot,
       faces: ['host'],

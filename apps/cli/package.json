@@ -122,6 +122,7 @@
     "@averqel/neosis-host-webserver": "workspace:*",
     "@averqel/neosis-llm": "workspace:*",
     "@averqel/neosis-llm-deepseek": "workspace:*",
+    "@averqel/neosis-llm-deepseek-api-key": "workspace:*",
     "@averqel/neosis-llm-mock-server": "workspace:*",
     "@averqel/neosis-llm-pi-ai": "workspace:*",
     "@averqel/neosis-llm-replay": "workspace:*",

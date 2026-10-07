@@ -3,7 +3,7 @@
 # stdout remains reserved for ACP JSON-RPC.
 
 - id: llm-deepseek
-  name: '@averqel/neosis-llm-deepseek'
+  name: '@averqel/neosis-llm-deepseek-api-key'
   config:
     thinking: enabled
     reasoningEffort: max

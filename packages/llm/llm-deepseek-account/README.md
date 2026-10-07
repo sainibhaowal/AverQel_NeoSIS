@@ -55,6 +55,8 @@ The provider's normal DeepSeek cache behavior applies to the request. Account au
 
 <a id="known-limitations-and-deferred-work"></a>
 
+No runtime invariant companion is published because this provider applies account authentication per request; identity, Session, and token lifecycle state remain owned by the account service.
+
 - The account route requires a signed-in account and a request destination that allows account authentication.
 - The package does not provide the sign-in UI or token storage; those belong to the account service and client settings packages.
 - A provider can advertise a model before the remote gateway accepts that model id, so the request may still fail with a provider request error.

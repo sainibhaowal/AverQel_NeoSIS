@@ -55,6 +55,8 @@ None; the package does not assemble or send provider requests.
 
 <a id="known-limitations-and-deferred-work"></a>
 
+No runtime invariant companion is published because this client package projects the active command catalog and owns no independent event stream or state snapshot.
+
 - The reference lists the command catalog supplied by the active composition; commands from disabled features are not shown.
 - Browser recording follows browser reservation rules, so some combinations are unavailable even when their physical keys exist.
 - Fixed commands can be reviewed but cannot be edited through this package.

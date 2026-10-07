@@ -296,7 +296,11 @@ export function resolveAdapterOptions(config: Options, environment?: LaunchEnvir
     || fileQuotaCleanupBatch > 1_000) {
     throw new Error('llm-deepseek: fileQuotaCleanupBatch must be an integer from 1 through 1000')
   }
-  const baseURL = config.baseURL ?? environment?.get(BASE_URL_ENV)?.value ?? PUBLIC_BASE_URL
+  const environmentBaseURL = environment?.get(BASE_URL_ENV)?.value
+  const baseURL = config.baseURL
+    ?? (environmentBaseURL === undefined || environmentBaseURL.trim().length === 0
+      ? PUBLIC_BASE_URL
+      : environmentBaseURL)
   const parsed = new URL(baseURL)
   if (!['http:', 'https:'].includes(parsed.protocol) || parsed.username || parsed.password || parsed.search || parsed.hash) {
     throw new Error('llm-deepseek: Messages baseURL must be an HTTP(S) root without credentials, query, or fragment')

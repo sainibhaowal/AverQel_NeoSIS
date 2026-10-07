@@ -2,7 +2,7 @@
 # a separate SDK child runtime. Both runtimes persist their request headers.
 
 - id: llm-deepseek
-  name: '@averqel/neosis-llm-deepseek'
+  name: '@averqel/neosis-llm-deepseek-api-key'
   disabled: true
 
 - id: tool-subagent

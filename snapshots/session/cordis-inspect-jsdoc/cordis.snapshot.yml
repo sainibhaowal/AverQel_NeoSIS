@@ -1,6 +1,6 @@
 # Replay counterpart to advanced.cordis.yml; only the live model is replaced.
 - id: llm-deepseek
-  name: '@averqel/neosis-llm-deepseek'
+  name: '@averqel/neosis-llm-deepseek-api-key'
   disabled: true
 
 - id: agent-default-model

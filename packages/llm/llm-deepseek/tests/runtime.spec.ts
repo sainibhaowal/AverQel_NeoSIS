@@ -2237,6 +2237,13 @@ describe('plugin registration and config', () => {
     expect(server.requests).toHaveLength(1)
   })
 
+  it('uses the public endpoint when the trusted endpoint environment value is empty', () => {
+    const emptyEnvironment = createLaunchEnvironmentSnapshot([
+      { source: 'process', values: { DEEPSEEK_BASE_URL: '' } },
+    ])
+    expect(resolveAdapterOptions({}, emptyEnvironment).baseURL).toBe('https://api.deepseek.com/anthropic')
+  })
+
 
   it('takes DEEPSEEK_BASE_URL from any environment layer, with explicit config still on top', () => {
     const trusted = createLaunchEnvironmentSnapshot([

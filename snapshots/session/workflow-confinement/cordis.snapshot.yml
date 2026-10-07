@@ -1,6 +1,6 @@
 # Replay the authored model turns through the shipped OS sandbox.
 - id: llm-deepseek
-  name: '@averqel/neosis-llm-deepseek'
+  name: '@averqel/neosis-llm-deepseek-api-key'
   disabled: true
 
 - id: plugin-package-inventory-deepseek

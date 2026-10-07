@@ -16,6 +16,7 @@ import { mkdtemp, rm } from 'node:fs/promises'
 import { createRequire } from 'node:module'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { pathToFileURL } from 'node:url'
 import { execa } from 'execa'
 
 export {
@@ -127,7 +128,7 @@ export function resolveExampleLaunch(options: ExampleLaunchOptions): ExampleLaun
       ? require.resolve('tsx/esm')
       : require.resolve('tsx')
     env.TSX_TSCONFIG_PATH = options.tsconfigPath
-    return { command: process.execPath, args: ['--import', tsxLoader, options.srcBin, ...configArgs], env }
+    return { command: process.execPath, args: ['--import', pathToFileURL(tsxLoader).href, options.srcBin, ...configArgs], env }
   }
 
   return { command: process.execPath, args: [options.libBin ?? toLibBin(options.srcBin), ...configArgs], env }

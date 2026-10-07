@@ -13,7 +13,7 @@ const ROOT = fileURLToPath(new URL('../../../snapshots', import.meta.url))
 const MODE = webSnapshotMode()
 
 const CASES = [
-  { name: 'diff-context', source: 'session/fs-edit/session.v3.jsonl', totals: '+1 -1', shared: 'level=info', inventory: ['ui.expected.md'] },
+  { name: 'diff-context', source: 'session/fs-edit/session.v4.jsonl', totals: '+1 -1', shared: 'level=info', inventory: ['ui.expected.md'] },
   { name: 'diff-bounded', source: 'web/diff-bounded/session.v3.jsonl', totals: '+130 -130', shared: 'shared heading', inventory: ['session.v3.jsonl', 'ui.expected.md'] },
 ]
 

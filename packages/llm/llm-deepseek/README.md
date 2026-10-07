@@ -52,7 +52,7 @@ A request selects the route with `provider: deepseek-official`; the model id pas
 | Field | Default | Meaning |
 |---|---|---|
 | `apiKeyEnv` | `DEEPSEEK_API_KEY` | Credential reference resolved per request through the credentials seam, then the environment |
-| `baseURL` | `https://api.deepseek.com/anthropic` | Explicit value, then `$DEEPSEEK_BASE_URL`, then the official root |
+| `baseURL` | `https://api.deepseek.com/anthropic` | Explicit value, then a non-empty `$DEEPSEEK_BASE_URL`, then the official root |
 | `thinking` | `enabled` | Deployment policy; `disabled` locks every request to `off` |
 | `reasoningEffort` | `high` | Default effort: `off`, `low`, `high`, or `max` |
 | `maxTokens` | `256,000` | Per-request output cap; a model's own cap and explicit request values win |
@@ -78,7 +78,7 @@ When [proactive compaction](../../compaction/compaction-basic/README.md#use-this
 <a id="endpoint-and-wire-format"></a>
 ### Endpoint and wire format
 
-The official root is `https://api.deepseek.com/anthropic`. An explicit `baseURL` or `$DEEPSEEK_BASE_URL` supplies a Messages-compatible root. Model and Files requests append `/v1/messages` and `/v1/files`, except that an exact final `/v1` segment is reused. Trailing slashes do not change these results. A base URL must use HTTP(S) without credentials, query, or fragment.
+The official root is `https://api.deepseek.com/anthropic`. An explicit `baseURL` or non-empty `$DEEPSEEK_BASE_URL` supplies a Messages-compatible root; an empty environment value is treated as unset. Model and Files requests append `/v1/messages` and `/v1/files`, except that an exact final `/v1` segment is reused. Trailing slashes do not change these results. A base URL must use HTTP(S) without credentials, query, or fragment.
 
 Messages sends text, thinking, tool calls, and tool results as content blocks, reasoning effort as `output_config.effort`, and images as Files references or inline base64. Models declaring `systemPromptUpdate: in-history` retain the initial top-level system and send new system snapshots after their corresponding user/tool-result turn; undeclared models use the latest snapshot as the top-level system. Replay metadata preserves the model and thinking signatures. Invalid replay metadata emits a warning and omits signatures while retaining text and tool history.
 

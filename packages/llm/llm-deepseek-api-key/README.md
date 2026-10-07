@@ -55,6 +55,8 @@ The provider's normal DeepSeek cache behavior applies to the request. API-key au
 
 <a id="known-limitations-and-deferred-work"></a>
 
+No runtime invariant companion is published because credential lookup and request authentication are call-local; durable key storage and validation remain owned by the credentials service.
+
 - The provider requires a valid API key in the configured launch environment or credentials source.
 - The package does not create or validate keys with DeepSeek; rejected credentials surface as provider authentication failures.
 - A provider can advertise a model before the remote gateway accepts that model id, so the request may still fail with a provider request error.

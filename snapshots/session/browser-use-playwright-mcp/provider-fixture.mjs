@@ -1,7 +1,6 @@
 /** Replace only the external MCP executable; retain the shipped provider and browser runtime. */
-import { registerHooks } from 'node:module'
+import Module from 'node:module'
 import { readFile } from 'node:fs/promises'
-import { pathToFileURL } from 'node:url'
 import { resolve } from 'node:path'
 
 export const name = 'browser-provider-fixture'
@@ -9,15 +8,20 @@ export const inject = ['browserUse', 'agents', 'tools']
 
 export async function apply(ctx) {
   let replaced = false
+  const originalResolveFilename = Module._resolveFilename
+  const target = '@playwright/mcp/package.json'
   ctx.effect(() => {
-    const hooks = registerHooks({
-      resolve(specifier, context, nextResolve) {
-        if (specifier !== '@playwright/mcp/package.json') return nextResolve(specifier, context)
+    const resolveFilename = function (specifier, ...args) {
+      if (specifier === target) {
         replaced = true
-        return { url: pathToFileURL(resolve('package.json')).href, shortCircuit: true }
-      },
-    })
-    return () => hooks.deregister()
+        return resolve('package.json')
+      }
+      return originalResolveFilename.call(this, specifier, ...args)
+    }
+    Module._resolveFilename = resolveFilename
+    return () => {
+      if (Module._resolveFilename === resolveFilename) Module._resolveFilename = originalResolveFilename
+    }
   }, 'browser-fixture.executable')
   const provider = await import('@averqel/neosis-experimental-browser-use-playwright-mcp')
   await ctx.plugin(provider, { mode: 'launch' })

@@ -12,12 +12,17 @@
   config:
     providers:
       deepseek:
+        api: openai-completions
         apiKeyEnv: DEEPSEEK_API_KEY
         baseURL: !!js process.env.NEOSIS_SNAPSHOT_BASE_URL
         reasoning: low
-        modelOverrides:
-          deepseek-v4-flash:
+        compat:
+          maxTokensField: max_tokens
+        models:
+          - id: deepseek-v4-flash
             maxTokens: 1024
+            reasoningEfforts:
+              low: low
         streamIdleTimeoutMs: 1000
 
 - id: agent-loop

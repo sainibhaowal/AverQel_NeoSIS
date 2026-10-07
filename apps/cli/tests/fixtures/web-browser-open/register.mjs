@@ -14,7 +14,10 @@ markerPoll.unref()
 
 registerHooks({
   resolve(specifier, context, nextResolve) {
-    if (specifier === 'open') return { shortCircuit: true, url: openerUrl }
+    const normalizedSpecifier = specifier.replaceAll('\\', '/')
+    if (specifier === 'open' || normalizedSpecifier.endsWith('/node_modules/open/index.js')) {
+      return { shortCircuit: true, url: openerUrl }
+    }
     return nextResolve(specifier, context)
   },
 })

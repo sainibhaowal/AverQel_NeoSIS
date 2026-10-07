@@ -485,6 +485,9 @@ importers:
       '@averqel/neosis-llm-deepseek':
         specifier: workspace:*
         version: link:../../packages/llm/llm-deepseek
+      '@averqel/neosis-llm-deepseek-api-key':
+        specifier: workspace:*
+        version: link:../../packages/llm/llm-deepseek-api-key
       '@averqel/neosis-llm-mock-server':
         specifier: workspace:*
         version: link:../../packages/test-support/llm-mock-server

@@ -1,3 +1,5 @@
+import { createRequire } from 'node:module'
+import { pathToFileURL } from 'node:url'
 import { afterEach, describe, expect, it } from 'vitest'
 import {
   EXAMPLE_MODE_ENV,
@@ -48,6 +50,7 @@ describe('resolveExampleLaunch', () => {
     })
     expect(command).toBe(process.execPath)
     expect(args).toContain('--import')
+    expect(args[args.indexOf('--import') + 1]).toBe(pathToFileURL(createRequire(import.meta.url).resolve('tsx')).href)
     expect(args).toContain(SRC_BIN)
     expect(args[args.length - 1]).toBe('./cordis.yml')
     expect(env.TSX_TSCONFIG_PATH).toBe(TSCONFIG)
@@ -65,7 +68,7 @@ describe('resolveExampleLaunch', () => {
       tsconfigPath: TSCONFIG,
     })
     expect(args[0]).toBe('--import')
-    expect(args[1]).toContain('/tsx/dist/esm/index.mjs')
+    expect(args[1]).toBe(pathToFileURL(createRequire(import.meta.url).resolve('tsx/esm')).href)
   })
 
   it('lib mode: plain node on the derived lib bin, no tsx and no paths env', () => {
