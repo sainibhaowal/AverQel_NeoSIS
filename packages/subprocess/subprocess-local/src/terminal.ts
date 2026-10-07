@@ -94,8 +94,6 @@ export class LocalTerminalHandle implements SubprocessTerminalHandle {
     private readonly observeShellExit = false,
   ) {
     this.pid = terminal.pid
-    try { this.rootIdentity = inspector.snapshot().tree(this.pid).find(member => member.pid === this.pid) }
-    catch (_rootIdentityUnavailable) { this.rootIdentity = undefined }
     this.done = this.outcome.promise
     const resume = (): void => {
       if (!this.outputPaused) return
@@ -129,6 +127,11 @@ export class LocalTerminalHandle implements SubprocessTerminalHandle {
         this.outcome.reject(error)
       }
     })
+    // Subscribe before inspecting the process tree. The shell can print its
+    // initial prompt as soon as node-pty spawns it; losing that first data event
+    // leaves a newly opened terminal looking empty until the user types.
+    try { this.rootIdentity = inspector.snapshot().tree(this.pid).find(member => member.pid === this.pid) }
+    catch (_rootIdentityUnavailable) { this.rootIdentity = undefined }
   }
 
   /** Whether node-pty has not yet published the top-level exit event. */

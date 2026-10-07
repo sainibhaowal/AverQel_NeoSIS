@@ -156,6 +156,28 @@ describe('LocalTerminalHandle', () => {
     handle.output.destroy()
   })
 
+  it('retains the initial shell output emitted during process inspection', async () => {
+    const pty = new FakePty()
+    const inspector = new FakeInspector()
+    let emitted = false
+    inspector.readTree = () => {
+      if (!emitted) {
+        emitted = true
+        pty.emitData('READY> ')
+      }
+      return inspector.root === undefined ? inspector.members : [inspector.root, ...inspector.members]
+    }
+    const handle = makeHandle(pty, inspector, 10)
+    let output = ''
+    handle.output.on('data', (data: Buffer) => { output += data.toString('utf8') })
+    try {
+      await expect.poll(() => output).toContain('READY>')
+    } finally {
+      await handle.terminate()
+      handle.output.destroy()
+    }
+  })
+
   it('does not resume native output when a pending drain follows the PTY exit', async () => {
     const pty = new FakePty()
     const handle = makeHandle(pty, new FakeInspector(), 10)
