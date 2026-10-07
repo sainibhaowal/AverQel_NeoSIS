@@ -13,7 +13,6 @@ const disabledWorkflowNames = new Set([
   'node-addon-system-release.yml',
   'python-release.yml',
   'release-vendor-publish.yml',
-  'release-vendor.yml',
 ])
 
 interface Step {
@@ -134,7 +133,9 @@ for (const [file, jobIds] of [['release.yml', ['dependencies', 'pack']], ['relea
         it('uses the shared persistent store without remote cache reads or writes on self-hosted', () => {
           assertSharedPersistentStore(job.steps.find(step => step.name === 'Configure pnpm store path')?.run)
           const caches = job.steps.filter(step => step.uses?.startsWith('actions/cache'))
-          expect(caches.map(step => step.uses)).toEqual(['actions/cache/restore@v4'])
+          expect(caches.map(step => step.uses)).toEqual(file === 'release-vendor.yml'
+            ? ['actions/cache/restore@v4', 'actions/cache/save@v4']
+            : ['actions/cache/restore@v4'])
           for (const step of caches) {
             expect(evaluate(step.if!, { 'runner.environment': 'self-hosted' })).toBe(false)
             expect(evaluate(step.if!, { 'runner.environment': 'github-hosted' })).toBe(true)

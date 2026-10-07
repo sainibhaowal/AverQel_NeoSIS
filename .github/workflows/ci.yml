@@ -124,10 +124,12 @@ jobs:
           || 'ubuntu-24.04' }}
     name: node 24 / coverage
     env:
-      # Shared hosts expose host CPUs, not an isolated allocation.
+      # Keep ordinary hosted coverage gates serial: the 4-CPU runners otherwise
+      # starve test subprocesses when the heavy and partitioned suites overlap.
+      # Larger failover pools retain parallel gates; shared hosts expose host CPUs.
       NEOSIS_COVERAGE_MAX_WORKERS: ${{ vars.NEOSIS_CI_FAILOVER_LINUX == 'selfhosted' && github.event.pull_request.user.login != 'dependabot[bot]' && '6' || '' }}
       NEOSIS_COVERAGE_PARTITIONS: ${{ vars.NEOSIS_CI_FAILOVER_LINUX == 'selfhosted' && github.event.pull_request.user.login != 'dependabot[bot]' && '4' || '' }}
-      NEOSIS_GATE_CONCURRENCY: ${{ vars.NEOSIS_CI_FAILOVER_LINUX == 'selfhosted' && github.event.pull_request.user.login != 'dependabot[bot]' && '3' || '' }}
+      NEOSIS_GATE_CONCURRENCY: ${{ vars.NEOSIS_CI_FAILOVER_LINUX == 'selfhosted' && github.event.pull_request.user.login != 'dependabot[bot]' && '3' || vars.NEOSIS_CI_FAILOVER_LINUX == 'blacksmith' && '3' || '1' }}
       # Managed-scope teardown cases run past the default per-test budget when
       # this lane's partitions, workers, and sibling gates share one host: the
       # disposal cases in subprocess-local and bash-sandbox exceeded 5000ms on
@@ -599,10 +601,11 @@ jobs:
     name: windows node 24 / coverage
     timeout-minutes: 120
     env:
-      # Shared hosts expose host CPUs, not an isolated allocation.
+      # Keep ordinary hosted coverage gates serial to avoid starving test
+      # subprocesses when the heavy and partitioned suites overlap.
       NEOSIS_COVERAGE_MAX_WORKERS: ${{ vars.NEOSIS_CI_FAILOVER_WINDOWS == 'selfhosted' && github.event.pull_request.user.login != 'dependabot[bot]' && '6' || '' }}
       NEOSIS_COVERAGE_PARTITIONS: ${{ vars.NEOSIS_CI_FAILOVER_WINDOWS == 'selfhosted' && github.event.pull_request.user.login != 'dependabot[bot]' && '4' || '' }}
-      NEOSIS_GATE_CONCURRENCY: ${{ vars.NEOSIS_CI_FAILOVER_WINDOWS == 'selfhosted' && github.event.pull_request.user.login != 'dependabot[bot]' && '3' || '' }}
+      NEOSIS_GATE_CONCURRENCY: ${{ vars.NEOSIS_CI_FAILOVER_WINDOWS == 'selfhosted' && github.event.pull_request.user.login != 'dependabot[bot]' && '3' || vars.NEOSIS_CI_FAILOVER_WINDOWS == 'blacksmith' && '3' || '1' }}
       NEOSIS_COVERAGE_TEST_TIMEOUT_MS: '90000'
       # A gate failure aborts the sibling gate instead of waiting out its
       # multi-minute instrumented run.

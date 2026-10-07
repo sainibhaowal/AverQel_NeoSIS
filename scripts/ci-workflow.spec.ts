@@ -13,11 +13,9 @@ const root = resolve(import.meta.dirname, '..')
 const runnerPrivatePnpmDestination = /^\$\{\{ runner\.temp \}\}\/setup-pnpm-\$\{\{ github\.run_id \}\}-\$\{\{ github\.run_attempt \}\}$/
 const nativeWindowsPnpmDestination = '${{ runner.temp }}/setup-pnpm-js-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}'
 const disabledWorkflowNames = new Set([
-  'docs-pages.yml',
   'node-addon-system-release.yml',
   'python-release.yml',
   'release-vendor-publish.yml',
-  'release-vendor.yml',
 ])
 
 function workflowPath(name: string): string {
@@ -71,6 +69,16 @@ describe('CI workflow', () => {
       name: 'Save coverage duration history', if: '${{ !cancelled() }}',
     }))
     expect(wine.steps).toContainEqual(expect.objectContaining({ name: 'Shut down wineserver', if: 'always()' }))
+  })
+
+  it('serializes hosted coverage gates to protect worker capacity', () => {
+    const linux = workflowJob(loadWorkflow('.github/workflows/ci.yml'), 'node-24-coverage')
+    const windows = workflowJob(loadWorkflow('.github/workflows/ci.yml'), 'windows-coverage')
+    if (!isRecord(linux.env) || !isRecord(windows.env)) {
+      throw new TypeError('coverage jobs must define environment settings')
+    }
+    expect(linux.env.NEOSIS_GATE_CONCURRENCY).toContain("|| '1'")
+    expect(windows.env.NEOSIS_GATE_CONCURRENCY).toContain("|| '1'")
   })
 
   it('isolates every pnpm action setup destination per runner', () => {
@@ -514,7 +522,7 @@ describe('CI workflow', () => {
     if (!isRecord(workflow.on) || !isRecord(prWorkflow.on)) {
       throw new TypeError('both CI workflows must define on')
     }
-    expect(Object.keys(workflow.on).sort()).toEqual(['push', 'workflow_dispatch'])
+    expect(Object.keys(workflow.on).sort()).toEqual(['push', 'schedule', 'workflow_dispatch'])
     expect(Object.keys(prWorkflow.on)).toEqual(['pull_request'])
 
     // Drills share the parent run’s supersession policy.
@@ -522,11 +530,11 @@ describe('CI workflow', () => {
       const job = workflow.jobs[name]
       if (!isRecord(job)) throw new TypeError(`${name} must be defined`)
       expect(job.concurrency).toBeUndefined()
-      // The Linux gate stays post-merge; the Windows inventory is on-demand
-      // because it measured 92.7 minutes and outran the push interval.
+      // The Linux gate runs on the weekly schedule and on demand; the Windows
+      // inventory remains on demand because it measured 92.7 minutes.
       expect(job.if).toBe(name === 'serial-windows'
         ? "github.event_name == 'workflow_dispatch' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')"
-        : "github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')")
+        : "(github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')")
     }
 
     // Pin the post-merge runtime, Wine, and standby inventory. macOS minutes

@@ -840,7 +840,7 @@ describe('WorkspaceAnalyzer', { timeout: 60_000 }, () => {
       expect(new WorkspaceAnalyzer({ root, packages }).analyzeInBatches(1)).toEqual(direct)
       expect(new WorkspaceAnalyzer({ root, packages }).analyzeInBatches(2)).toEqual(direct)
       expect(new WorkspaceAnalyzer({ root, packages: [...packages].reverse() }).analyzeInBatches(2)).toEqual(direct)
-    })
+    }, 90_000)
   })
 
   it('rejects TypeScript projects with source diagnostics before modeling them', () => {

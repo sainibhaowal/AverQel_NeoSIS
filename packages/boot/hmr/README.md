@@ -44,7 +44,7 @@ Existing configurations replace the module name `@averqel/cordis-plugin-hmr` wit
 | `ignored` | `["**/node_modules", "**/.*", "cache", "data"]` | Excluded module paths. |
 | `debounce` | `100` | Milliseconds for combining module changes. |
 
-Chokidar options, including polling, retain their existing meaning. Exact configuration watches also observe additions, removals and initially missing parent directories. They default to `awaitWriteFinish: true`: edits wait for Chokidar's 2-second write-stability window, avoiding its lossy change-event throttle. Configure `awaitWriteFinish` to adjust that window; disabling it can miss rapid consecutive edits. Direct Plugin Manager operations apply without waiting for file events.
+Chokidar options, including polling, retain their existing meaning. Exact configuration watches also observe additions, removals and initially missing parent directories. On macOS they default to polling so newly created configuration paths are observed reliably; an explicit `usePolling` option overrides that default. They default to `awaitWriteFinish: true`: edits wait for Chokidar's 2-second write-stability window, avoiding its lossy change-event throttle. Configure `awaitWriteFinish` to adjust that window; disabling it can miss rapid consecutive edits. Direct Plugin Manager operations apply without waiting for file events.
 
 -----
 

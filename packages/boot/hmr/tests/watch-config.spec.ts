@@ -109,6 +109,26 @@ describe('HMR exact config paths', () => {
     }
   })
 
+  it('defaults exact configuration watches to polling on macOS', async () => {
+    const dir = mkdtempSync(join(tmpdir(), 'neosis-hmr-config-polling-'))
+    hmrRoots.push(dir)
+    const ctx = new Context()
+    onTestFinished(() => ctx.fiber.dispose())
+    const watcher = new FSWatcher()
+    const previousFactory = configWatch.create
+    onTestFinished(() => { configWatch.create = previousFactory })
+    let options: ChokidarOptions | undefined
+    configWatch.create = (configured) => {
+      options = configured
+      queueMicrotask(() => { watcher.emit('ready') })
+      return watcher
+    }
+
+    await watchConfig(ctx, join(dir, 'profile.yml'), {}, () => {})
+
+    expect(options?.usePolling).toBe(process.platform === 'darwin')
+  })
+
   it('observes add, change, and unlink outside its module roots', { timeout: 20_000 }, async () => {
     const dir = mkdtempSync(join(tmpdir(), 'neosis-hmr-config-'))
     hmrRoots.push(dir)

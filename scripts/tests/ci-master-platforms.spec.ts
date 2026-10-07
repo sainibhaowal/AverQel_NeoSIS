@@ -97,7 +97,7 @@ describe('master-only platform scheduling', () => {
   it('runs all three deferred carriers on master pushes without live API credentials', () => {
     const master = workflow('ci-master.yml')
     expect(master.on.push).toEqual({ branches: ['main', 'master'] })
-    expect(Object.keys(master.on).sort()).toEqual(['push', 'workflow_dispatch'])
+    expect(Object.keys(master.on).sort()).toEqual(['push', 'schedule', 'workflow_dispatch'])
     const runtime = master.jobs['python-runtime']!
     expect(runtime).toMatchObject({
       if: primaryBranchPush,
