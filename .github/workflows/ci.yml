@@ -124,11 +124,10 @@ jobs:
           || 'ubuntu-24.04' }}
     name: node 24 / coverage
     env:
-      # Keep ordinary hosted coverage gates serial: the 4-CPU runners otherwise
-      # starve test subprocesses when the heavy and partitioned suites overlap.
-      # Larger failover pools retain parallel gates; shared hosts expose host CPUs.
+      # Two instrumented partitions on the ordinary 4-CPU runner leave headroom
+      # for shell and worker subprocesses; larger pools use more partitions.
       NEOSIS_COVERAGE_MAX_WORKERS: ${{ vars.NEOSIS_CI_FAILOVER_LINUX == 'selfhosted' && github.event.pull_request.user.login != 'dependabot[bot]' && '6' || '' }}
-      NEOSIS_COVERAGE_PARTITIONS: ${{ vars.NEOSIS_CI_FAILOVER_LINUX == 'selfhosted' && github.event.pull_request.user.login != 'dependabot[bot]' && '4' || '' }}
+      NEOSIS_COVERAGE_PARTITIONS: ${{ vars.NEOSIS_CI_FAILOVER_LINUX == 'selfhosted' && github.event.pull_request.user.login != 'dependabot[bot]' && '4' || vars.NEOSIS_CI_FAILOVER_LINUX == 'blacksmith' && '11' || '2' }}
       NEOSIS_GATE_CONCURRENCY: ${{ vars.NEOSIS_CI_FAILOVER_LINUX == 'selfhosted' && github.event.pull_request.user.login != 'dependabot[bot]' && '3' || vars.NEOSIS_CI_FAILOVER_LINUX == 'blacksmith' && '3' || '1' }}
       # Managed-scope teardown cases run past the default per-test budget when
       # this lane's partitions, workers, and sibling gates share one host: the

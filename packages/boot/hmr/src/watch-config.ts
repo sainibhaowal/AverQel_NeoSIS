@@ -50,9 +50,6 @@ export async function watchConfig(
     ...watchOptions,
     depth: target.depth,
     ignoreInitial: false,
-    // FSEvents can miss files created beneath a newly-created directory.
-    // Polling only the exact config watch root keeps Darwin profile updates reliable.
-    usePolling: watchOptions.usePolling ?? process.platform === 'darwin',
   })
   paths.add(target.filename)
   const state = { dirty: false }

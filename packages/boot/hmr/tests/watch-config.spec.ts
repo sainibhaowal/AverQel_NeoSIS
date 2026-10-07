@@ -109,8 +109,8 @@ describe('HMR exact config paths', () => {
     }
   })
 
-  it('defaults exact configuration watches to polling on macOS', async () => {
-    const dir = mkdtempSync(join(tmpdir(), 'neosis-hmr-config-polling-'))
+  it('leaves the platform-default watcher strategy intact for exact config watches', async () => {
+    const dir = mkdtempSync(join(tmpdir(), 'neosis-hmr-config-default-'))
     hmrRoots.push(dir)
     const ctx = new Context()
     onTestFinished(() => ctx.fiber.dispose())
@@ -126,7 +126,7 @@ describe('HMR exact config paths', () => {
 
     await watchConfig(ctx, join(dir, 'profile.yml'), {}, () => {})
 
-    expect(options?.usePolling).toBe(process.platform === 'darwin')
+    expect(options?.usePolling).toBeUndefined()
   })
 
   it('observes add, change, and unlink outside its module roots', { timeout: 20_000 }, async () => {
