@@ -5,6 +5,7 @@ import { dirname, join, resolve } from 'node:path'
 import * as chokidar from 'chokidar'
 import { afterEach, describe, expect, it, onTestFinished, vi } from 'vitest'
 import { LocalFileSystem } from '../src/index.ts'
+import { missingTargetWatchOptions } from '../src/watch-policy.ts'
 
 vi.mock('chokidar', async (importOriginal) => {
   const original = await importOriginal<typeof import('chokidar')>()
@@ -12,6 +13,17 @@ vi.mock('chokidar', async (importOriginal) => {
 })
 
 afterEach(() => { vi.restoreAllMocks() })
+
+describe('missing target watcher policy', () => {
+  it.each([
+    ['macOS and missing', 'darwin', false, { usePolling: true }],
+    ['macOS and existing', 'darwin', true, {}],
+    ['Linux and missing', 'linux', false, {}],
+    ['Windows and missing', 'win32', false, {}],
+  ] as const)('%s', (_label, platform, targetExists, expected) => {
+    expect(missingTargetWatchOptions(platform, targetExists)).toEqual(expected)
+  })
+})
 
 async function setup(kind: 'file' | 'directory' | 'missing' = 'file') {
   const watcher = new chokidar.FSWatcher()

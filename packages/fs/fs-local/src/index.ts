@@ -40,6 +40,7 @@ import {
   writeFileAtomic,
 } from './fsio.ts'
 import type { FsIoInternals } from './fsio.ts'
+import { missingTargetWatchOptions } from './watch-policy.ts'
 
 /** Configuration for the local filesystem backend. */
 export interface Config {
@@ -69,11 +70,13 @@ export class LocalFileSystem extends FileSystem {
   override async watch(target: FsTarget, changed: (error?: Error) => void, signal: AbortSignal): Promise<() => Promise<void>> {
     signal.throwIfAborted()
     const path = resolve(this.processPath(target))
-    const directory = (await this.stat(target, signal))?.type === 'directory'
+    const info = await this.stat(target, signal)
+    const directory = info?.type === 'directory'
     signal.throwIfAborted()
     const root = directory ? path : dirname(path)
     const watcher = watch(root, {
       ignoreInitial: true, depth: 0,
+      ...missingTargetWatchOptions(process.platform, info !== undefined),
       ignored: entry => !directory && resolve(entry) !== root && resolve(entry) !== path,
     })
     watcher.on('all', (_event, entry) => {
