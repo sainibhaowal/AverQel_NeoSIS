@@ -12,10 +12,10 @@ afterEach(async () => {
   for (const root of roots.splice(0)) await rm(root, { recursive: true, force: true })
 })
 
-it('uses the bundled Unix executable when the resource is present', async () => {
+it('uses the bundled platform executable when the resource is present', async () => {
   const root = await mkdtemp(join(tmpdir(), 'neosis-office-executable-'))
   roots.push(root)
-  const executable = join(root, 'program', 'soffice')
+  const executable = join(root, 'program', process.platform === 'win32' ? 'soffice.exe' : 'soffice')
   await mkdir(join(root, 'program'))
   await writeFile(executable, '')
   expect(resolveOfficeExecutable(root)).toBe(executable)

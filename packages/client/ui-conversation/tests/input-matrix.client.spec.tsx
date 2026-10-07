@@ -336,7 +336,7 @@ describe('matrix row: submitting', () => {
     act(() => { rejectSubmit(new Error('晚到失败')) })
     await vi.waitFor(() => { expect(second.shell.snapshot.phase).toBe('plain') })
     expect(second.shell.snapshot.draft).toBe('用户飞行中打的新稿')
-    expect(second.view.getByText('晚到失败')).toBeTruthy()
+    await vi.waitFor(() => { expect(second.view.getByText('晚到失败')).toBeTruthy() })
   })
 })
 

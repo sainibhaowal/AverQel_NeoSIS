@@ -249,7 +249,8 @@ describe('CI workflow', () => {
     }
 
     expect(windowsCoverage.name).toBe('windows node 24 / coverage')
-    expect(windowsCoverage.env).toMatchObject({ NEOSIS_COVERAGE_PARTITIONS: "${{ vars.NEOSIS_CI_FAILOVER_WINDOWS == 'selfhosted' && github.event.pull_request.user.login != 'dependabot[bot]' && '4' || '' }}" })
+    expect(windowsCoverage.env).toMatchObject({ NEOSIS_COVERAGE_PARTITIONS: "${{ vars.NEOSIS_CI_FAILOVER_WINDOWS == 'selfhosted' && github.event.pull_request.user.login != 'dependabot[bot]' && '4' || '2' }}" })
+    expect(node24Consumers.env).toMatchObject({ NEOSIS_WEB_SNAPSHOT_WORKERS: "${{ vars.NEOSIS_CI_FAILOVER_LINUX == 'selfhosted' && github.event.pull_request.user.login != 'dependabot[bot]' && '6' || '2' }}" })
     expect(node24Coverage.env).toMatchObject({ NEOSIS_COVERAGE_PARTITIONS: "${{ vars.NEOSIS_CI_FAILOVER_LINUX == 'selfhosted' && github.event.pull_request.user.login != 'dependabot[bot]' && '4' || vars.NEOSIS_CI_FAILOVER_LINUX == 'blacksmith' && '11' || '2' }}" })
     const coverageSteps = windowsCoverage.steps as unknown[]
     const coverageCommands = coverageSteps.filter((step): step is Record<string, unknown> & { run: string } => (

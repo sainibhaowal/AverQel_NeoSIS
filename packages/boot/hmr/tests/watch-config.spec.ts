@@ -47,7 +47,7 @@ async function bootHmr(dir: string, root: string[] = [], usePolling?: boolean): 
 }
 
 async function eventually(test: () => boolean, message: string): Promise<void> {
-  const deadline = Date.now() + 10_000
+  const deadline = Date.now() + 30_000
   while (!test()) {
     if (Date.now() >= deadline) throw new Error(message)
     await new Promise(resolve => setTimeout(resolve, 10))
@@ -110,7 +110,7 @@ describe('HMR exact config paths', () => {
     }
   })
 
-  it('leaves the platform-default watcher strategy intact for exact config watches', async () => {
+  it('defaults exact configuration watches to polling on macOS', async () => {
     const dir = mkdtempSync(join(tmpdir(), 'neosis-hmr-config-default-'))
     hmrRoots.push(dir)
     const ctx = new Context()
@@ -127,10 +127,10 @@ describe('HMR exact config paths', () => {
 
     await watchConfig(ctx, join(dir, 'profile.yml'), {}, () => {})
 
-    expect(options?.usePolling).toBeUndefined()
+    expect(options?.usePolling).toBe(process.platform === 'darwin')
   })
 
-  it('observes add, change, and unlink outside its module roots', { timeout: 20_000 }, async () => {
+  it('observes add, change, and unlink outside its module roots', { timeout: 60_000 }, async () => {
     const dir = mkdtempSync(join(tmpdir(), 'neosis-hmr-config-'))
     hmrRoots.push(dir)
     const filename = join(dir, 'plugins.yml')

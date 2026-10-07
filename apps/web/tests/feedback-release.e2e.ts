@@ -20,8 +20,6 @@ import { connectFreshWorkspace, newEnglishPage, saveFailureShot } from './suppor
 const SNAPSHOT_DIR = fileURLToPath(new URL('../../../snapshots/web/feedback-release', import.meta.url))
 // Both routes borrow the same settled turn; this manifest references its owner.
 const FIXTURE = fileURLToPath(new URL('../../../snapshots/web/feedback-command/session.v3.jsonl', import.meta.url))
-const ACK_EXPECTED = join(SNAPSHOT_DIR, 'ack.expected.md')
-const ACK_EXPANDED_EXPECTED = join(SNAPSHOT_DIR, 'ack-expanded.expected.md')
 const RELEASE_EXPECTED = join(SNAPSHOT_DIR, 'feedback-release.expected.json')
 const MODE = webSnapshotMode()
 
@@ -35,6 +33,8 @@ const PROMPT = 'Reply with the single word LIGHTHOUSE and stop.'
 
 describe.each(MODE === 'record' ? ['deepseek-official'] : ['deepseek-official', 'feedback-mock'])('web e2e: feedback release for %s', (provider) => {
   const official = provider === 'deepseek-official'
+  const ackExpected = join(SNAPSHOT_DIR, official ? 'ack.expected.md' : 'ack-feedback-mock.expected.md')
+  const ackExpandedExpected = join(SNAPSHOT_DIR, official ? 'ack-expanded.expected.md' : 'ack-expanded-feedback-mock.expected.md')
   let scaffold: WebScaffold
   let browser: Browser
   let page: Page
@@ -80,7 +80,9 @@ describe.each(MODE === 'record' ? ['deepseek-official'] : ['deepseek-official', 
     const trigger = page.getByRole('button', { name: /^Select model, current/ })
     await trigger.click()
     await page.getByRole('menuitem', { name: /^Model\b/ }).click()
-    await page.getByRole('menuitemradio', { name, exact: true }).click()
+    const provider = name === 'DeepSeek-V4.1-Flash' ? 'DeepSeek' : 'Feedback mock'
+    await page.getByRole('group', { name: provider, exact: true })
+      .getByRole('menuitemradio', { name, exact: true }).click()
     await expect.poll(() => trigger.getAttribute('aria-label')).toContain(name)
     // The durable projection can update the label before the selection reply closes the menu.
     await expect.poll(() => trigger.getAttribute('aria-expanded'), { timeout: 10_000 }).toBe('false')
@@ -184,13 +186,13 @@ describe.each(MODE === 'record' ? ['deepseek-official'] : ['deepseek-official', 
     await expectFeedbackRelease('feedback/record', 1)
 
     const snapshot = await captureStableAria(page, '[class*="centerCol"]', scaffold.workspaceCwd)
-    await compareOrRefreshGolden(ACK_EXPECTED, snapshot, MODE)
+    await compareOrRefreshGolden(ackExpected, snapshot, MODE)
     const expanded = await captureExpandedTurnProcessAria(
       page,
       '[class*="centerCol"]',
       scaffold.workspaceCwd,
     )
-    await compareOrRefreshGolden(ACK_EXPANDED_EXPECTED, expanded, MODE)
+    await compareOrRefreshGolden(ackExpandedExpected, expanded, MODE)
     expect(tripwire.pageErrors).toEqual([])
     expect(tripwire.warnings).toEqual([])
   }, 60_000)
@@ -305,6 +307,10 @@ describe.each(MODE === 'record' ? ['deepseek-official'] : ['deepseek-official', 
   })
 
   it.skipIf(MODE === 'record')('keeps the fixture inventory closed', async () => {
-    await assertFixtureInventory(SNAPSHOT_DIR, ['ack.expected.md', 'ack-expanded.expected.md', 'feedback-release.expected.json'])
+    await assertFixtureInventory(SNAPSHOT_DIR, [
+      'ack.expected.md', 'ack-expanded.expected.md',
+      'ack-feedback-mock.expected.md', 'ack-expanded-feedback-mock.expected.md',
+      'feedback-release.expected.json',
+    ])
   })
 })

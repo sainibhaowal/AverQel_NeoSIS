@@ -24,3 +24,4 @@
 - button "Send message" [disabled]
 - button "1 turns 1 steps · {{throughput}} tok/s": 1 turns 1 steps{{throughput}} tok/s
 - button "7.8K tok · Cache hit 99%": 7.8K tokCache hit 99%
+- button "6% of context used": 6%

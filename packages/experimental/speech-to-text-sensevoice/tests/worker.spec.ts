@@ -1,8 +1,9 @@
 /** Local provider queueing, cancellation and process cleanup with real managed subprocesses. */
 import { mkdtemp, readFile, rm } from 'node:fs/promises'
+import { createRequire } from 'node:module'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 import { Context } from '@averqel/cordis'
 import type { SubprocessHandle } from '@averqel/neosis-subprocess'
 import LocalSubprocess from '@averqel/neosis-subprocess-local'
@@ -369,7 +370,10 @@ it('launches source workers through the repository ESM loader', async () => {
   vi.mocked(prepareRuntime).mockResolvedValueOnce({ tokens: root, worker: fileURLToPath(new URL('./worker-source.fixture.ts', import.meta.url)), model: root, vad: root })
   await prepare(worker)
   expect((await worker.transcribe({ audio, language: 'zh' }, signal())).text).toBe('zh')
-  expect(spawn.mock.calls[0]?.[0].argv).toContain('--import')
+  const argv = spawn.mock.calls[0]?.[0].argv ?? []
+  const importIndex = argv.indexOf('--import')
+  expect(importIndex).toBeGreaterThanOrEqual(0)
+  expect(argv[importIndex + 1]).toBe(pathToFileURL(createRequire(import.meta.url).resolve('tsx/esm')).href)
 })
 
 it('requires explicit preparation before direct transcription without starting downloads', async () => {

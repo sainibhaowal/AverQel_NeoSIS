@@ -5,6 +5,7 @@ import { createRequire } from 'node:module'
 import { mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, posix, resolve } from 'node:path'
+import { pathToFileURL } from 'node:url'
 import { afterEach, describe, expect, it } from 'vitest'
 import { canonicalizeSchema, historicalSchemaDigest, schemaDigest } from './persistence-schema-model.ts'
 import type { PersistenceRoot, PersistenceSchemaInventory, SchemaNode, SchemaProperty, SourceCompatibility } from './persistence-schema-model.ts'
@@ -12,7 +13,7 @@ import { extractPersistenceSchema } from './persistence-schema.ts'
 import { persistenceCatalogArtifacts } from './gen-persistence-catalog.ts'
 import { createPersistenceFinalizationCheckpoint, loadPersistenceFinalization } from './persistence-finalization.ts'
 
-const tsxLoader = createRequire(import.meta.url).resolve('tsx/esm')
+const tsxLoader = pathToFileURL(createRequire(import.meta.url).resolve('tsx/esm')).href
 import {
   classifyPersistenceChange,
   loadPersistenceHistory,

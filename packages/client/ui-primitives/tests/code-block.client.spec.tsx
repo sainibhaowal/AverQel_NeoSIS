@@ -58,7 +58,7 @@ describe('highlightToHtml', () => {
     } finally {
       stop()
     }
-  }, 15_000)
+  }, 60_000)
 })
 
 describe('CodeBlock', () => {

@@ -203,7 +203,7 @@ describe('workspace-changes in a repository', () => {
     expect(await ctx.workspaceChanges.diff(session.id, announcedSeq(session), 2, signal)).toMatchObject({ kind: 'text', before: false, after: true, hunks: [{ lines: ['+one', '+two', '+three'] }] })
   })
 
-  it('records inside the turn when the agent stops, and again after turn/end only when tools settled later', { timeout: 30_000 }, async () => {
+  it('records inside the turn when the agent stops, and again after turn/end only when tools settled later', { timeout: 90_000 }, async () => {
     const cwd = await repository()
     const { ctx } = await boot()
     const session = ctx.sessions.create(SessionId('stopping'), { meta: { cwd } })

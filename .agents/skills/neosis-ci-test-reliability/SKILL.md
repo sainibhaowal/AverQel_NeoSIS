@@ -24,6 +24,8 @@ Assume these layers can overlap unless the active configuration proves otherwise
 3. Independent Vitest or repository-gate processes in one job.
 4. Different Actions jobs whose runners share one host.
 
+Tune hosted worker counts to the lane's CPU and process-start budget: browser snapshots use two Chromium workers on hosted Linux and six on dedicated self-hosted runners; hosted Windows coverage uses two partitions. Repository-wide script scans run in the required uninstrumented coverage companion gate because scripts are outside package-source coverage thresholds; those tests still must pass.
+
 Process isolation does not isolate host ports, predictable filesystem paths, external services, databases, sockets, or inherited child processes. For every acquired resource, identify its owner, atomic allocation mechanism, observable readiness signal, registered cleanup, and quiescent completion signal.
 
 Do not serialize an entire suite merely because one fixture lacks isolation. Narrow the exclusive scope or change the resource allocation first. A sequential Vitest block cannot protect a host resource from another file, process, job, or runner.

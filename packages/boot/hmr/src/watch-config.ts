@@ -50,6 +50,9 @@ export async function watchConfig(
     ...watchOptions,
     depth: target.depth,
     ignoreInitial: false,
+    // FSEvents can miss exact configuration-file additions under load. Keep
+    // polling local to this narrow watch; explicit deployment settings win.
+    usePolling: watchOptions.usePolling ?? process.platform === 'darwin',
   })
   paths.add(target.filename)
   const state = { dirty: false }

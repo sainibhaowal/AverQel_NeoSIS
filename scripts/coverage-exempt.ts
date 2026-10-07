@@ -49,6 +49,13 @@ export const coverageExemptHeavySuites: readonly CoverageExemptSuite[] = [
   { filter: 'scripts/oxlint-contract.spec.ts', exclude: 'scripts/oxlint-contract.spec.ts' },
   { filter: 'scripts/change-scope.spec.ts', exclude: 'scripts/change-scope.spec.ts' },
   { filter: 'scripts/translation-pairing-merge.spec.ts', exclude: 'scripts/translation-pairing-merge.spec.ts' },
+  // Repository-wide manifest and schema scans only exercise script sources,
+  // which are outside the package-source coverage thresholds. Keep them in
+  // the required gate without paying the V8 instrumentation cost.
+  { filter: 'scripts/project-doc-site.spec.ts', exclude: 'scripts/project-doc-site.spec.ts' },
+  { filter: 'scripts/persistence-epoch-header.spec.ts', exclude: 'scripts/persistence-epoch-header.spec.ts' },
+  { filter: 'scripts/persistence-changes.spec.ts', exclude: 'scripts/persistence-changes.spec.ts' },
+  { filter: 'scripts/benchmark-npm-resolution.spec.ts', exclude: 'scripts/benchmark-npm-resolution.spec.ts' },
   // Built-artifact proof. Packer/runtime src is threshold-excluded, and the
   // suite self-skips on unbuilt checkouts; the serial-windows complete
   // reference still starts this uninstrumented gate after its build gate, so

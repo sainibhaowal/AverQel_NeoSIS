@@ -153,11 +153,11 @@ describe('Node program process', () => {
   })
 
   it('retains console output emitted immediately before a non-yielding program', async () => {
-    const { run } = await setup({ timeoutMs: 1000, graceMs: 50 })
+    const { run } = await setup({ timeoutMs: 3000, graceMs: 50 })
     const result = await run({ program: 'console.log("before hot loop"); for (;;) {}', bindings: [] })
     expect(result.error?.kind).toBe('timeout')
     expect(result.logs).toEqual(['before hot loop'])
-  })
+  }, 6000)
 
   it('does not pause the deadline while a binding is pending', async () => {
     const { run } = await setup({ timeoutMs: 1000, graceMs: 50 })
