@@ -59,6 +59,8 @@ None; the package does not assemble or send provider requests.
 
 <a id="known-limitations-and-deferred-work"></a>
 
+No runtime invariant companion is published because this adapter exposes no independent event stream or state snapshot to compare; command registration and preference behavior are covered by its package tests.
+
 - Browser support depends on the platform's allowed physical-key combinations and browser reservation rules.
 - Desktop native behavior requires the product's keyboard bridge; the package intentionally does not emulate that bridge in the browser.
 - Binding conflicts remain visible in the catalog and are not silently resolved by choosing a winner.

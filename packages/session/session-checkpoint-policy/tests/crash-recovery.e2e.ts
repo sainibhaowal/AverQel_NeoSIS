@@ -2,7 +2,7 @@ import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import { createRequire } from 'node:module'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 import { execa } from 'execa'
 import { Context } from '@averqel/cordis'
 import { afterEach, describe, expect, it, vi } from 'vitest'
@@ -14,7 +14,7 @@ import JsonlSessionPersistence from '@averqel/neosis-session-persistence-jsonl'
 
 const repoRoot = fileURLToPath(new URL('../../../../', import.meta.url))
 const childScript = fileURLToPath(new URL('./fixtures/crash-child.ts', import.meta.url))
-const tsxLoader = createRequire(import.meta.url).resolve('tsx')
+const tsxLoader = pathToFileURL(createRequire(import.meta.url).resolve('tsx')).href
 const sessionId = SessionId('semantic-checkpoint-crash')
 const roots: string[] = []
 const CHILD_FAILPOINT_TIMEOUT_MS = 30_000

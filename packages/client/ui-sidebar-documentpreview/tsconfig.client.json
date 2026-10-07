@@ -12,9 +12,6 @@
   ],
   "references": [
     {
-      "path": "./tsconfig.host.json"
-    },
-    {
       "path": "../../api/gateway/tsconfig.client.json"
     },
     {

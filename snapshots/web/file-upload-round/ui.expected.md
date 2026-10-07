@@ -23,8 +23,8 @@
 - textbox "Message or run a task, / commands, @ files or sessions"
 - button "Add files or run commands"
 - 'button "Access mode, current: Workspace Write"': Workspace Write
-- button "Select model, current AverQel-V4-Flash-Vision-Exp, reasoning effort high": AverQel-V4-Flash-Vision-Exp high
+- button "Select model, current DeepSeek · DeepSeek-V4.1-Flash": DeepSeek-V4.1-Flash
 - button "Send message" [disabled]
 - button "1 turns 2 steps · {{throughput}} tok/s": 1 turns 2 steps{{throughput}} tok/s
 - button "17.3K tok · Cache hit 51%": 17.3K tokCache hit 51%
-- button "1% of context used": 1%
+- button "7% of context used": 7%

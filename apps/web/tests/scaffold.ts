@@ -212,6 +212,9 @@ const REPLAY_PROVIDERS = [{
   name: 'DeepSeek',
   models: [
     { id: 'deepseek-flash', name: 'DeepSeek-V4.1-Flash', contextWindow: 128_000 },
+    // Some authored sessions pin the public route's compatibility model id.
+    // Keep its catalog metadata available so replay preserves context events.
+    { id: 'deepseek-v4-flash', name: 'AverQel-V4-Flash', contextWindow: 128_000 },
     {
       id: 'deepseek-v4-pro',
       name: 'DeepSeek-V4-Pro',

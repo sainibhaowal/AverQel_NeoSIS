@@ -530,6 +530,20 @@ describe('automation-only ACP bridge', () => {
     expect(harness.adapter.requests[0]).toMatchObject({ provider: 'mock', model: 'plain' })
   })
 
+  it('orders model provider groups by id regardless of registration order', async () => {
+    harness = await makeBridgeHarness()
+    harness.registerCatalogProvider('z-provider')
+    harness.registerCatalogProvider('a-provider')
+    await harness.client.initialize({ protocolVersion: PROTOCOL_VERSION, clientCapabilities: {} })
+
+    const created = await harness.client.newSession({ cwd: process.cwd(), mcpServers: [] })
+    const model = created.configOptions?.find(option => option.id === 'model')
+    if (model?.type !== 'select') throw new Error('expected a model select option')
+
+    expect(model.options.map(option => 'group' in option ? option.group : option.value))
+      .toEqual(['a-provider', 'mock', 'z-provider'])
+  })
+
   it('publishes complete config options when adapter topology changes', async () => {
     harness = await makeBridgeHarness()
     await harness.client.initialize({ protocolVersion: PROTOCOL_VERSION, clientCapabilities: {} })

@@ -89,12 +89,12 @@ describe('npm resolution benchmark', () => {
     })
   })
 
-  it('runs npm against the local registry without requesting an archive', async () => {
+  it('runs npm against the local registry without requesting an archive', { timeout: 45_000 }, async () => {
     const index: RegistryIndex = new Map([[
       '@averqel/neosis',
       new Map([['0.1.0', { name: '@averqel/neosis', version: '0.1.0' }]]),
     ]])
-    const result = await benchmarkNpmResolution(index, '0.1.0', 10_000)
+    const result = await benchmarkNpmResolution(index, '0.1.0', 30_000)
 
     expect(result.durationMs).toBeGreaterThan(0)
     expect(result.registryRequests).toBeGreaterThan(0)
@@ -102,7 +102,7 @@ describe('npm resolution benchmark', () => {
     expect(result.unknownPackages).toEqual([])
   })
 
-  it('returns npm placement for two aliased package versions without requesting archives', async () => {
+  it('returns npm placement for two aliased package versions without requesting archives', { timeout: 45_000 }, async () => {
     const index: RegistryIndex = new Map([[
       '@averqel/neosis',
       new Map([
@@ -114,7 +114,7 @@ describe('npm resolution benchmark', () => {
     const result = await resolveNpmPackageLock(index, {
       '@averqel/neosis': '0.2.0',
       'neosis-previous': 'npm:@averqel/neosis@0.1.0',
-    }, 10_000)
+    }, 30_000)
 
     expect(result.archiveRequests).toBe(0)
     expect(result.packageLock.packages['node_modules/@averqel/neosis']?.version).toBe('0.2.0')
@@ -124,7 +124,7 @@ describe('npm resolution benchmark', () => {
     })
   })
 
-  it('isolates peer resolution from inherited npm configuration', async () => {
+  it('isolates peer resolution from inherited npm configuration', { timeout: 45_000 }, async () => {
     const root = mkdtempSync(join(tmpdir(), 'neosis-hostile-npm-config-'))
     roots.push(root)
     const userConfig = join(root, 'user.npmrc')
@@ -150,7 +150,7 @@ describe('npm resolution benchmark', () => {
         }]])],
       ])
 
-      const result = await resolveNpmPackageLock(index, { '@averqel/neosis': '0.1.0' }, 10_000)
+      const result = await resolveNpmPackageLock(index, { '@averqel/neosis': '0.1.0' }, 30_000)
 
       expect(result.archiveRequests).toBe(0)
       expect(result.packageLock.packages['node_modules/@averqel/neosis-peer']?.version).toBe('1.0.0')

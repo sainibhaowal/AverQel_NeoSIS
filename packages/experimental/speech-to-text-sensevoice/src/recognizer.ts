@@ -2,6 +2,7 @@
 import { randomBytes } from 'node:crypto'
 import { mkdir } from 'node:fs/promises'
 import { createRequire } from 'node:module'
+import { pathToFileURL } from 'node:url'
 import type { Context } from '@averqel/cordis'
 import type { SubprocessHandle } from '@averqel/neosis-subprocess'
 import type { SpeechPreparationOptions, SpeechInput, SpeechPreparationState, SpeechPreparationStep, SpeechPreparationStepKind, Transcript } from '@averqel/neosis-experimental-speech-to-text/types'
@@ -263,7 +264,7 @@ export class SenseVoiceWorker {
     await mkdir(this.config.dataRoot, { recursive: true })
     const token = randomBytes(32).toString('hex')
     const handle = this.ctx.subprocess.spawn({
-      argv: [process.execPath, ...runtime.worker.endsWith('.ts') ? ['--import', require.resolve('tsx/esm')] : [], runtime.worker, JSON.stringify(Object.assign({}, this.config, runtime))],
+      argv: [process.execPath, ...runtime.worker.endsWith('.ts') ? ['--import', pathToFileURL(require.resolve('tsx/esm')).href] : [], runtime.worker, JSON.stringify(Object.assign({}, this.config, runtime))],
       cwd: this.config.dataRoot, graceMs: this.config.graceMs,
       env: { NEOSIS_SPEECH_TOKEN: token, ELECTRON_RUN_AS_NODE: '1' },
       stdio: { stdin: 'ignore', stdout: 'pipe', stderr: { maxBytes: this.config.maxLogBytes } },

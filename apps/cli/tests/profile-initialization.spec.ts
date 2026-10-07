@@ -4,7 +4,7 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync
 import { createRequire } from 'node:module'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 import {
   initProfile,
   PROFILE_PATCH_FILENAME,
@@ -18,8 +18,8 @@ import { execa } from 'execa'
 import { initializeProfileFromDefault } from '../src/profile-boot.ts'
 
 const childEntry = fileURLToPath(new URL('./fixtures/initialize-profile-from-default.ts', import.meta.url))
-const tsxLoader = createRequire(import.meta.url).resolve('tsx/esm')
-const CHILD_TIMEOUT_MS = 30_000
+const tsxLoader = pathToFileURL(createRequire(import.meta.url).resolve('tsx/esm')).href
+const CHILD_TIMEOUT_MS = 60_000
 
 /** Wait until a child has reached the shared creation barrier. */
 async function waitForFile(file: string): Promise<void> {

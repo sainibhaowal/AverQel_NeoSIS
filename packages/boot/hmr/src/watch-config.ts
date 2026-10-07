@@ -1,5 +1,6 @@
 /** Exact-path watching for live profile patch files outside Cordis module roots. */
-import { dirname, relative, resolve } from 'node:path'
+import { basename, dirname, relative, resolve } from 'node:path'
+import { realpathSync } from 'node:fs'
 import { realpath, stat } from 'node:fs/promises'
 import { watch, type ChokidarOptions } from 'chokidar'
 import type { Context } from '@averqel/cordis'
@@ -45,14 +46,26 @@ export async function watchConfig(
   const { cwd: _cwd, ignored: _ignored, ...watchOptions } = options
   const watcher = watch(target.root, {
     // Stabilized events bypass Chokidar's lossy 50 ms change-event throttle.
-    awaitWriteFinish: true, ...watchOptions, depth: target.depth, ignoreInitial: false,
+    awaitWriteFinish: true,
+    ...watchOptions,
+    depth: target.depth,
+    ignoreInitial: false,
+    // FSEvents can miss exact configuration-file additions under load. Keep
+    // polling local to this narrow watch; explicit deployment settings win.
+    usePolling: watchOptions.usePolling ?? process.platform === 'darwin',
   })
   paths.add(target.filename)
   const state = { dirty: false }
   let running: Promise<void> | undefined
   const onChange = (path: string) => {
     const observed = resolve(path)
-    if (observed !== filename && observed !== target.filename) return
+    let canonicalObserved = observed
+    try {
+      canonicalObserved = resolve(realpathSync(dirname(observed)), basename(observed))
+    } catch {
+      // Keep the event path for removals or when a parent disappeared.
+    }
+    if (observed !== filename && canonicalObserved !== target.filename) return
     state.dirty = true
     if (running) return
     running = (async () => {

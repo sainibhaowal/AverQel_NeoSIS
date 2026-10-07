@@ -1,7 +1,7 @@
 # SDK-profile patch for the deterministic diagnostic child runtime.
 
 - id: llm-deepseek
-  name: '@averqel/neosis-llm-deepseek'
+  name: '@averqel/neosis-llm-deepseek-api-key'
   disabled: true
 
 - id: agent-instructions

@@ -42,7 +42,6 @@ describe.skipIf(!builtArtifactsExist)('neosis web browser-open assembled snapsho
     const root = mkdtempSync(join(tmpdir(), 'neosis-web-browser-open-snapshot-'))
     tempRoots.push(root)
     const result = await execa(process.execPath, [
-      '--import', openerHook,
       builtBin,
       'web',
       '--port', '0',
@@ -54,6 +53,7 @@ describe.skipIf(!builtArtifactsExist)('neosis web browser-open assembled snapsho
         NEOSIS_AGENTS_HOME: join(root, '.agents'),
         NEOSIS_HOME: join(root, '.neosis'),
         NEOSIS_TELEMETRY_DISABLED: '1',
+        NODE_OPTIONS: [process.env.NODE_OPTIONS, `--import=${openerHook}`].filter(Boolean).join(' '),
         NODE_NO_WARNINGS: '1',
         SSH_CONNECTION: '',
         SSH_TTY: '',
@@ -85,8 +85,8 @@ describe.skipIf(!builtArtifactsExist)('neosis web browser-open assembled snapsho
       {
         "apiKeyPresent": false,
         "bootManifest": true,
-        "neosisHomePresent": false,
         "exitCode": 0,
+        "neosisHomePresent": false,
         "openedUrl": "http://127.0.0.1:{{port}}/?token={{token}}",
         "opening": true,
         "readyUrl": "http://127.0.0.1:{{port}}/?token={{token}}",
@@ -100,7 +100,6 @@ describe.skipIf(!builtArtifactsExist)('neosis web browser-open assembled snapsho
     const root = mkdtempSync(join(tmpdir(), 'neosis-web-browser-open-failure-snapshot-'))
     tempRoots.push(root)
     const result = await execa(process.execPath, [
-      '--import', openerHook,
       builtBin,
       'web',
       '--port', '0',
@@ -114,6 +113,7 @@ describe.skipIf(!builtArtifactsExist)('neosis web browser-open assembled snapsho
         NEOSIS_BROWSER_OPEN_TEST_EXIT_ON_FAILURE: '1',
         NEOSIS_HOME: join(root, '.neosis'),
         NEOSIS_TELEMETRY_DISABLED: '1',
+        NODE_OPTIONS: [process.env.NODE_OPTIONS, `--import=${openerHook}`].filter(Boolean).join(' '),
         NODE_NO_WARNINGS: '1',
         SSH_CONNECTION: '',
         SSH_TTY: '',

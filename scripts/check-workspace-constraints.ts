@@ -174,6 +174,7 @@ export function readWorkspaceManifests(repositoryRoot: string): WorkspaceManifes
 }
 
 const packageFileExtras: Readonly<Record<string, readonly string[]>> = {
+  '@averqel/neosis-client-shortcuts': ['lib/protocol.js'],
   // Owned Worker bundles import this public bootstrap before their business entry.
   '@averqel/neosis-app-boot': ['lib/worker/profile-resolution-bootstrap.js'],
   // Statically linked client libraries keep their stylesheets next to the emitted
@@ -204,8 +205,9 @@ const packageFileExtras: Readonly<Record<string, readonly string[]>> = {
   '@averqel/neosis-session-persistence-jsonl': ['lib/worker.cjs'],
   // The argv-prefix runner entry ships beside the lib as its own bundle;
   // sandbox-local resolves it through the package's ./runner export. tsdown
-  // also shares its generated FFI code through a hashed runtime chunk.
-  '@averqel/neosis-sandbox-windows-acl': ['lib/runner.js', 'lib/types-*.js'],
+  // also shares its generated FFI code through a hashed runtime chunk. The
+  // ACL diagnostic skill is loaded from the package's assets directory.
+  '@averqel/neosis-sandbox-windows-acl': ['lib/runner.js', 'lib/types-*.js', 'assets'],
   '@averqel/neosis-skill-badge': ['assets'],
   '@averqel/neosis-skill-office': ['assets'],
   '@averqel/neosis-subprocess': ['lib/control.js'],
@@ -221,6 +223,7 @@ const packageFileExtras: Readonly<Record<string, readonly string[]>> = {
     'lib/runner.js',
     'lib/runner-*.js',
     'lib/output.js',
+    'lib/output-*.js',
     'scripts/ensure-spawn-helper.mjs',
   ],
   // tsdown shares the repository/pack code between the lib entry and the bin

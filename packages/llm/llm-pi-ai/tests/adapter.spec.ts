@@ -413,16 +413,23 @@ describe('PiAiAdapter provider routing', () => {
     })
   })
 
-  it('stops the SDK request when the adapter idle watchdog expires', async () => {
-    const server = await mockServer([{ events: textEvents, delayMs: 200 }])
-    const ctx = await harness(server.url, { streamIdleTimeoutMs: 20 })
+  it('stops the SDK request when the adapter idle watchdog expires', { timeout: 20_000 }, async () => {
+    const server = await mockServer([{ events: textEvents, delayMs: 4_000 }])
+    const ctx = await harness(server.url, { streamIdleTimeoutMs: 2_000 })
 
-    const result = await assemble(ctx, { model: 'deepseek-v4-flash', messages: [] })
+    const request = assemble(ctx, { model: 'deepseek-v4-flash', messages: [] })
+    const startup = await Promise.race([
+      server.firstEventWritten.then(() => 'first-event' as const),
+      request.then(() => 'finished-before-first-event' as const),
+    ])
+    expect(startup).toBe('first-event')
+
+    const result = await request
     expect(result.finish).toMatchObject({ kind: 'error', failure: { code: 'TIMEOUT' } })
     await Promise.race([
       server.responseClosed,
       new Promise<never>((_resolve, reject) => {
-        setTimeout(() => { reject(new Error('SDK request did not close after idle timeout')) }, 1_000)
+        setTimeout(() => { reject(new Error('SDK request did not close after idle timeout')) }, 5_000)
       }),
     ])
 

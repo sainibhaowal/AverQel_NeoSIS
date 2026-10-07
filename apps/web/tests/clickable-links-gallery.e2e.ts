@@ -400,7 +400,9 @@ describe('web e2e: clickable links gallery', () => {
     const sourceLink = page.locator(`a[href="${SOURCE_URL}"]`)
     await expect.poll(() => sourceLink.count(), { timeout: 10_000 }).toBe(1)
     expect(await page.locator('a[href^="ftp:"]').count()).toBe(0)
-    expect(await page.locator(`a[href="${FETCH_URL}"]`).count()).toBe(1)
+    const fetchCardLink = page.locator('[data-web="fetch"]')
+      .locator(`a[href="${FETCH_URL}"]`)
+    expect(await fetchCardLink.count()).toBe(1)
     expect(await page.locator(`a[href="${GUIDE_URL}"]`).count()).toBe(2)
 
     const snapshot = (await captureStableAria(page, '[class*="centerCol"]', scaffold.workspaceCwd))
@@ -423,7 +425,7 @@ describe('web e2e: clickable links gallery', () => {
       ['markdown anchor', guideLink],
       ['file mention', mentions.first()],
       ['search source', sourceLink.first()],
-      ['fetch url', page.locator(`a[href="${FETCH_URL}"]`).first()],
+      ['fetch url', fetchCardLink],
     ] as const) {
       expect.soft(await styleOf(link, 'color'), `${name} color`).toBe(LINK_BLUE)
       expect.soft(await styleOf(link, 'font-weight'), `${name} weight`).toBe('500')

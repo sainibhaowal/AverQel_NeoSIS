@@ -33,6 +33,11 @@ describe('desktop login-shell environment', () => {
     await expect(readDesktopLoginShellEnvironment(base, { timeoutMs: 2_000 }, { platform: 'win32', shells: ['/does-not-exist'] }))
       .resolves.toEqual({ environment: base, failures: [] })
 
+    // A Windows checkout cannot execute the POSIX-only fallback paths used by
+    // this second half. The explicit win32 call above still exercises the
+    // platform behavior on the native CI runner.
+    if (process.platform === 'win32') return
+
     const result = await readDesktopLoginShellEnvironment(base, { timeoutMs: 2_000 }, {
       platform: 'linux', shells: ['/does-not-exist', '/bin/sh'],
     })

@@ -39,6 +39,7 @@
     }
   },
   "files": [
+    "locale/*.json",
     "lib/index.js",
     "lib/invariant.js",
     "lib/types/**/*.js",

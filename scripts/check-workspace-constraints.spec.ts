@@ -335,6 +335,20 @@ describe('package payload constraints', () => {
   })
 
   it.each([
+    'packages/client/shortcuts',
+    'packages/sandbox/sandbox-windows-acl',
+    'packages/schedule/schedule',
+    'packages/subprocess/subprocess-local',
+  ])('accepts the complete runtime payload for %s', (dir) => {
+    const manifest = JSON.parse(readFileSync(new URL(`../${dir}/package.json`, import.meta.url), 'utf8')) as WorkspaceManifest['manifest']
+    expect(checkWorkspaceManifest({ dir, manifest })).toEqual([])
+    if (dir === 'packages/client/shortcuts') expect(manifest.files).toContain('lib/protocol.js')
+    if (dir === 'packages/sandbox/sandbox-windows-acl') expect(manifest.files).toContain('assets')
+    if (dir === 'packages/schedule/schedule') expect(manifest.files).toContain('locale/*.json')
+    if (dir === 'packages/subprocess/subprocess-local') expect(manifest.files).toContain('lib/output-*.js')
+  })
+
+  it.each([
     'packages/client/ui-sidebar-documentpreview',
     'packages/client/ui-sidebar-terminal',
   ])('accepts package-local Client chunks from %s', (dir) => {

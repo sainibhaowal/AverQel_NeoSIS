@@ -789,7 +789,8 @@ describe('runScenario', () => {
     expect(result.sessionLogs[0]?.content).toContain('durable marker')
   })
 
-  it('waitForInboxMessage times out when the session log or matching insertion is absent', { timeout: 20_000 }, async () => {
+  it('waitForInboxMessage times out when the session log or matching insertion is absent', { timeout: 20_000 }, async ({ onTestFinished }) => {
+    isolateDiagnosticTimeout(onTestFinished)
     const absent = await scenario({ prompt: 'hang-until-cancel', persistLogsOnCancel: true })
     await expect(runScenario(
       { steps: [...boot, { op: 'promptAndCancel', text: 'hang' }, { op: 'waitForInboxMessage', text: 'missing', timeoutMs: 20 }] },
@@ -1119,7 +1120,8 @@ describe('runScenario', () => {
     )).rejects.toThrow(/subagent child #2 did not persist closed turn 1 within 20ms/)
   })
 
-  it('waitForTitleAfterTurnEnd times out when the title precedes the boundary', { timeout: 20_000 }, async () => {
+  it('waitForTitleAfterTurnEnd times out when the title precedes the boundary', { timeout: 20_000 }, async ({ onTestFinished }) => {
+    isolateDiagnosticTimeout(onTestFinished)
     const { fixtureFile } = await scenario({
       prompt: 'hang-until-cancel',
       persistLogsOnCancel: true,

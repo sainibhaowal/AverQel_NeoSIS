@@ -55,6 +55,8 @@ None; the package does not assemble or send provider inference requests.
 
 <a id="known-limitations-and-deferred-work"></a>
 
+No runtime invariant companion is published because reporter lifecycle is consumer-owned and collector acceptance is not observable locally, so no independent delivery state can be checked.
+
 - Export is best-effort and has no durable outbox or collector-acceptance guarantee.
 - The consumer must perform authorization and redaction before reporting Session events.
 - A single serialized Session-log record larger than the configured byte limit is rejected rather than truncated.

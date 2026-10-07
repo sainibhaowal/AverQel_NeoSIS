@@ -2,7 +2,7 @@
 # trigger from 8,240 to 7,500, between the history and its condensed replacement.
 
 - id: llm-deepseek
-  name: '@averqel/neosis-llm-deepseek'
+  name: '@averqel/neosis-llm-deepseek-api-key'
   disabled: true
 
 - id: session-persistence-jsonl

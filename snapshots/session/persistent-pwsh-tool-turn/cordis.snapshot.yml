@@ -1,6 +1,6 @@
 # Keyless replay counterpart to persistent-pwsh.cordis.yml.
 - id: llm-deepseek
-  name: '@averqel/neosis-llm-deepseek'
+  name: '@averqel/neosis-llm-deepseek-api-key'
   disabled: true
 
 - insert:

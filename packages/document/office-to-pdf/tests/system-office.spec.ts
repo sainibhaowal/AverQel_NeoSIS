@@ -15,7 +15,7 @@ async function fixture(script: string): Promise<{ root: string; executable: stri
   return { root, executable }
 }
 
-it('runs an isolated executable with provider-owned input and output paths', async () => {
+it.skipIf(process.platform === 'win32')('runs an isolated POSIX executable with provider-owned input and output paths', async () => {
   const { root, executable } = await fixture(`
     import { writeFile } from 'node:fs/promises'
     import { join } from 'node:path'

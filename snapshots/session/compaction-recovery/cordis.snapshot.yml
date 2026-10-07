@@ -1,7 +1,7 @@
 # Keyless context-overflow replay composition.
 
 - id: llm-deepseek
-  name: '@averqel/neosis-llm-deepseek'
+  name: '@averqel/neosis-llm-deepseek-api-key'
   disabled: true
 
 - id: session-persistence-jsonl

@@ -83,8 +83,9 @@ async function selectModel(page: Page, name: string): Promise<void> {
   const trigger = page.getByRole('button', { name: /Select model/ })
   await trigger.click()
   await page.getByRole('menuitem', { name: /^Model/ }).click()
-  await page.getByRole('menuitemradio', { name, exact: true }).click()
-  await expect.poll(() => trigger.getAttribute('title')).toMatch(new RegExp(`^${name}(?: ·|$)`))
+  await page.getByRole('group', { name: 'DeepSeek', exact: true })
+    .getByRole('menuitemradio', { name, exact: true }).click()
+  await expect.poll(() => trigger.getAttribute('title')).toContain(`DeepSeek · ${name}`)
 }
 
 /** A compact decision must remain stable across observer deliveries and paints. */
@@ -129,6 +130,9 @@ describe('web e2e: plan chip click area at the narrow viewport', () => {
     onTestFailed(() => saveFailureShot(page, 'web-e2e-plan-narrow-viewport'))
     const input = page.locator('[data-composer-input]').first()
     await input.waitFor({ timeout: 10_000 })
+    // The persisted fixture's compatibility model now has explicit catalog
+    // metadata, so choose the intended long display name for this geometry case.
+    await selectModel(page, SHORT_MODEL)
     await input.fill('/plan ')
     await input.press('Enter')
 
@@ -201,7 +205,7 @@ describe('web e2e: plan chip click area at the narrow viewport', () => {
     // Find the content-dependent transition on this platform's fonts, never a
     // committed pixel threshold. The old 360px rule cannot satisfy this case.
     let narrowViewport: number | undefined
-    for (let width = 1100; width >= 650; width -= 10) {
+    for (let width = 1100; width >= 480; width -= 10) {
       await resizeControls(page, width)
       const layout = await controlLayout(page)
       if (layout.width > 360 && layout.icon && !layout.text) {

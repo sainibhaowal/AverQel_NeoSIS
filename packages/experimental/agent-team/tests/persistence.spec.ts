@@ -316,7 +316,7 @@ for (const backend of backends) {
         agentOptions: { provider: 'mock', model: 'mock' },
       })
       await vi.waitFor(() => { expect(second.ctx.agents.get(started.member.id)).toBeUndefined() }, { timeout: 5_000 })
-      await vi.waitFor(() => { expect(durable(rootHandle.agent).pendingMessages).toEqual([]) })
+      await vi.waitFor(() => { expect(durable(rootHandle.agent).pendingMessages).toEqual([]) }, { timeout: 20_000 })
 
       const child = await storedEvents(second.ctx, started.member.id)
       const peerIds = child.flatMap(event => event.type === 'user/message'

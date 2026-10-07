@@ -7,6 +7,7 @@ export interface MockServer {
   requests: unknown[]
   headers: IncomingMessage['headers'][]
   readonly closedResponses: number
+  firstEventWritten: Promise<void>
   responseClosed: Promise<void>
 }
 
@@ -37,9 +38,12 @@ export async function mockServer(script: {
   const requests: unknown[] = []
   const headers: IncomingMessage['headers'][] = []
   let closedResponses = 0
+  const firstEventWritten = Promise.withResolvers<undefined>()
   const responseClosed = Promise.withResolvers<undefined>()
   const server = createServer((request: IncomingMessage, response: ServerResponse) => {
+    let eventTimer: ReturnType<typeof setTimeout> | undefined
     response.on('close', () => {
+      if (eventTimer !== undefined) clearTimeout(eventTimer)
       closedResponses += 1
       responseClosed.resolve(undefined)
     })
@@ -63,11 +67,16 @@ export async function mockServer(script: {
       response.writeHead(200, { 'content-type': 'text/event-stream' })
       let index = 0
       const writeNext = (): void => {
+        if (response.destroyed) return
         const event = behavior.events?.[index++]
         if (event === undefined) { response.end(); return }
         response.write(`data: ${event}\n\n`)
+        firstEventWritten.resolve(undefined)
         if (behavior.delayMs === undefined) writeNext()
-        else setTimeout(writeNext, behavior.delayMs)
+        else eventTimer = setTimeout(() => {
+          eventTimer = undefined
+          writeNext()
+        }, behavior.delayMs)
       }
       writeNext()
     })
@@ -81,6 +90,7 @@ export async function mockServer(script: {
     paths,
     requests,
     headers,
+    firstEventWritten: firstEventWritten.promise,
     responseClosed: responseClosed.promise,
     get closedResponses() { return closedResponses },
   }

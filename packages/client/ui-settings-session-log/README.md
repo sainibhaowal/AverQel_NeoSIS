@@ -55,6 +55,8 @@ None; the package does not assemble or send provider requests.
 
 <a id="known-limitations-and-deferred-work"></a>
 
+No runtime invariant companion is published because this client package renders settings owned by the Host and exposes no independent event stream or state snapshot.
+
 - The row is useful only when the Host exposes the matching configuration form.
 - The package does not verify collector acceptance and cannot display delivery details owned by the Host telemetry channel.
 - The package controls the DeepSeek Session-log preference surface; other telemetry channels have separate owners and settings.

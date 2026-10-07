@@ -1,6 +1,6 @@
 import { spawn, type ChildProcessWithoutNullStreams } from 'node:child_process'
 import { createRequire } from 'node:module'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 import WebSocket, { type RawData } from 'ws'
 import { afterEach, describe, expect, it } from 'vitest'
 import { isPlainObject } from '../src/shared/json.ts'
@@ -98,7 +98,7 @@ describe('Host debugger through the Inspector Worker', () => {
 
   it('evaluates a paused Host frame and resumes while the main thread is stopped', async () => {
     const fixture = fileURLToPath(new URL('./fixtures/debug-host.ts', import.meta.url))
-    const tsx = createRequire(import.meta.url).resolve('tsx/esm')
+    const tsx = pathToFileURL(createRequire(import.meta.url).resolve('tsx/esm')).href
     child = spawn(process.execPath, ['--import', tsx, fixture], {
       env: { ...process.env, TSX_TSCONFIG_PATH: fileURLToPath(new URL('../../../../tsconfig.json', import.meta.url)) },
       stdio: ['pipe', 'pipe', 'pipe'],

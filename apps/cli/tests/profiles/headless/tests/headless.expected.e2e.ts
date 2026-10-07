@@ -84,7 +84,7 @@ async function expectHeadlessStream(normalized: string, expectedPath: string): P
 
 /** Serve one deterministic AverQel-compatible response while retaining its request body. */
 async function deepseekDefaultsServer(
-  options: { waitForTitleRequest?: boolean; piAiCompatibility?: true } = {},
+  options: { keepAliveCount?: number; waitForTitleRequest?: boolean; piAiCompatibility?: true } = {},
 ): Promise<AverQelDefaultsServer> {
   const requests: JsonObject[] = []
   const paths: string[] = []
@@ -96,7 +96,7 @@ async function deepseekDefaultsServer(
       requests.push(JSON.parse(body) as JsonObject)
       paths.push(request.url ?? '')
       response.writeHead(200, { 'content-type': 'text/event-stream' })
-      let keepAlives = 3
+      let keepAlives = options.keepAliveCount ?? 3
       const write = (): void => {
         // One-shot teardown may cancel background title work after the main response.
         if (keepAlives-- > 0
@@ -584,7 +584,9 @@ describe('headless stream-json snapshots', () => {
   }, LOADER_SMOKE_TEST_TIMEOUT_MS)
 
   it('keeps provider comments alive and sends AverQel defaults through the one-shot app', async () => {
-    const server = await deepseekDefaultsServer()
+    // Keep this request active longer than the watchdog deadline. The wide
+    // margin avoids CI scheduler jitter while still proving comments pulse it.
+    const server = await deepseekDefaultsServer({ keepAliveCount: 20 })
     try {
       const result = await runLoaderSmoke({
         label: 'AverQel adapter defaults headless stream-json snapshot',

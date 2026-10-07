@@ -13,7 +13,7 @@ import {
 } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { delimiter, dirname, join } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 import { afterEach, describe, expect, it } from 'vitest'
 import { gitBlobHash, storeGitBlob } from './translation-pairing-git.ts'
 import {
@@ -29,7 +29,7 @@ import { removeFixtureSafely } from './test-fixture-cleanup.ts'
 const driver = fileURLToPath(new URL('./merge-translation-pairing.ts', import.meta.url))
 const driverLauncher = fileURLToPath(new URL('./merge-translation-pairing-driver.sh', import.meta.url))
 const workspaceRoot = fileURLToPath(new URL('../', import.meta.url))
-const tsxLoader = createRequire(import.meta.url).resolve('tsx/esm')
+const tsxLoader = pathToFileURL(createRequire(import.meta.url).resolve('tsx/esm')).href
 const fixtures: string[] = []
 
 interface Fixture {

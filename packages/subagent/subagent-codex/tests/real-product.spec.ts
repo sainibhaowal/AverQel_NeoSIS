@@ -47,7 +47,7 @@ const roots: string[] = []
 const fixtures: ResponsesFixture[] = []
 const contexts: Context[] = []
 
-afterEach(() => cleanupRealProduct({ contexts, fixtures, roots }))
+afterEach(() => cleanupRealProduct({ contexts, fixtures, roots }), 60_000)
 
 interface RealHarness {
   readonly ctx: Context

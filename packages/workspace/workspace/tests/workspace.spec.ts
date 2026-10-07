@@ -2,7 +2,7 @@ import type { z } from 'zod'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { mkdir, mkdtemp, realpath, rm, symlink, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
-import { basename, join, relative } from 'node:path'
+import { basename, join } from 'node:path'
 import { Context } from '@averqel/cordis'
 import Storage from '@averqel/neosis-storage'
 import type { StorageBackend } from '@averqel/neosis-storage'
@@ -1290,7 +1290,10 @@ describe('first-use Workspace preparation', () => {
   it('rejects a relative candidate before creating its directory', async () => {
     const h = await firstUse()
     const candidate = join(h.directoryRoot, 'relative')
-    h.resolveDirectory.mockResolvedValueOnce(relative(process.cwd(), candidate))
+    // Use a relative spelling directly: path.relative can return its absolute
+    // second argument when Windows places cwd and the temp directory on
+    // different drive letters.
+    h.resolveDirectory.mockResolvedValueOnce(join('relative', 'candidate'))
     await expect(h.registry.initializeDefault(h.resolveDirectory)).rejects.toThrow('fully qualified')
     await expect(realpath(candidate)).rejects.toMatchObject({ code: 'ENOENT' })
     expect(h.registry.list()).toEqual([])

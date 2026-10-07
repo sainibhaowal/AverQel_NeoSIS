@@ -189,11 +189,12 @@ describe.each(CHOKIDAR_FIXTURES)('$label running unchanged', (fixture) => {
     watcher.on('all', (event) => { events.push(event) })
     const added = onceEvent<string>(watcher, 'add')
     vfs.writeFileSync(path, 'a')
-    await delay(10)
     vfs.appendFileSync(path, 'b')
-    await delay(10)
     vfs.appendFileSync(path, 'c')
     await expect(added).resolves.toBe(path)
+    // Let delayed filesystem notifications settle before asserting that the
+    // write burst produced one stabilized add rather than a later change.
+    await delay(60)
     expect(events).toEqual(['add'])
   })
 

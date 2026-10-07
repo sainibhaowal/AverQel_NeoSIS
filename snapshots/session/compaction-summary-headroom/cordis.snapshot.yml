@@ -2,7 +2,7 @@
 # request output reservation lowers the proactive trigger to 7,500 tokens.
 
 - id: llm-deepseek
-  name: '@averqel/neosis-llm-deepseek'
+  name: '@averqel/neosis-llm-deepseek-api-key'
   disabled: true
 
 - id: session-persistence-jsonl

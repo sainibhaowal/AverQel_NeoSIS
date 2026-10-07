@@ -6,7 +6,7 @@
 // content-addressed store makes the saved path identical across record and
 // replay once the workspace cwd is tokenized, so the recorded read arguments
 // replay verbatim against a freshly re-uploaded object.
-// Record: NEOSIS_SNAPSHOT=record rewrites session.v3.jsonl, then a keyless
+// Record: NEOSIS_SNAPSHOT=record writes the current session format, then a keyless
 // NEOSIS_SNAPSHOT=refresh regenerates ui.expected.md.
 import { readFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
@@ -231,7 +231,8 @@ describe('web e2e: generic file upload through the real assembly', () => {
     const modelTrigger = page.getByRole('button', { name: /^Select model, current/ })
     await modelTrigger.click()
     await page.getByRole('menuitem', { name: /^Model\b/ }).click()
-    await page.getByRole('menuitemradio', { name: 'DeepSeek-V4.1-Flash' }).click()
+    await page.getByRole('group', { name: 'DeepSeek', exact: true })
+      .getByRole('menuitemradio', { name: 'DeepSeek-V4.1-Flash', exact: true }).click()
     await expect.poll(() => modelTrigger.getAttribute('aria-label'), { timeout: 10_000 })
       .toContain('DeepSeek-V4.1-Flash')
     const imageBytes = await readFile(IMAGE_FIXTURE)
@@ -432,7 +433,7 @@ describe('web e2e: generic file upload through the real assembly', () => {
     expect(tripwire.pageErrors).toEqual([])
     expect(tripwire.warnings).toEqual([])
     await assertFixtureInventory(SNAPSHOT_DIR, [
-      'session.v3.jsonl', 'replay.override.json', 'ui.expected.md', 'trajectory.expected.md', 'trajectory-status.expected.md',
+      'session.v4.jsonl', 'replay.override.json', 'ui.expected.md', 'trajectory.expected.md', 'trajectory-status.expected.md',
     ])
   })
 })

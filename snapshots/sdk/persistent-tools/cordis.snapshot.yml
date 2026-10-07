@@ -1,7 +1,7 @@
 # Replay layer for the TypeScript SDK minimal customization patch.
 
 - id: llm-deepseek
-  name: '@averqel/neosis-llm-deepseek'
+  name: '@averqel/neosis-llm-deepseek-api-key'
   disabled: true
 
 - insert:
