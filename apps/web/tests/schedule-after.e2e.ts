@@ -464,7 +464,7 @@ describe.skipIf(MODE === 'record')('web e2e: conversational reminders', () => {
     expect(await row.textContent()).toContain(AFTER_REPLY)
     const triggerTitle = '[data-turn-trigger] > button > span:nth-child(2)'
     await page.locator(triggerTitle).waitFor()
-    expect(await page.locator(triggerTitle).textContent()).toBe('Automation task')
+    expect(await page.locator(triggerTitle).textContent()).toBe('Scheduled task')
     await compareOrRefreshGolden(
       AFTER_EXPECTED,
       `${await captureStableAria(page, triggerTitle, scaffold.workspaceCwd)}\n\n${await captureStableAria(page, selector, scaffold.workspaceCwd)}`,
@@ -853,8 +853,14 @@ describe.skipIf(MODE === 'record')('web e2e: active Schedule catalog', () => {
       { id: 'schedule', name: '@averqel/neosis-schedule' },
       { id: 'ui-schedule', name: '@averqel/neosis-client-ui-schedule' },
     ]) {
-      // The shipped Web composition carries none of the rows; the bundle inserts each once, switched on.
-      expect(shipped.some(entry => entry.id === row.id)).toBe(false)
+      // Web ships the UI row disabled; the optional bundle enables it and adds
+      // the Host services that make the task catalog available.
+      const shippedRow = shipped.find(entry => entry.id === row.id)
+      if (row.id === 'ui-schedule') {
+        expect(shippedRow).toMatchObject({ name: row.name, disabled: true })
+      } else {
+        expect(shippedRow).toBeUndefined()
+      }
       expect(withBundle.filter(entry => entry.id === row.id && entry.name === row.name && entry.disabled !== true)).toHaveLength(1)
     }
 

@@ -249,6 +249,33 @@ describe('HMR exact config paths', () => {
     expect(calls).toBe(2)
   })
 
+  it('does not await an in-flight refresh when disposal is inside its transaction', async () => {
+    const dir = mkdtempSync(join(tmpdir(), 'neosis-hmr-transaction-dispose-'))
+    hmrRoots.push(dir)
+    const filename = join(dir, 'plugins.yml')
+    const ctx = await bootHmr(dir)
+    onTestFinished(() => ctx.fiber.dispose())
+    const watcher = new FSWatcher()
+    const previousFactory = configWatch.create
+    onTestFinished(() => { configWatch.create = previousFactory })
+    configWatch.create = () => { queueMicrotask(() => { watcher.emit('ready') }); return watcher }
+
+    const started = Promise.withResolvers<undefined>()
+    const release = Promise.withResolvers<undefined>()
+    const finished = Promise.withResolvers<undefined>()
+    const dispose = await watchConfig(ctx, filename, {}, async () => {
+      started.resolve(undefined)
+      await release.promise
+      finished.resolve(undefined)
+    }, () => true)
+
+    await watcher._emit('change', filename)
+    await started.promise
+    await dispose()
+    release.resolve(undefined)
+    await finished.promise
+  }, 10_000)
+
   it('observes consecutive writes after the previous configuration was applied', async () => {
     const dir = mkdtempSync(join(tmpdir(), 'neosis-hmr-consecutive-'))
     hmrRoots.push(dir)

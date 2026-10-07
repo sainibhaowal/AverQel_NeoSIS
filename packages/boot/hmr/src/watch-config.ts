@@ -1,5 +1,5 @@
 /** Exact-path watching for live profile patch files outside Cordis module roots. */
-import { basename, dirname, relative, resolve } from 'node:path'
+import { basename, dirname, isAbsolute, relative, resolve, sep } from 'node:path'
 import { realpathSync } from 'node:fs'
 import { realpath, stat } from 'node:fs/promises'
 import { watch, type ChokidarOptions } from 'chokidar'
@@ -65,7 +65,12 @@ export async function watchConfig(
     } catch {
       // Keep the event path for removals or when a parent disappeared.
     }
-    if (observed !== filename && canonicalObserved !== target.filename) return
+    const targetFromObserved = relative(canonicalObserved, target.filename)
+    const observesTargetParent = targetFromObserved !== ''
+      && targetFromObserved !== '..'
+      && !targetFromObserved.startsWith(`..${sep}`)
+      && !isAbsolute(targetFromObserved)
+    if (observed !== filename && canonicalObserved !== target.filename && !observesTargetParent) return
     state.dirty = true
     if (running) return
     running = (async () => {
@@ -82,8 +87,14 @@ export async function watchConfig(
     })().finally(() => { running = undefined })
   }
   watcher.on('add', onChange)
+  // A target below a missing directory can be created before Chokidar has
+  // attached a watcher to that newly-created directory. Refreshing on the
+  // ancestor event observes the target's current state even if its own add
+  // event was lost in that subscription window.
+  watcher.on('addDir', onChange)
   watcher.on('change', onChange)
   watcher.on('unlink', onChange)
+  watcher.on('unlinkDir', onChange)
   const ready = Promise.withResolvers<void>()
   let pending = true
   watcher.once('ready', () => { pending = false; ready.resolve() })
