@@ -28,14 +28,12 @@ const roots: string[] = []
 const neosisBuildWorkflows = [
   'build-exe-for-python-sdk.yml',
   'ci.yml',
-  'release.yml',
-  'release-publish.yml',
+  'ci-master.yml',
+  'desktop-release.yml',
   'sandbox.yml',
 ]
-const disabledWorkflowNames = new Set<string>()
-
 function workflowPath(name: string): string {
-  return `.github/${disabledWorkflowNames.has(name) ? 'workflows-disabled' : 'workflows'}/${name}`
+  return `.github/workflows/${name}`
 }
 
 afterEach(() => {

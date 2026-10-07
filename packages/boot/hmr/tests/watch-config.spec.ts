@@ -150,6 +150,8 @@ describe('HMR exact config paths', () => {
         }
       })
 
+      // Wait for the first polling cycle after the watcher is ready.
+      await new Promise(resolve => setTimeout(resolve, 50))
       writeFileSync(filename, 'one', { flag: 'wx' })
       await eventually(() => observed.includes('one'), 'HMR did not observe config creation')
       writeFileSync(filename, 'two')

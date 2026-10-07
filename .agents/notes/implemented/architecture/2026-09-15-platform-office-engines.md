@@ -28,4 +28,4 @@ Distributions with a declared native target omit WASM assets. Other targets reta
 
 A new engine package identity also requires updates to `LIBREOFFICE_PACKAGES` in `scripts/gen-third-party-notices.ts`, any applicable `minimumReleaseAgeExclude` entry in `pnpm-workspace.yaml`, and the package list in the [kit ownership note](2026-09-14-independent-libreoffice-kit.md). The license allowlist remains explicit.
 
-The [public Python release workflow](../../../../.github/workflows-disabled/python-release.yml) rejects any wheel at or above 100,000,000 bytes. Selecting one engine reduces payload size but does not establish that a runtime wheel meets this limit; npm engine publication and local conversion are separate from wheel upload eligibility.
+The former public Python release workflow rejected any wheel at or above 100,000,000 bytes. Selecting one engine reduces payload size but does not establish that a runtime wheel meets this limit; npm engine publication and local conversion are separate from wheel upload eligibility.

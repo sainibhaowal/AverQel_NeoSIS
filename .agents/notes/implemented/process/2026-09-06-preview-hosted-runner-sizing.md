@@ -6,11 +6,11 @@ English
 
 ## Problem
 
-PR previews build the full workspace and browser-worker VFS image. A lower per-minute runner price does not guarantee lower job cost because GitHub rounds each job upward to whole minutes. Moving previews to persistent self-hosted machines also changes isolation and is outside this decision.
+PR previews built the full workspace and browser-worker VFS image. A lower per-minute runner price does not guarantee lower job cost because GitHub rounds each job upward to whole minutes. Moving previews to persistent self-hosted machines also changes isolation and is outside this decision.
 
 ## Decision
 
-The [preview workflow](../../../../.github/workflows-disabled/build-preview-cloudflare.yml) uses standard GitHub-hosted `ubuntu-24.04`. Build, cache, deployment, protected-image verification, and comment semantics remain unchanged. The [sizing reference](../../../../.github/preview-sizing/README.md) owns comparison requirements. The separate CI [failover runbook](2026-07-26-ci-failover-runbook.md) retains its independent runner-switch decision; previews do not use those switches.
+The former preview workflow used standard GitHub-hosted `ubuntu-24.04`. Build, cache, deployment, protected-image verification, and comment semantics remained unchanged. The former sizing reference owned comparison requirements. The separate CI [failover runbook](2026-07-26-ci-failover-runbook.md) retains its independent runner-switch decision; previews did not use those switches.
 
 ### Measurements
 

@@ -9,7 +9,6 @@ import { gatesForMode } from '../run-gates.ts'
 const root = resolve(import.meta.dirname, '../..')
 const primaryBranchPush = "github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')"
 const runtimeBuilder = './.github/workflows/build-exe-for-python-sdk.yml'
-const disabledWorkflowNames = new Set(['python-release.yml'])
 
 interface Job {
   if?: string | boolean
@@ -29,8 +28,7 @@ interface Workflow {
 }
 
 function workflow(name: string): Workflow {
-  const directory = disabledWorkflowNames.has(name) ? '.github/workflows-disabled' : '.github/workflows'
-  return load(readFileSync(resolve(root, directory, name), 'utf8')) as Workflow
+  return load(readFileSync(resolve(root, '.github/workflows', name), 'utf8')) as Workflow
 }
 
 function commands(job: Job): string[] {
@@ -74,7 +72,7 @@ describe('master-only platform scheduling', () => {
     expect(evaluateCondition(workflow('ci.yml').jobs['all-checks-passed']!.if as string, true, ['success'])).toBe(false)
   })
 
-  it('keeps only Linux and Windows x64 runtimes in required PR CI', () => {
+  it('keeps Linux and Windows x64 Python runtime validation in required PR CI', () => {
     const pr = workflow('ci.yml')
     expect(Object.keys(pr.on)).toEqual(['pull_request'])
     expect(pr.jobs['python-runtime']).toMatchObject({
@@ -94,7 +92,7 @@ describe('master-only platform scheduling', () => {
     }))
   })
 
-  it('runs all three deferred carriers on master pushes without live API credentials', () => {
+  it('runs Python runtime carriers on master pushes without live API credentials', () => {
     const master = workflow('ci-master.yml')
     expect(master.on.push).toEqual({ branches: ['main', 'master'] })
     expect(Object.keys(master.on).sort()).toEqual(['push', 'schedule', 'workflow_dispatch'])
@@ -107,9 +105,7 @@ describe('master-only platform scheduling', () => {
     expect(runtime.needs).toBeUndefined()
     expect(runtime['continue-on-error']).toBeUndefined()
     const builder = workflow('build-exe-for-python-sdk.yml')
-    expect(builder.concurrency?.['cancel-in-progress']).toBe(
-      '${{ !inputs.release }}',
-    )
+    expect(builder.concurrency?.['cancel-in-progress']).toBe('${{ !inputs.release }}')
     expect(builder.jobs.build!.steps).toEqual(expect.arrayContaining([
       expect.objectContaining({ name: 'Run installed-wheel keyless black-box tests (POSIX)' }),
       expect.objectContaining({ name: 'Run installed-wheel keyless black-box tests (Windows)' }),
@@ -144,13 +140,4 @@ describe('master-only platform scheduling', () => {
     expect(process.env.npm_execpath).toBe(previous)
   })
 
-  it('retains the complete release matrix independently of CI scheduling', () => {
-    const release = workflow('python-release.yml')
-    const calls = Object.values(release.jobs).filter(job => job.uses === runtimeBuilder)
-    expect(calls).toHaveLength(1)
-    expect(calls[0]!.with).toMatchObject({
-      release: true,
-      targets: 'node24-linux-x64,node24-linux-arm64,node24-macos-arm64,node24-macos-x64,node24-win-x64',
-    })
-  })
 })

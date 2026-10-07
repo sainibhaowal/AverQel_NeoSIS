@@ -1,0 +1,213 @@
+name: Desktop release
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_ref:
+        description: Git ref to package
+        required: true
+        default: main
+        type: string
+      release_tag:
+        description: GitHub Release tag to create
+        required: true
+        type: string
+      app_id:
+        description: Desktop application id
+        required: true
+        default: com.averqel.neosis
+        type: string
+      update_origin:
+        description: Existing HTTPS update-service origin used by the desktop policy
+        required: true
+        type: string
+      auth_origin:
+        description: HTTPS origin where test users authenticate
+        required: true
+        type: string
+      update_release_id:
+        description: Lowercase 32-character test release id used by the desktop updater
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: desktop-release-${{ inputs.release_tag }}
+  cancel-in-progress: false
+
+env:
+  NEOSIS_TELEMETRY_DISABLED: '1'
+
+jobs:
+  windows:
+    name: Windows x64 installer
+    runs-on: windows-2025
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.source_ref }}
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.17.1
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Write desktop release environment
+        shell: pwsh
+        env:
+          APP_ID: ${{ inputs.app_id }}
+          UPDATE_ORIGIN: ${{ inputs.update_origin }}
+          AUTH_ORIGIN: ${{ inputs.auth_origin }}
+          RELEASE_ID: ${{ inputs.update_release_id }}
+        run: |
+          @'
+          const origin = process.env.UPDATE_ORIGIN;
+          const authOrigin = process.env.AUTH_ORIGIN;
+          const releaseId = process.env.RELEASE_ID;
+          if (!origin || !authOrigin || !releaseId || !/^https:\/\/[^/?#\s]+$/.test(origin) || !/^https:\/\/[^/?#\s]+$/.test(authOrigin)) {
+            console.error('update_origin must be an HTTPS origin without a path, query, or fragment.');
+            process.exit(1);
+          }
+          const parsed = new URL(origin);
+          const parsedAuth = new URL(authOrigin);
+          if ([parsed, parsedAuth].some(url => url.protocol !== 'https:' || url.pathname !== '/' || url.search || url.hash || url.username || url.password)) {
+            console.error('update_origin and auth_origin must be HTTPS origins without credentials or a path.');
+            process.exit(1);
+          }
+          if (!/^[a-f0-9]{32}$/.test(releaseId)) {
+            console.error('update_release_id must contain exactly 32 lowercase hexadecimal characters.');
+            process.exit(1);
+          }
+          '@ | node --input-type=module
+
+          $config = '{"allowedAuthOrigins":["' + $env:AUTH_ORIGIN + '"]}'
+          @(
+            "NEOSIS_DESKTOP_APP_ID=$env:APP_ID"
+            'NEOSIS_DESKTOP_AUTO_UPDATE_ENV=test'
+            "DOWNLOAD_TEST_ORIGIN=$env:UPDATE_ORIGIN"
+            "DOWNLOAD_TEST_RELEASE_ID=$env:RELEASE_ID"
+            "NEOSIS_DESKTOP_MANDATORY_UPDATE_TEST_ORIGIN=$env:UPDATE_ORIGIN"
+            "NEOSIS_DESKTOP_MANDATORY_UPDATE_CONFIG='$config'"
+            'NEOSIS_DESKTOP_NPM_REGISTRY=https://registry.npmjs.org'
+          ) | Set-Content -Path apps/desktop/.env.windows -Encoding utf8NoBOM
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build unsigned Windows installer
+        run: pnpm --filter @averqel/neosis-desktop package:desktop:win:x64:unsigned
+
+      - name: Upload Windows installer
+        uses: actions/upload-artifact@v7
+        with:
+          name: desktop-win-x64
+          path: apps/desktop/.desktop-build/targets/win-x64/unsigned-artifacts
+          if-no-files-found: error
+
+  linux:
+    name: Linux x64 packages
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.source_ref }}
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.17.1
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Write desktop release environment
+        env:
+          APP_ID: ${{ inputs.app_id }}
+          UPDATE_ORIGIN: ${{ inputs.update_origin }}
+          AUTH_ORIGIN: ${{ inputs.auth_origin }}
+          RELEASE_ID: ${{ inputs.update_release_id }}
+        run: |
+          node --input-type=module <<'NODE'
+          const origin = process.env.UPDATE_ORIGIN;
+          const authOrigin = process.env.AUTH_ORIGIN;
+          const releaseId = process.env.RELEASE_ID;
+          if (!origin || !authOrigin || !releaseId || !/^https:\/\/[^/?#\s]+$/.test(origin) || !/^https:\/\/[^/?#\s]+$/.test(authOrigin)) {
+            console.error('update_origin must be an HTTPS origin without a path, query, or fragment.');
+            process.exit(1);
+          }
+          const parsed = new URL(origin);
+          const parsedAuth = new URL(authOrigin);
+          if ([parsed, parsedAuth].some(url => url.protocol !== 'https:' || url.pathname !== '/' || url.search || url.hash || url.username || url.password)) {
+            console.error('update_origin and auth_origin must be HTTPS origins without credentials or a path.');
+            process.exit(1);
+          }
+          if (!/^[a-f0-9]{32}$/.test(releaseId)) {
+            console.error('update_release_id must contain exactly 32 lowercase hexadecimal characters.');
+            process.exit(1);
+          }
+          NODE
+
+          cat > apps/desktop/.env.linux <<EOF
+          NEOSIS_DESKTOP_APP_ID=$APP_ID
+          NEOSIS_DESKTOP_AUTO_UPDATE_ENV=test
+          DOWNLOAD_TEST_ORIGIN=$UPDATE_ORIGIN
+          DOWNLOAD_TEST_RELEASE_ID=$RELEASE_ID
+          NEOSIS_DESKTOP_MANDATORY_UPDATE_TEST_ORIGIN=$UPDATE_ORIGIN
+          NEOSIS_DESKTOP_MANDATORY_UPDATE_CONFIG='{"allowedAuthOrigins":["$AUTH_ORIGIN"]}'
+          NEOSIS_DESKTOP_NPM_REGISTRY=https://registry.npmjs.org
+          EOF
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build AppImage and deb packages
+        run: pnpm --filter @averqel/neosis-desktop package:desktop:linux:x64
+
+      - name: Upload Linux packages
+        uses: actions/upload-artifact@v7
+        with:
+          name: desktop-linux-x64
+          path: apps/desktop/.desktop-build/targets/linux-x64/artifacts
+          if-no-files-found: error
+
+  release:
+    name: Create GitHub Release
+    needs: [windows, linux]
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - name: Download desktop packages
+        uses: actions/download-artifact@v8
+        with:
+          pattern: desktop-*
+          path: release-assets
+          merge-multiple: true
+
+      - name: Create GitHub Release and attach packages
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
+        run: |
+          mapfile -t assets < <(find release-assets -type f \( -name '*.exe' -o -name '*.AppImage' -o -name '*.deb' \) -print)
+          if (( ${#assets[@]} == 0 )); then
+            echo 'No desktop installer assets were found.' >&2
+            exit 1
+          fi
+          gh release create "$RELEASE_TAG" "${assets[@]}" \
+            --title "$RELEASE_TAG" \
+            --target "${{ inputs.source_ref }}" \
+            --generate-notes
