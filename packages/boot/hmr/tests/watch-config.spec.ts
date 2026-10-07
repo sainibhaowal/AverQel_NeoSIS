@@ -137,7 +137,11 @@ describe('HMR exact config paths', () => {
     const ctx = await bootHmr(dir)
     const observed: string[] = []
     try {
-      await watchConfig(ctx, filename, {}, () => {
+      await watchConfig(ctx, filename, {
+        usePolling: true,
+        interval: 25,
+        awaitWriteFinish: { stabilityThreshold: 100, pollInterval: 10 },
+      }, () => {
         try {
           observed.push(readFileSync(filename, 'utf8'))
         } catch (error) {
