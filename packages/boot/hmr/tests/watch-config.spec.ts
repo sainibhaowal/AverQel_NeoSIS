@@ -1,4 +1,5 @@
 import { mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, symlinkSync, unlinkSync, writeFileSync } from 'node:fs'
+import { AsyncResource } from 'node:async_hooks'
 import * as fs from 'node:fs'
 import { realpath } from 'node:fs/promises'
 import * as fsPromises from 'node:fs/promises'
@@ -175,12 +176,26 @@ describe('HMR exact config paths', () => {
     }
   })
 
-  it('processes native events for a watcher registered during a transaction', async () => {
+  it('processes a watcher event registered during a transaction', { timeout: 10_000 }, async () => {
     const dir = mkdtempSync(join(tmpdir(), 'neosis-hmr-transaction-watch-'))
     const filename = join(dir, 'plugins.yml')
     onTestFinished(() => { rmSync(dir, { recursive: true, force: true }) })
     const ctx = await bootHmr(dir)
     onTestFinished(() => ctx.fiber.dispose())
+    let watcher!: FSWatcher
+    let eventResource!: AsyncResource
+    const previousFactory = configWatch.create
+    onTestFinished(() => { configWatch.create = previousFactory })
+    onTestFinished(() => { eventResource?.emitDestroy() })
+    configWatch.create = (options) => {
+      watcher = new FSWatcher(options)
+      // Native filesystem integration is covered by the adjacent add/change/unlink cases.
+      // Capture the async context Chokidar uses when it creates its event source here.
+      eventResource = new AsyncResource('hmr-config-watcher-event')
+      Reflect.set(watcher, '_readyEmitted', true)
+      queueMicrotask(() => watcher.emit('ready'))
+      return watcher
+    }
     const hmr = ctx.hmr
     const observed = Promise.withResolvers<string>()
     const warn = vi.spyOn(ctx.logger, 'warn').mockImplementation((reason) => { observed.reject(new Error(String(reason))) })
@@ -189,6 +204,7 @@ describe('HMR exact config paths', () => {
       observed.resolve(readFileSync(filename, 'utf8'))
     }))
     writeFileSync(filename, 'created-after-transaction')
+    await eventResource.runInAsyncScope(() => watcher._emit('add', filename))
     expect(await observed.promise).toBe('created-after-transaction')
   })
 

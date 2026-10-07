@@ -8,6 +8,7 @@ import { classifyPersistenceChange, parsePersistenceSnapshot } from './persisten
 import { canonicalizeSchema, isArbitraryJsonSchema, schemaDigest, type PersistenceSchemaInventory } from './persistence-schema-model.ts'
 
 const roots: string[] = []
+const repositoryScanTimeoutMs = process.env.NEOSIS_COVERAGE_PARTITION_MODE === '1' ? 240_000 : 90_000
 afterEach(() => {
   for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true, maxRetries: 3 })
 })
@@ -316,8 +317,8 @@ interface SessionEventMap {
     expect(() => extractPersistenceSchema(fixture(source))).toThrow(error)
   })
 
-  // Repository-wide TypeScript extraction and reachable-node hashing use the Windows coverage test budget.
-  it('includes every real repository event and fingerprints every reachable node', { timeout: 90_000 }, () => {
+  // This repository-wide TypeScript program is CPU intensive under V8 coverage.
+  it('includes every real repository event and fingerprints every reachable node', { timeout: repositoryScanTimeoutMs }, () => {
     const root = resolve(import.meta.dirname, '..')
     const model = extractPersistenceSchema(root)
     expect(model.roots.filter(root => root.kind === 'event').map(root => root.event).sort())
